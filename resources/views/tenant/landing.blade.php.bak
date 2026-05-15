@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="{{ $settings->locale ?? 'en' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ $settings->clinic_name }}</title>
+    @if ($settings->primary_color)
+    <style>
+        :root { --primary: {{ $settings->primary_color }}; }
+        .btn-primary { background-color: var(--primary); color: #fff; padding: .75rem 1.5rem; border-radius: .375rem; text-decoration: none; display: inline-block; font-weight: 600; }
+        .btn-primary:hover { opacity: .9; }
+    </style>
+    @endif
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: system-ui, sans-serif; color: #111; background: #f9fafb; }
+        header { background: #fff; border-bottom: 1px solid #e5e7eb; padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; }
+        header h1 { font-size: 1.25rem; font-weight: 700; }
+        main { max-width: 800px; margin: 4rem auto; padding: 0 1.5rem; text-align: center; }
+        main h2 { font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; }
+        main p { font-size: 1.125rem; color: #6b7280; margin-bottom: 2rem; }
+        .btn-primary { background-color: #4f46e5; color: #fff; padding: .75rem 1.5rem; border-radius: .375rem; text-decoration: none; display: inline-block; font-weight: 600; }
+        .contact { margin-top: 3rem; font-size: .9rem; color: #9ca3af; }
+        .contact a { color: inherit; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>{{ $settings->clinic_name }}</h1>
+        @if ($settings->online_booking_enabled)
+            <a href="{{ route('book.create') }}" class="btn-primary">Book Online</a>
+        @endif
+    </header>
+
+    <main>
+        <h2>{{ $settings->clinic_name }}</h2>
+
+        @if ($settings->tagline)
+            <p>{{ $settings->tagline }}</p>
+        @endif
+
+        @if ($settings->online_booking_enabled)
+            <a href="{{ route('book.create') }}" class="btn-primary">Book an Appointment</a>
+        @endif
+
+        @if ($settings->contact_phone || $settings->contact_email || $settings->contact_address)
+            <div class="contact">
+                @if ($settings->contact_phone)
+                    <p>{{ $settings->contact_phone }}</p>
+                @endif
+                @if ($settings->contact_email)
+                    <p><a href="mailto:{{ $settings->contact_email }}">{{ $settings->contact_email }}</a></p>
+                @endif
+                @if ($settings->contact_address)
+                    <p>{{ $settings->contact_address }}</p>
+                @endif
+            </div>
+        @endif
+    </main>
+</body>
+</html>

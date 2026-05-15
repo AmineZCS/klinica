@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "01c584d36cea6af6a414dec78f076795",
+    "content-hash": "a56e39ba78fbac616fd96a0b8f0de0d6",
     "packages": [
         {
             "name": "blade-ui-kit/blade-heroicons",
@@ -2004,6 +2004,86 @@
                 }
             ],
             "time": "2025-12-27T19:43:20+00:00"
+        },
+        {
+            "name": "guava/calendar",
+            "version": "3.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/GuavaCZ/calendar.git",
+                "reference": "6caa50e4ccadad601203c7b90f4614f6a331876a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/GuavaCZ/calendar/zipball/6caa50e4ccadad601203c7b90f4614f6a331876a",
+                "reference": "6caa50e4ccadad601203c7b90f4614f6a331876a",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^5.0",
+                "illuminate/contracts": "^11.0|^12.0|^13.0",
+                "php": "^8.1|^8.2",
+                "spatie/laravel-package-tools": "^1.14.0"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.0",
+                "nunomaduro/collision": "^7.8|^8.0",
+                "nunomaduro/larastan": "^2.0.1",
+                "orchestra/testbench": "^9.0|^10.0|^11.0",
+                "pestphp/pest": "^2.36|^4.4",
+                "pestphp/pest-plugin": "^2.1.1|^4.0",
+                "pestphp/pest-plugin-arch": "^2.0|^4.0",
+                "pestphp/pest-plugin-laravel": "^2.0|^4.1",
+                "phpstan/extension-installer": "^1.1",
+                "phpstan/phpstan-deprecation-rules": "^1.0|^2.0",
+                "phpstan/phpstan-phpunit": "^1.0|^2.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Guava\\Calendar\\CalendarServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "Guava\\Calendar\\": "src/",
+                    "Guava\\Calendar\\Database\\Factories\\": "database/factories/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Lukas Frey",
+                    "email": "lukas.frey@guava.cz",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Adds support for vkurko/calendar to Filament PHP.",
+            "homepage": "https://github.com/GuavaCZ/calendar",
+            "keywords": [
+                "Guava",
+                "calendar",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/GuavaCZ/calendar/issues",
+                "source": "https://github.com/GuavaCZ/calendar/tree/3.1.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/GuavaCZ",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-03-23T18:09:09+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -11183,6 +11263,131 @@
                 "source": "https://github.com/laravel/sail"
             },
             "time": "2026-04-27T13:38:34+00:00"
+        },
+        {
+            "name": "laravel/sentinel",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/sentinel.git",
+                "reference": "972d9885d9d14312a118e9565c4e6ecc5e751ea1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/sentinel/zipball/972d9885d9d14312a118e9565c4e6ecc5e751ea1",
+                "reference": "972d9885d9d14312a118e9565c4e6ecc5e751ea1",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "illuminate/container": "^8.37|^9.0|^10.0|^11.0|^12.0|^13.0",
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.27",
+                "orchestra/testbench": "^6.47.1|^7.56|^8.37|^9.16|^10.9|^11.0",
+                "phpstan/phpstan": "^2.1.33"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Laravel\\Sentinel\\SentinelServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laravel\\Sentinel\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylor@laravel.com"
+                },
+                {
+                    "name": "Mior Muhammad Zaki",
+                    "email": "mior@laravel.com"
+                }
+            ],
+            "support": {
+                "source": "https://github.com/laravel/sentinel/tree/v1.1.0"
+            },
+            "time": "2026-03-24T14:03:38+00:00"
+        },
+        {
+            "name": "laravel/telescope",
+            "version": "v5.20.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/telescope.git",
+                "reference": "38ec6e6006a67e05e0c476c5f8ef3550b72e43d8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/telescope/zipball/38ec6e6006a67e05e0c476c5f8ef3550b72e43d8",
+                "reference": "38ec6e6006a67e05e0c476c5f8ef3550b72e43d8",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "laravel/framework": "^8.37|^9.0|^10.0|^11.0|^12.0|^13.0",
+                "laravel/sentinel": "^1.0",
+                "php": "^8.0",
+                "symfony/console": "^5.3|^6.0|^7.0|^8.0",
+                "symfony/var-dumper": "^5.0|^6.0|^7.0|^8.0"
+            },
+            "require-dev": {
+                "ext-gd": "*",
+                "guzzlehttp/guzzle": "^6.0|^7.0",
+                "laravel/octane": "^1.4|^2.0",
+                "orchestra/testbench": "^6.47.1|^7.55|^8.36|^9.15|^10.8|^11.0",
+                "phpstan/phpstan": "^1.10"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Laravel\\Telescope\\TelescopeServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laravel\\Telescope\\": "src/",
+                    "Laravel\\Telescope\\Database\\Factories\\": "database/factories/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylor@laravel.com"
+                },
+                {
+                    "name": "Mohamed Said",
+                    "email": "mohamed@laravel.com"
+                }
+            ],
+            "description": "An elegant debug assistant for the Laravel framework.",
+            "keywords": [
+                "debugging",
+                "laravel",
+                "monitoring"
+            ],
+            "support": {
+                "issues": "https://github.com/laravel/telescope/issues",
+                "source": "https://github.com/laravel/telescope/tree/v5.20.0"
+            },
+            "time": "2026-04-06T12:52:26+00:00"
         },
         {
             "name": "mockery/mockery",

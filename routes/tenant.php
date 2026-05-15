@@ -2,8 +2,11 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Tenant\GdprExportController;
+use App\Http\Controllers\Tenant\LandingController;
+use App\Http\Controllers\Tenant\PublicBookingController;
 use Illuminate\Support\Facades\Route;
-use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
+use Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
 /*
@@ -20,10 +23,20 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
 Route::middleware([
     'web',
-    InitializeTenancyByDomain::class,
+    InitializeTenancyBySubdomain::class,
     PreventAccessFromCentralDomains::class,
-])->group(function () {
-    Route::get('/', function () {
-        return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
+])->group(function (): void {
+    Route::get('/', [LandingController::class, 'index'])->name('tenant.home');
+
+    // Public booking
+    Route::prefix('book')->name('book.')->group(function (): void {
+        Route::get('/', [PublicBookingController::class, 'create'])->name('create');
+        Route::post('/', [PublicBookingController::class, 'store'])->name('store');
+    });
+
+    // GDPR data exports (authenticated tenant users only)
+    Route::middleware(['auth:tenant'])->prefix('gdpr')->name('gdpr.')->group(function (): void {
+        Route::get('/export/patients', [GdprExportController::class, 'patients'])->name('export.patients');
+        Route::get('/export/bookings', [GdprExportController::class, 'bookings'])->name('export.bookings');
     });
 });

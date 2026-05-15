@@ -9,3 +9,94 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+/* ============================================================
+   Klinica Design System — Kindsight-inspired
+   ============================================================ */
+
+/* -- Fonts -- */
+@font-face { font-family: 'KlinicaSerif'; src: local('Georgia'); }
+
+:root {
+    --k-green:      #3D4128;
+    --k-navy:       #0E0F0A;
+    --k-yellow:     #E1F079;
+    --k-terra:      #DE7653;
+    --k-terra-btn:  #E7573D;
+    --k-terra-soft: #FEBEB4;
+    --k-taupe:      #7A6C5F;
+    --k-beige:      #E5E1D6;
+    --k-cream:      #FAF5F1;
+    --k-off-white:  #FEFFFA;
+    --k-white:      #FFFFFF;
+    --k-gray:       #EFEFEF;
+    --k-error:      #CF2E2E;
+    --k-warn:       #FCB900;
+    --k-maroon:     #641E1E;
+}
+
+/* -- Utility classes -- */
+.k-serif   { font-family: 'Playfair Display', 'Times New Roman', Georgia, serif; }
+.k-sans    { font-family: 'DM Sans', 'Helvetica Neue', Arial, sans-serif; }
+.k-btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--k-terra-btn); color: #fff;
+    font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 400;
+    padding: 8px 26px 4px; border-radius: 10px; border: 2px solid var(--k-terra-btn);
+    height: 38px; line-height: 22.4px; text-decoration: none; cursor: pointer;
+    transition: background 0.2s;
+}
+.k-btn-primary:hover { background: var(--k-terra); border-color: var(--k-terra); }
+
+.k-btn-secondary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: transparent; color: var(--k-terra);
+    font-family: 'DM Sans', sans-serif; font-size: 18px; font-weight: 300;
+    padding: 14px 35px 7px; border-radius: 10px; border: 2px solid var(--k-terra);
+    height: 50px; line-height: 25px; text-decoration: none; cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+.k-btn-secondary:hover { background: var(--k-terra-soft); }
+
+.k-btn-accent {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--k-yellow); color: var(--k-navy);
+    font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 400;
+    padding: 12px 24px 8px; border-radius: 10px; border: 2px solid var(--k-yellow);
+    height: 44px; line-height: 22.4px; text-decoration: none; cursor: pointer;
+    transition: background 0.2s;
+}
+.k-btn-accent:hover { background: #D4E855; border-color: #D4E855; }
+
+.k-input {
+    background: var(--k-cream); color: #242810;
+    font-family: 'DM Sans', sans-serif; font-size: 18px; font-weight: 300;
+    padding: 0 15px; border-radius: 51px; border: 2px solid transparent;
+    height: 46px; line-height: 20px; width: 100%;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.k-input:focus {
+    outline: none;
+    border-color: var(--k-terra);
+    box-shadow: 0 0 0 3px rgba(222,118,83,0.1);
+}
+.k-input::placeholder { color: var(--k-taupe); opacity: 0.6; }
+
+.k-card {
+    background: var(--k-white); border: 1px solid var(--k-beige);
+    border-radius: 10px; padding: 24px;
+    box-shadow: 0 2px 8px rgba(14,15,10,0.08);
+    transition: box-shadow 0.2s;
+}
+.k-card:hover { box-shadow: 0 4px 12px rgba(14,15,10,0.12); }
+
+.k-badge-green {
+    background: var(--k-green); color: var(--k-yellow);
+    font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 700;
+    padding: 4px 12px; border-radius: 17px; display: inline-block;
+}
+.k-badge-terra {
+    background: var(--k-terra); color: #fff;
+    font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 700;
+    padding: 4px 12px; border-radius: 17px; display: inline-block;
+}

@@ -67,6 +67,8 @@ return [
 
     'timezone' => 'UTC',
 
+    'trial_reminder_days_before' => (int) env('TRIAL_REMINDER_DAYS_BEFORE', 3),
+
     /*
     |--------------------------------------------------------------------------
     | Application Locale Configuration

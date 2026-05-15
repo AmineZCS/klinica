@@ -3,19 +3,23 @@
     "name": "laravel/laravel",
     "type": "project",
     "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "keywords": [
+        "laravel",
+        "framework"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "danestves/laravel-polar": "dev-main",
         "filament/filament": "^5.0",
+        "guava/calendar": "^3.1",
+        "illuminate/contracts": "v13.8.0 as v12.0.0",
         "laravel/framework": "^13.7",
         "laravel/tinker": "^3.0",
         "spatie/laravel-activitylog": "^5.0",
         "spatie/laravel-medialibrary": "^11.22",
         "spatie/laravel-permission": "^7.4",
-        "stancl/tenancy": "^3.10",
-        "danestves/laravel-polar": "dev-main",
-        "illuminate/contracts": "v13.8.0 as v12.0.0"
+        "stancl/tenancy": "^3.10"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -24,12 +28,16 @@
         "laravel/pao": "^1.0.6",
         "laravel/pint": "^1.27",
         "laravel/sail": "^1.58",
+        "laravel/telescope": "^5.20",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
         "pestphp/pest": "^4.7",
         "pestphp/pest-plugin-laravel": "^4.1"
     },
     "autoload": {
+        "files": [
+            "app/helpers.php"
+        ],
         "psr-4": {
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
@@ -80,7 +88,9 @@
     },
     "extra": {
         "laravel": {
-            "dont-discover": []
+            "dont-discover": [
+                "laravel/telescope"
+            ]
         }
     },
     "config": {
