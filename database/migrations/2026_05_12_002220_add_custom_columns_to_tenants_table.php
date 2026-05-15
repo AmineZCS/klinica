@@ -11,7 +11,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tenants', function (Blueprint $table): void {
-            $table->string('name')->nullable()->after('id');
             $table->timestamp('trial_ends_at')->nullable()->after('name');
             $table->string('plan')->default('trial')->after('trial_ends_at');
             $table->timestamp('plan_expires_at')->nullable()->after('plan');
@@ -25,7 +24,6 @@ return new class extends Migration
     {
         Schema::table('tenants', function (Blueprint $table): void {
             $table->dropColumn([
-                'name',
                 'trial_ends_at',
                 'plan',
                 'plan_expires_at',
