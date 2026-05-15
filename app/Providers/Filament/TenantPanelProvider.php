@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace App\Providers\Filament;
@@ -36,6 +35,7 @@ class TenantPanelProvider extends PanelProvider
         return $panel
             ->id('clinic')
             ->path('clinic')
+            ->favicon(asset('favicon.ico'))
             ->login()
             ->colors([
                 'primary' => Color::hex('#2F8082'),
