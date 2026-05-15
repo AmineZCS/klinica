@@ -15,6 +15,7 @@
         "guava/calendar": "^3.1",
         "illuminate/contracts": "v13.8.0 as v12.0.0",
         "laravel/framework": "^13.7",
+        "laravel/octane": "^2.17",
         "laravel/tinker": "^3.0",
         "spatie/laravel-activitylog": "^5.0",
         "spatie/laravel-medialibrary": "^11.22",
