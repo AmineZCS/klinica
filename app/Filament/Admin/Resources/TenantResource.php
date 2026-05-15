@@ -1,0 +1,150 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Filament\Admin\Resources;
+
+use App\Actions\Central\ExtendTrialAction;
+use App\Enums\TenantPlan;
+use App\Filament\Admin\Resources\TenantResource\Pages;
+use App\Models\Tenant;
+use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup as ActionsBulkActionGroup;
+use Filament\Actions\DeleteBulkAction as ActionsDeleteBulkAction;
+use Filament\Actions\EditAction as ActionsEditAction;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Table;
+
+class TenantResource extends Resource
+{
+    protected static ?string $model = Tenant::class;
+
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-building-office';
+
+    protected static string|\UnitEnum|null $navigationGroup = 'Tenants';
+
+    public static function form(Schema $schema): Schema
+    {
+        return $schema->components([
+            Section::make('Tenant Details')->schema([
+                Grid::make(2)->schema([
+                    TextInput::make('name')
+                        ->required()
+                        ->maxLength(255),
+
+                    TextInput::make('id')
+                        ->label('Subdomain')
+                        ->required()
+                        ->maxLength(63)
+                        ->helperText('e.g. "myclinic" → myclinic.klinica.space')
+                        ->visibleOn('create'),
+
+                    Select::make('plan')
+                        ->options(TenantPlan::class)
+                        ->required(),
+
+                    DateTimePicker::make('trial_ends_at')
+                        ->label('Trial ends at'),
+
+                    DateTimePicker::make('plan_expires_at')
+                        ->label('Plan expires at'),
+
+                    TextInput::make('polar_customer_id')
+                        ->label('Polar Customer ID'),
+
+                    TextInput::make('discount_code')
+                        ->label('Discount Code'),
+
+                    Toggle::make('is_active')
+                        ->label('Active (clinic can log in and be accessed)')
+                        ->default(true)
+                        ->columnSpanFull(),
+                ]),
+            ]),
+        ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('id')->searchable()->sortable(),
+                TextColumn::make('name')->searchable()->sortable(),
+                IconColumn::make('is_active')
+                    ->label('Active')
+                    ->boolean()
+                    ->sortable(),
+                TextColumn::make('plan')
+                    ->badge()
+                    ->formatStateUsing(fn (TenantPlan $state): string => $state->label())
+                    ->color(fn (TenantPlan $state): string => match ($state) {
+                        TenantPlan::Trial => 'warning',
+                        TenantPlan::Monthly, TenantPlan::Yearly => 'success',
+                        TenantPlan::Cancelled => 'danger',
+                    }),
+                TextColumn::make('trial_ends_at')->dateTime()->sortable(),
+                TextColumn::make('plan_expires_at')->dateTime()->sortable(),
+                TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                SelectFilter::make('plan')->options(TenantPlan::class),
+                TernaryFilter::make('is_active')->label('Active status'),
+            ])
+            ->recordActions([
+                ActionsEditAction::make(),
+                Action::make('toggle_active')
+                    ->label(fn (Tenant $record): string => $record->is_active ? 'Disable' : 'Enable')
+                    ->icon(fn (Tenant $record): string => $record->is_active ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle')
+                    ->color(fn (Tenant $record): string => $record->is_active ? 'danger' : 'success')
+                    ->requiresConfirmation()
+                    ->modalHeading(fn (Tenant $record): string => $record->is_active ? 'Disable Clinic' : 'Enable Clinic')
+                    ->modalDescription(fn (Tenant $record): string => $record->is_active
+                        ? 'This will block all logins and the public landing page for this clinic.'
+                        : 'This will restore access to this clinic.')
+                    ->action(fn (Tenant $record) => $record->update(['is_active' => ! $record->is_active])),
+                Action::make('extend_trial')
+                    ->label('Extend Trial')
+                    ->icon('heroicon-o-clock')
+                    ->schema([
+                        TextInput::make('days')
+                            ->numeric()
+                            ->required()
+                            ->default(14)
+                            ->minValue(1),
+                    ])
+                    ->action(function (Tenant $record, array $data): void {
+                        app(ExtendTrialAction::class)->execute($record, (int) $data['days']);
+                    }),
+            ])
+            ->toolbarActions([
+                ActionsBulkActionGroup::make([
+                    ActionsDeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListTenants::route('/'),
+            'create' => Pages\CreateTenant::route('/create'),
+            'edit' => Pages\EditTenant::route('/{record}/edit'),
+        ];
+    }
+}

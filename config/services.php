@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    'polar' => [
+        'access_token' => env('POLAR_ACCESS_TOKEN'),
+        'server' => env('POLAR_SERVER', 'sandbox'),
+        'webhook_secret' => env('POLAR_WEBHOOK_SECRET'),
+        'product_starter' => env('POLAR_PRODUCT_STARTER', 'de349818-3047-4c4a-9f16-2357caf67ea3'),
+        'product_pro' => env('POLAR_PRODUCT_PRO', '4f8b00a9-788d-47ec-9f25-a3192f6063ac'),
+    ],
+
 ];
