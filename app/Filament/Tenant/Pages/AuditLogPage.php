@@ -36,7 +36,7 @@ class AuditLogPage extends Page implements HasTable
     {
         $user = auth('tenant')->user();
 
-        return $user?->is_super_admin || ($user?->hasPermissionTo('view_audit_log', 'tenant') ?? false);
+        // return $user?->is_super_admin || ($user?->hasPermissionTo('view_audit_log', 'tenant') ?? false);
     }
 
     /** @return array<string, string> */
