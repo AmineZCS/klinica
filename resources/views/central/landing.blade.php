@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     {{-- SEO --}}
-    <title>Klinica — Modern Clinic Management & Online Booking Platform</title>
-    <meta name="description" content="Klinica helps clinics grow with beautiful online booking, patient management, and smart scheduling. Start your free trial today — no credit card required.">
+    <title>Klinica | Modern Clinic Management & Online Booking Platform</title>
+    <meta name="description" content="Klinica helps clinics grow with beautiful online booking, patient management, and smart scheduling. Start your free trial today, no credit card required.">
     <meta name="keywords" content="clinic management, online booking, patient scheduling, healthcare platform, appointment software">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="{{ url('/') }}">
 
     {{-- Open Graph --}}
-    <meta property="og:title" content="Klinica — Modern Clinic Management Platform">
+    <meta property="og:title" content="Klinica | Modern Clinic Management Platform">
     <meta property="og:description" content="Beautiful online booking, patient management, and smart scheduling for modern clinics.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url('/') }}">
@@ -20,7 +20,7 @@
 
     {{-- Twitter --}}
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Klinica — Modern Clinic Management Platform">
+    <meta name="twitter:title" content="Klinica | Modern Clinic Management Platform">
     <meta name="twitter:description" content="Beautiful online booking, patient management, and smart scheduling for modern clinics.">
 
     {{-- Fonts --}}
@@ -443,12 +443,12 @@
             <div>
                 <div class="hero-badge">
                     <span class="hero-badge-dot"></span>
-                    Now in open beta — join 200+ clinics
+                    Now in open beta, join 200+ clinics
                 </div>
                 <h1 class="serif">
                     Run your clinic<br><em>beautifully.</em>
                 </h1>
-                <p>Klinica gives clinics of all sizes a stunning online presence, smart scheduling, and patient management — all in one platform.</p>
+                <p>Klinica gives clinics of all sizes a stunning online presence, smart scheduling, and patient management, all in one platform.</p>
                 <div class="hero-actions">
                     <a href="{{ route('register') }}" class="hero-btn-primary">Start free trial</a>
                     <a href="#features" class="hero-btn-ghost">
@@ -546,7 +546,7 @@
             <div class="section-header section-header-centered">
                 <div class="section-label">Platform Features</div>
                 <h2 class="section-heading serif" style="margin:0 auto 20px">Everything your clinic needs</h2>
-                <p class="section-sub">From first click to confirmed appointment — Klinica handles the complexity so you can focus on care.</p>
+                <p class="section-sub">From first click to confirmed appointment, Klinica handles the complexity so you can focus on care.</p>
             </div>
             <div class="features-grid">
                 <div class="feature-card">
@@ -557,7 +557,7 @@
                 <div class="feature-card">
                     <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"/></svg></div>
                     <h3 class="feature-title">Your own booking page</h3>
-                    <p class="feature-desc">A beautiful, branded landing page at your own subdomain. Customise colors, services, and content — no code needed.</p>
+                    <p class="feature-desc">A beautiful, branded landing page at your own subdomain. Customise colors, services, and content with no code needed.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg></div>
@@ -567,7 +567,7 @@
                 <div class="feature-card">
                     <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg></div>
                     <h3 class="feature-title">Dashboard analytics</h3>
-                    <p class="feature-desc">At-a-glance insights into bookings, revenue, and patient flow — updated in real time.</p>
+                    <p class="feature-desc">At-a-glance insights into bookings, revenue, and patient flow, updated in real time.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg></div>
@@ -617,7 +617,7 @@
             <div class="section-header section-header-centered">
                 <div class="section-label">Security & Compliance</div>
                 <h2 class="section-heading serif" style="margin:0 auto 20px">Your patients' data is safe with us</h2>
-                <p class="section-sub">We built Klinica with security at its core — not as an afterthought.</p>
+                <p class="section-sub">We built Klinica with security at its core, not as an afterthought.</p>
             </div>
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;margin-top:48px">
                 <div class="feature-card" style="text-align:left">
@@ -762,7 +762,7 @@
     <div class="cta-section">
         <div class="container">
             <h2 class="serif">Ready to grow your clinic?</h2>
-            <p>Join hundreds of clinics already using Klinica. Start your free trial — no credit card required.</p>
+            <p>Join hundreds of clinics already using Klinica. Start your free trial, no credit card required.</p>
             <div class="cta-actions">
                 <a href="{{ route('register') }}" class="hero-btn-primary">Start your free trial</a>
                 <a href="mailto:hello@klinica.space" class="hero-btn-ghost" style="color:rgba(255,255,255,0.65)">
@@ -802,10 +802,10 @@
                 <div>
                     <div class="footer-col-title">Legal</div>
                     <ul class="footer-links">
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms of Service</a></li>
-                        <li><a href="#">Cookie Policy</a></li>
-                        <li><a href="#">GDPR</a></li>
+                        <li><a href="{{ route('privacy') }}">Privacy Policy</a></li>
+                        <li><a href="{{ route('dpa') }}">Data Processing Agreement</a></li>
+                        <li><a href="{{ route('refund-policy') }}">Refund Policy</a></li>
+                        <li><a href="mailto:privacy@klinica.space">Privacy Contact</a></li>
                     </ul>
                 </div>
             </div>
@@ -813,9 +813,10 @@
             <div class="footer-bottom">
                 <span class="footer-copy">© {{ date('Y') }} Klinica. All rights reserved.</span>
                 <div class="footer-bottom-links">
-                    <a href="#">Privacy</a>
-                    <a href="#">Terms</a>
-                    <a href="#">Cookies</a>
+                    <a href="{{ route('privacy') }}">Privacy</a>
+                    <a href="{{ route('dpa') }}">DPA</a>
+                    <a href="{{ route('refund-policy') }}">Refunds</a>
+                    <a href="mailto:privacy@klinica.space">Contact</a>
                 </div>
             </div>
         </div>
