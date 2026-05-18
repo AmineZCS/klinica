@@ -60,8 +60,8 @@ class TenantResource extends Resource
                     DateTimePicker::make('plan_expires_at')
                         ->label('Plan expires at'),
 
-                    TextInput::make('polar_customer_id')
-                        ->label('Polar Customer ID'),
+                    TextInput::make('paddle_customer_id')
+                        ->label('Paddle Customer ID'),
 
                     TextInput::make('discount_code')
                         ->label('Discount Code'),
@@ -88,11 +88,7 @@ class TenantResource extends Resource
                 TextColumn::make('plan')
                     ->badge()
                     ->formatStateUsing(fn (TenantPlan $state): string => $state->label())
-                    ->color(fn (TenantPlan $state): string => match ($state) {
-                        TenantPlan::Trial => 'warning',
-                        TenantPlan::Monthly, TenantPlan::Yearly => 'success',
-                        TenantPlan::Cancelled => 'danger',
-                    }),
+                    ->color(fn (TenantPlan $state): string => $state->badgeColor()),
                 TextColumn::make('trial_ends_at')->dateTime()->sortable(),
                 TextColumn::make('plan_expires_at')->dateTime()->sortable(),
                 TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),

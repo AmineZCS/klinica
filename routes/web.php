@@ -3,10 +3,11 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\BillingController;
-use App\Http\Controllers\PolarWebhookController;
+use App\Http\Controllers\PaddleWebhookController;
 use App\Http\Controllers\TenantRegistrationController;
 use App\Models\ClinicSetting;
 use App\Models\Service;
+use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
@@ -28,6 +29,7 @@ Route::get('/', function () {
 // Tenant registration
 Route::get('/register', [TenantRegistrationController::class, 'create'])->name('register');
 Route::post('/register', [TenantRegistrationController::class, 'store'])->name('register.store');
+Route::get('/api/check-subdomain', [TenantRegistrationController::class, 'checkSubdomain'])->name('register.check-subdomain');
 
 // Legal pages
 Route::get('/privacy', fn () => view('central.privacy'))->name('privacy');
@@ -36,15 +38,27 @@ Route::get('/refund-policy', fn () => view('central.refund-policy'))->name('refu
 Route::get('/terms', fn () => view('central.terms'))->name('terms');
 
 // Billing checkout (tenant context, auth required) — GET because it only creates
-// a Polar checkout session and immediately redirects away; no state mutation.
+// a Paddle checkout session and immediately redirects away; no state mutation.
 Route::get('/billing/checkout/{plan}', [BillingController::class, 'checkout'])
     ->middleware(['auth:tenant'])
     ->whereIn('plan', ['starter', 'pro'])
     ->name('billing.checkout');
 
-// Polar webhooks — both paths accepted (CSRF excluded in bootstrap/app.php)
-Route::post('/webhooks/polar', [PolarWebhookController::class, 'handle'])->name('webhooks.polar');
-Route::post('/polar/webhook', [PolarWebhookController::class, 'handle'])->name('polar.webhook');
+// Paddle posts back to this verified central domain after checkout completes.
+// The ?tenant= param identifies which subdomain to redirect back to.
+// Paddle appends its own ?_ptxn= query param; webhook handles actual state update.
+Route::get('/billing/return', function (Request $request) {
+    $tenant = Tenant::find($request->query('tenant'));
+
+    if (! $tenant) {
+        return redirect('/');
+    }
+
+    return redirect()->away($tenant->billingPageUrl().'?checkout=complete');
+})->name('billing.return');
+
+// Paddle webhooks (CSRF excluded in bootstrap/app.php)
+Route::post('/webhooks/paddle', [PaddleWebhookController::class, 'handle'])->name('webhooks.paddle');
 
 // for production only
 // subdomain validation to check if a requested subdomain is actually a tenant or no to decide wether we issue an ssl certificate for it using Caddy or no
@@ -70,7 +84,7 @@ Route::get('/api/v1/validate-tenant', function (Request $request) {
             $subdomain = head(explode('.', $incomingDomain));
 
             // Check if the tenant ID matches the subdomain prefix
-            return \App\Models\Tenant::where('id', $subdomain)->exists();
+            return Tenant::where('id', $subdomain)->exists();
         }
 
         // Handle fully custom white-label domains (e.g., www.algiersclinic.dz)
@@ -84,7 +98,6 @@ Route::get('/api/v1/validate-tenant', function (Request $request) {
 
     return response('Unauthorized Domain', 403);
 });
-
 
 // test smtp
 Route::get('/test-smtp', function () {
@@ -100,5 +113,3 @@ Route::get('/test-smtp', function () {
         return 'Failed to send test email: '.$e->getMessage();
     }
 })->name('test.smtp');
-
-

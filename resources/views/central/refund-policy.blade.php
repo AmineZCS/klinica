@@ -482,6 +482,7 @@
         <p class="footer-copy">
             &copy; {{ date('Y') }} Klinica. All rights reserved. &mdash;
             <a href="{{ url('/') }}">Home</a> &middot;
+            <a href="{{ route('terms') }}">Terms of Service</a> &middot;
             <a href="{{ route('privacy') }}">Privacy Policy</a> &middot;
             <a href="{{ route('dpa') }}">DPA</a> &middot;
             <a href="{{ route('refund-policy') }}">Refund Policy</a> &middot;

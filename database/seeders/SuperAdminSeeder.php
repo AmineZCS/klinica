@@ -16,7 +16,7 @@ class SuperAdminSeeder extends Seeder
             ['email' => 'superadmin@klinica.space'],
             [
                 'name' => 'Super Admin',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('Amine123@@'),
                 'is_super_admin' => true,
             ]
         );

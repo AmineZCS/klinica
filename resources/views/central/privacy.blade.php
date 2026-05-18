@@ -231,7 +231,7 @@
             <ul>
                 <li>Full name and email address (for account creation and login)</li>
                 <li>Clinic name and subdomain preferences</li>
-                <li>Subscription and billing contact details (not payment card data — handled by Polar.sh)</li>
+                <li>Subscription and billing contact details (not payment card data — handled by Paddle.com)</li>
                 <li>IP address and browser/device information (for security and fraud prevention)</li>
                 <li>Usage logs and activity records within the platform</li>
             </ul>
@@ -290,7 +290,7 @@
             <p>We do not sell, rent, or share personal data with third parties for their own purposes. We share data only with:</p>
             <ul>
                 <li><strong>Hetzner Online GmbH (Germany):</strong> Cloud infrastructure provider hosting our servers. ISO 27001 certified. All data stays in the EU.</li>
-                <li><strong>Polar.sh:</strong> Payment processing for subscriptions. We share only billing contact details — no medical or patient data is shared.</li>
+                <li><strong>Paddle.com:</strong> Payment processing for subscriptions (acts as Merchant of Record). We share only billing contact details — no medical or patient data is shared.</li>
                 <li><strong>Transactional email service:</strong> For sending system notifications. Only the recipient email address and minimal content are shared.</li>
                 <li><strong>Law enforcement or regulators:</strong> Only when legally required and to the minimum extent necessary.</li>
             </ul>
@@ -433,6 +433,7 @@
         <p class="footer-copy">
             &copy; {{ date('Y') }} Klinica. All rights reserved. &mdash;
             <a href="{{ url('/') }}">Home</a> &middot;
+            <a href="{{ route('terms') }}">Terms of Service</a> &middot;
             <a href="{{ route('privacy') }}">Privacy Policy</a> &middot;
             <a href="{{ route('dpa') }}">DPA</a> &middot;
             <a href="{{ route('refund-policy') }}">Refund Policy</a> &middot;
