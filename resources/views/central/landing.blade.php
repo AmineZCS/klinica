@@ -802,6 +802,7 @@
                 <div>
                     <div class="footer-col-title">Legal</div>
                     <ul class="footer-links">
+                        <li><a href="{{ route('terms') }}">Terms of Service</a></li>
                         <li><a href="{{ route('privacy') }}">Privacy Policy</a></li>
                         <li><a href="{{ route('dpa') }}">Data Processing Agreement</a></li>
                         <li><a href="{{ route('refund-policy') }}">Refund Policy</a></li>
@@ -813,6 +814,7 @@
             <div class="footer-bottom">
                 <span class="footer-copy">© {{ date('Y') }} Klinica. All rights reserved.</span>
                 <div class="footer-bottom-links">
+                    <a href="{{ route('terms') }}">Terms</a>
                     <a href="{{ route('privacy') }}">Privacy</a>
                     <a href="{{ route('dpa') }}">DPA</a>
                     <a href="{{ route('refund-policy') }}">Refunds</a>

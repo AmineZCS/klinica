@@ -33,6 +33,7 @@ Route::post('/register', [TenantRegistrationController::class, 'store'])->name('
 Route::get('/privacy', fn () => view('central.privacy'))->name('privacy');
 Route::get('/dpa', fn () => view('central.dpa'))->name('dpa');
 Route::get('/refund-policy', fn () => view('central.refund-policy'))->name('refund-policy');
+Route::get('/terms', fn () => view('central.terms'))->name('terms');
 
 // Billing checkout (tenant context, auth required) — GET because it only creates
 // a Polar checkout session and immediately redirects away; no state mutation.
