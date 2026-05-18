@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\TenantPlan;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Stancl\Tenancy\Contracts\TenantWithDatabase;
@@ -97,8 +98,8 @@ class Tenant extends BaseTenant implements TenantWithDatabase
             'plan',
             'plan_tier',
             'plan_expires_at',
-            'polar_customer_id',
-            'polar_subscription_id',
+            'paddle_customer_id',
+            'paddle_subscription_id',
             'discount_code',
         ];
     }
@@ -131,5 +132,10 @@ class Tenant extends BaseTenant implements TenantWithDatabase
 
         return $this->plan->isActive()
             && ($this->plan_expires_at === null || Carbon::now()->isBefore($this->plan_expires_at));
+    }
+
+    public function featureRequests(): HasMany
+    {
+        return $this->hasMany(FeatureRequest::class, 'tenant_id');
     }
 }

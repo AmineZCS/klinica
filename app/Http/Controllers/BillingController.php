@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Services\PolarService;
+use App\Contracts\PaymentGatewayContract;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 
 class BillingController extends Controller
 {
-    public function checkout(Request $request, string $plan): RedirectResponse
+    public function checkout(string $plan): RedirectResponse
     {
         $tenant = tenancy()->tenant;
 
@@ -18,8 +17,8 @@ class BillingController extends Controller
             abort(403);
         }
 
-        $polar = app(PolarService::class);
-        $productId = $polar->productIdForPlan($plan);
+        $gateway = app(PaymentGatewayContract::class);
+        $priceId = $gateway->priceIdForPlan($plan);
         $currentTier = $tenant->effectiveTier();
         $isOnActivePlan = $tenant->isOnActivePlan();
 
@@ -27,10 +26,10 @@ class BillingController extends Controller
             return back()->with('success', 'You are already on this plan.');
         }
 
-        if ($isOnActivePlan && ! empty($tenant->polar_subscription_id)) {
-            $swapped = $polar->swapSubscriptionPlan(
-                (string) $tenant->polar_subscription_id,
-                (string) $productId,
+        if ($isOnActivePlan && ! empty($tenant->paddle_subscription_id)) {
+            $swapped = $gateway->swapSubscriptionPlan(
+                (string) $tenant->paddle_subscription_id,
+                $priceId,
             );
 
             if (! $swapped) {
@@ -40,12 +39,14 @@ class BillingController extends Controller
             return back()->with('success', 'Plan change requested successfully. It should reflect shortly after the update is confirmed.');
         }
 
-        $successUrl = $tenant->billingPageUrl().'?success=1';
+        $successUrl = route('billing.return', ['tenant' => $tenant->id]);
 
-        $checkoutUrl = $polar->createCheckoutUrl(
-            $productId,
-            $tenant->id,
-            $successUrl,
+        $checkoutUrl = $gateway->createCheckoutUrl(
+            priceId: $priceId,
+            tenantId: $tenant->id,
+            successUrl: $successUrl,
+            customerEmail: $tenant->owner_email,
+            gatewayCustomerId: $tenant->paddle_customer_id ?: null,
         );
 
         if ($checkoutUrl === null) {

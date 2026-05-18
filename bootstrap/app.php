@@ -18,8 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->prependToGroup('web', InitializeTenancyBySubdomainIfPresent::class);
         $middleware->trustProxies(at: '*');
         $middleware->validateCsrfTokens(except: [
-            'webhooks/polar',
-            'polar/webhook',
+            'webhooks/paddle',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

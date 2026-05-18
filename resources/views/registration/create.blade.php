@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Start Your Free Trial — Klinica</title>
+    <title>Start Your Free Trial | Klinica</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
@@ -207,6 +207,13 @@
         .subdomain-preview strong {
             color: var(--teal); font-weight: 600;
         }
+        .subdomain-status {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 12px; font-weight: 500; margin-top: 5px;
+        }
+        .subdomain-status.checking { color: var(--slate); }
+        .subdomain-status.available { color: #16a34a; }
+        .subdomain-status.unavailable { color: var(--error); }
 
         .field-hint {
             font-size: 12px; color: var(--slate);
@@ -282,6 +289,11 @@
             display: flex; align-items: center; justify-content: center;
             font-size: 16px; flex-shrink: 0;
         }
+        .review-icon svg {
+            width: 18px; height: 18px;
+            stroke: var(--teal); fill: none; stroke-width: 1.9;
+            stroke-linecap: round; stroke-linejoin: round;
+        }
         .review-label {
             font-size: 12px; font-weight: 600; color: var(--slate);
             text-transform: uppercase; letter-spacing: 0.8px;
@@ -311,6 +323,11 @@
             display: flex; align-items: center; justify-content: center;
             font-size: 14px;
         }
+        .trust-badge-icon svg {
+            width: 14px; height: 14px;
+            stroke: var(--teal); fill: none; stroke-width: 2;
+            stroke-linecap: round; stroke-linejoin: round;
+        }
 
         /* ── DIVIDER WITH TEXT ── */
         .or-divider {
@@ -331,6 +348,31 @@
         }
         .page-footer a { color: rgba(255,255,255,0.5); text-decoration: none; }
         .page-footer a:hover { color: rgba(255,255,255,0.8); }
+
+        /* ── CONSENT CHECKBOX ── */
+        .consent-wrap {
+            background: rgba(47,128,130,0.06);
+            border: 1px solid rgba(47,128,130,0.2);
+            border-radius: 10px;
+            padding: 16px 18px;
+            margin: 20px 0 4px;
+            display: flex; align-items: flex-start; gap: 12px;
+        }
+        .consent-wrap input[type="checkbox"] {
+            width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px;
+            accent-color: var(--teal); cursor: pointer;
+        }
+        .consent-label {
+            font-size: 13px; color: var(--slate); line-height: 1.6;
+        }
+        .consent-label a {
+            color: var(--teal); font-weight: 600; text-decoration: none;
+        }
+        .consent-label a:hover { text-decoration: underline; }
+        .consent-error {
+            font-size: 12px; color: var(--error);
+            margin-top: 6px; display: none;
+        }
 
         /* ── STEP 3 SUCCESS STATE ── */
         .success-state {
@@ -355,10 +397,10 @@
     {{-- ── HERO STRIP ── --}}
     <div class="hero-strip">
         <div class="hero-strip-badge">
-            <span>🎉</span> Free for 14 days — no credit card required
+            Free for 14 days, no credit card required
         </div>
         <h1>Set up your clinic in minutes</h1>
-        <p>Your booking page, patient management, and scheduling — all in one place.</p>
+        <p>Your booking page, patient management, and scheduling, all in one place.</p>
     </div>
 
     {{-- ── STEPPER ── --}}
@@ -477,6 +519,7 @@
                         <div class="subdomain-preview" id="subdomainPreview">
                             Enter a subdomain to preview your URL
                         </div>
+                        <div id="subdomainStatus"></div>
                         @error('subdomain')
                             <div class="field-error">{{ $message }}</div>
                         @enderror
@@ -534,7 +577,7 @@
                                     placeholder="Min. 8 characters"
                                     autocomplete="new-password"
                                 >
-                                <button type="button" class="password-toggle" onclick="togglePwd('password', this)" aria-label="Toggle password visibility">👁</button>
+                                <button type="button" class="password-toggle" onclick="togglePwd('password', this)" aria-label="Toggle password visibility">Show</button>
                             </div>
                             @error('password')
                                 <div class="field-error">{{ $message }}</div>
@@ -550,7 +593,7 @@
                                     placeholder="Repeat password"
                                     autocomplete="new-password"
                                 >
-                                <button type="button" class="password-toggle" onclick="togglePwd('password_confirmation', this)" aria-label="Toggle password visibility">👁</button>
+                                <button type="button" class="password-toggle" onclick="togglePwd('password_confirmation', this)" aria-label="Toggle password visibility">Show</button>
                             </div>
                         </div>
                     </div>
@@ -565,47 +608,57 @@
 
                 {{-- ═══════ STEP 4: CONFIRM ═══════ --}}
                 <div class="step-panel" id="panel4">
-                    <div class="panel-heading">Looks good — let's launch!</div>
+                    <div class="panel-heading">Looks good, let's launch!</div>
                     <p class="panel-sub">Review your details before we create your clinic.</p>
 
                     <div class="review-grid">
                         <div class="review-row">
-                            <div class="review-icon">💳</div>
+                            <div class="review-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M2.5 10h19"/></svg>
+                            </div>
                             <div>
                                 <div class="review-label">Plan</div>
-                                <div class="review-value" id="review-plan">—</div>
+                                <div class="review-value" id="review-plan">Not set</div>
                             </div>
                             <button type="button" class="review-edit" onclick="goToStep(1)">Edit</button>
                         </div>
                         <div class="review-row">
-                            <div class="review-icon">🏥</div>
+                            <div class="review-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M9 21v-6h6v6"/></svg>
+                            </div>
                             <div>
                                 <div class="review-label">Clinic Name</div>
-                                <div class="review-value" id="review-clinic-name">—</div>
+                                <div class="review-value" id="review-clinic-name">Not set</div>
                             </div>
                             <button type="button" class="review-edit" onclick="goToStep(2)">Edit</button>
                         </div>
                         <div class="review-row">
-                            <div class="review-icon">🔗</div>
+                            <div class="review-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24"><path d="M10 14a5 5 0 007.07 0l2.83-2.83a5 5 0 00-7.07-7.07L10 6"/><path d="M14 10a5 5 0 00-7.07 0L4.1 12.83a5 5 0 007.07 7.07L14 18"/></svg>
+                            </div>
                             <div>
                                 <div class="review-label">Booking URL</div>
-                                <div class="review-value" id="review-url">—</div>
+                                <div class="review-value" id="review-url">Not set</div>
                             </div>
                             <button type="button" class="review-edit" onclick="goToStep(2)">Edit</button>
                         </div>
                         <div class="review-row">
-                            <div class="review-icon">👤</div>
+                            <div class="review-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/></svg>
+                            </div>
                             <div>
                                 <div class="review-label">Name</div>
-                                <div class="review-value" id="review-name">—</div>
+                                <div class="review-value" id="review-name">Not set</div>
                             </div>
                             <button type="button" class="review-edit" onclick="goToStep(3)">Edit</button>
                         </div>
                         <div class="review-row">
-                            <div class="review-icon">✉️</div>
+                            <div class="review-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+                            </div>
                             <div>
                                 <div class="review-label">Email</div>
-                                <div class="review-value" id="review-email">—</div>
+                                <div class="review-value" id="review-email">Not set</div>
                             </div>
                             <button type="button" class="review-edit" onclick="goToStep(3)">Edit</button>
                         </div>
@@ -613,23 +666,56 @@
 
                     <div class="trust-badges">
                         <div class="trust-badge">
-                            <div class="trust-badge-icon">🔒</div> Encrypted & GDPR compliant
+                            <div class="trust-badge-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 5-3.5 8.5-7 9-3.5-.5-7-4-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
+                            </div>
+                            Encrypted & GDPR compliant
                         </div>
                         <div class="trust-badge">
-                            <div class="trust-badge-icon">⚡</div> Live in under 2 minutes
+                            <div class="trust-badge-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+                            </div>
+                            Live in under 2 minutes
                         </div>
                         <div class="trust-badge">
-                            <div class="trust-badge-icon">🆓</div> 14-day free trial
+                            <div class="trust-badge-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24"><path d="M8 4h8"/><path d="M8 4v4l4 3 4-3V4"/><rect x="3" y="8" width="18" height="12" rx="2"/></svg>
+                            </div>
+                            14-day free trial
+                        </div>
+                    </div>
+
+                    <div class="consent-wrap">
+                        <input
+                            type="checkbox"
+                            id="terms_accepted"
+                            name="terms_accepted"
+                            value="1"
+                            {{ old('terms_accepted') ? 'checked' : '' }}
+                        >
+                        <div>
+                            <label class="consent-label" for="terms_accepted">
+                                I have read and agree to Klinica's
+                                <a href="{{ route('terms') }}" target="_blank">Terms of Service</a>,
+                                <a href="{{ route('privacy') }}" target="_blank">Privacy Policy</a>,
+                                and <a href="{{ route('dpa') }}" target="_blank">Data Processing Agreement (DPA)</a>.
+                                I understand that my clinic's data will be processed in accordance with GDPR
+                                and hosted on ISO 27001 certified servers in Germany.
+                            </label>
+                            @error('terms_accepted')
+                                <p style="font-size:12px;color:var(--error);margin-top:6px">{{ $message }}</p>
+                            @enderror
+                            <p class="consent-error" id="consentError">You must accept the terms to continue.</p>
                         </div>
                     </div>
 
                     <div class="btn-row">
                         <button type="button" class="btn-ghost" onclick="goToStep(3)">← Back</button>
                         <button type="submit" class="btn-primary" id="submitBtn">
-                            🚀 Create my clinic
+                            Create my clinic
                         </button>
                     </div>
-                    <p style="text-align:center;font-size:12px;color:#888;margin-top:16px">🔒 Your data is encrypted and hosted on ISO 27001 certified servers in Germany. We never share or sell your data.</p>
+                    <p style="text-align:center;font-size:12px;color:#888;margin-top:16px">Your data is encrypted and hosted on ISO 27001 certified servers in Germany. We never share or sell your data.</p>
                 </div>
 
             </form>
@@ -638,7 +724,10 @@
 
     <footer class="page-footer">
         &copy; {{ date('Y') }} Klinica &mdash;
-        <a href="#">Privacy</a> &middot; <a href="#">Terms</a>
+        <a href="{{ route('terms') }}">Terms of Service</a> &middot;
+        <a href="{{ route('privacy') }}">Privacy Policy</a> &middot;
+        <a href="{{ route('dpa') }}">DPA</a> &middot;
+        <a href="{{ route('refund-policy') }}">Refund Policy</a>
     </footer>
 
     <script>
@@ -692,8 +781,12 @@
                 const sub = document.getElementById('subdomain').value.trim();
                 if (!clinic) { alert('Please enter your clinic name.'); return false; }
                 if (!sub)    { alert('Please enter a subdomain.'); return false; }
-                if (!/^[a-z0-9-]+$/.test(sub)) {
-                    alert('Subdomain may only contain lowercase letters, numbers and hyphens.');
+                if (!/^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/.test(sub)) {
+                    alert('Subdomain may only contain lowercase letters, numbers and hyphens, and cannot start or end with a hyphen.');
+                    return false;
+                }
+                if (lastCheckedSubdomain === sub && ! subdomainAvailable) {
+                    alert('That subdomain is not available. Please choose a different one.');
                     return false;
                 }
                 return true;
@@ -724,15 +817,15 @@
                 const sub = document.getElementById('subdomain').value.trim();
                 const plan = document.getElementById('selectedPlan').value;
                 document.getElementById('review-plan').textContent =
-                    plan === 'pro' ? 'Pro — €49/mo' : 'Starter — €19/mo';
+                    plan === 'pro' ? 'Pro - €49/mo' : 'Starter - €19/mo';
                 document.getElementById('review-clinic-name').textContent =
-                    document.getElementById('clinic_name').value.trim() || '—';
+                    document.getElementById('clinic_name').value.trim() || 'Not set';
                 document.getElementById('review-url').textContent =
-                    sub ? sub + '.klinica.space' : '—';
+                    sub ? sub + '.klinica.space' : 'Not set';
                 document.getElementById('review-name').textContent =
-                    document.getElementById('name').value.trim() || '—';
+                    document.getElementById('name').value.trim() || 'Not set';
                 document.getElementById('review-email').textContent =
-                    document.getElementById('email').value.trim() || '—';
+                    document.getElementById('email').value.trim() || 'Not set';
             }
 
             document.getElementById('panel' + currentStep).classList.remove('active');
@@ -742,7 +835,46 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Live subdomain preview
+        // Live subdomain preview + async availability check
+        let subdomainCheckTimer = null;
+        let lastCheckedSubdomain = '';
+        let subdomainAvailable = false;
+
+        function setSubdomainStatus(state, message) {
+            const el = document.getElementById('subdomainStatus');
+            el.className = 'subdomain-status ' + state;
+            el.textContent = message;
+        }
+
+        function checkSubdomainAvailability(val) {
+            if (val.length < 2) {
+                document.getElementById('subdomainStatus').textContent = '';
+                return;
+            }
+            if (val === lastCheckedSubdomain) { return; }
+
+            setSubdomainStatus('checking', '⏳ Checking availability…');
+
+            fetch('{{ route('register.check-subdomain') }}?subdomain=' + encodeURIComponent(val))
+                .then(r => r.json())
+                .then(data => {
+                    lastCheckedSubdomain = val;
+                    subdomainAvailable = data.available;
+                    if (data.available) {
+                        setSubdomainStatus('available', '✓ Available');
+                    } else if (data.reason === 'reserved') {
+                        setSubdomainStatus('unavailable', '✗ Reserved — choose a different name');
+                    } else if (data.reason === 'invalid') {
+                        setSubdomainStatus('unavailable', '✗ Invalid format');
+                    } else {
+                        setSubdomainStatus('unavailable', '✗ Already taken — try another');
+                    }
+                })
+                .catch(() => {
+                    document.getElementById('subdomainStatus').textContent = '';
+                });
+        }
+
         document.getElementById('subdomain').addEventListener('input', function () {
             const val = this.value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '');
             this.value = val;
@@ -751,6 +883,20 @@
                 preview.innerHTML = 'Your URL will be: <strong>' + val + '.klinica.space</strong>';
             } else {
                 preview.innerHTML = 'Enter a subdomain to preview your URL';
+                document.getElementById('subdomainStatus').textContent = '';
+                return;
+            }
+
+            subdomainAvailable = false;
+            clearTimeout(subdomainCheckTimer);
+            subdomainCheckTimer = setTimeout(() => checkSubdomainAvailability(val), 500);
+        });
+
+        document.getElementById('subdomain').addEventListener('blur', function () {
+            const val = this.value.trim();
+            if (val.length >= 2) {
+                clearTimeout(subdomainCheckTimer);
+                checkSubdomainAvailability(val);
             }
         });
 
@@ -772,17 +918,35 @@
             const input = document.getElementById(id);
             if (input.type === 'password') {
                 input.type = 'text';
-                btn.textContent = '🙈';
+                btn.textContent = 'Hide';
             } else {
                 input.type = 'password';
-                btn.textContent = '👁';
+                btn.textContent = 'Show';
             }
         }
 
-        // Disable submit on click to prevent double-submit
-        document.getElementById('regForm').addEventListener('submit', function () {
+        // Validate consent checkbox before submit
+        document.getElementById('regForm').addEventListener('submit', function (e) {
+            const consent = document.getElementById('terms_accepted');
+            const consentError = document.getElementById('consentError');
+            if (!consent.checked) {
+                e.preventDefault();
+                consentError.style.display = 'block';
+                consent.closest('.consent-wrap').style.borderColor = 'var(--error)';
+                consent.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+            consentError.style.display = 'none';
             document.getElementById('submitBtn').disabled = true;
-            document.getElementById('submitBtn').textContent = '⏳ Creating your clinic…';
+            document.getElementById('submitBtn').textContent = 'Creating your clinic...';
+        });
+
+        // Clear consent error on check
+        document.getElementById('terms_accepted').addEventListener('change', function () {
+            if (this.checked) {
+                document.getElementById('consentError').style.display = 'none';
+                this.closest('.consent-wrap').style.borderColor = 'rgba(47,128,130,0.2)';
+            }
         });
 
         // If there are server-side errors, jump to correct step
@@ -792,6 +956,8 @@
             goToStep(2);
         @elseif ($errors->hasAny(['plan']))
             goToStep(1);
+        @elseif ($errors->hasAny(['terms_accepted']))
+            goToStep(4);
         @endif
     </script>
 </body>

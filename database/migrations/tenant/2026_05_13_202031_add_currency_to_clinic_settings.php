@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('clinic_settings', function (Blueprint $table): void {
-            $table->string('currency', 10)->default('DA');
+            $table->string('currency', 10)->default('EUR');
         });
     }
 

@@ -272,7 +272,7 @@
                 <li>Appointment and scheduling data</li>
                 <li>Medical notes and clinical records entered by the Controller</li>
                 <li>Authentication credentials (hashed passwords) of clinic staff</li>
-                <li>Billing contact information (name, email) — payment details are not stored and are handled exclusively by Polar.sh (our payment processor)</li>
+                <li>Billing contact information (name, email) — payment details are not stored and are handled exclusively by Paddle.com (our payment processor)</li>
             </ul>
             <p>The DPA is effective for the duration of your active subscription to Klinica. Upon termination, data retention and deletion obligations as described in Article 10 apply.</p>
             <div class="highlight-box">
@@ -340,10 +340,10 @@
                         <td style="padding:12px 16px;color:var(--slate)">ISO 27001, ISO 9001, GDPR compliant</td>
                     </tr>
                     <tr style="border-bottom:1px solid var(--beige)">
-                        <td style="padding:12px 16px;color:var(--navy);font-weight:600">Polar.sh</td>
-                        <td style="padding:12px 16px;color:var(--slate)">Subscription billing & payments</td>
-                        <td style="padding:12px 16px;color:var(--slate)">USA (SCCs)</td>
-                        <td style="padding:12px 16px;color:var(--slate)">PCI-DSS compliant, SCCs in place</td>
+                        <td style="padding:12px 16px;color:var(--navy);font-weight:600">Paddle.com</td>
+                        <td style="padding:12px 16px;color:var(--slate)">Subscription billing & payments (Merchant of Record)</td>
+                        <td style="padding:12px 16px;color:var(--slate)">UK / EU</td>
+                        <td style="padding:12px 16px;color:var(--slate)">PCI-DSS Level 1, GDPR compliant, UK GDPR</td>
                     </tr>
                     <tr>
                         <td style="padding:12px 16px;color:var(--navy);font-weight:600">Transactional Email Provider</td>
@@ -511,6 +511,7 @@
         <p class="footer-copy">
             &copy; {{ date('Y') }} Klinica. All rights reserved. &mdash;
             <a href="{{ url('/') }}">Home</a> &middot;
+            <a href="{{ route('terms') }}">Terms of Service</a> &middot;
             <a href="{{ route('privacy') }}">Privacy Policy</a> &middot;
             <a href="{{ route('dpa') }}">DPA</a> &middot;
             <a href="{{ route('refund-policy') }}">Refund Policy</a> &middot;
