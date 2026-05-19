@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\PaddleWebhookController;
+use App\Http\Controllers\Tenant\LandingController;
 use App\Http\Controllers\TenantRegistrationController;
-use App\Models\ClinicSetting;
-use App\Models\Service;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -15,12 +14,8 @@ use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Database\Models\Domain;
 
 Route::get('/', function () {
-    // If tenancy is initialized (subdomain request), delegate to the tenant landing
     if (tenancy()->initialized) {
-        $settings = ClinicSetting::current();
-        $services = Service::query()->where('is_active', true)->get();
-
-        return view('tenant.landing', compact('settings', 'services'));
+        return app(LandingController::class)->index();
     }
 
     return view('central.landing');

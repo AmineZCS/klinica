@@ -11,11 +11,12 @@ use Illuminate\Support\Carbon;
 
 class BookingsTrendWidget extends ChartWidget
 {
-    protected ?string $heading = 'Bookings — Last 14 Days';
-
     protected ?string $pollingInterval = '60s';
 
-    protected int|string|array $columnSpan = 'full';
+    public function getHeading(): string
+    {
+        return __('klinica.dashboard.chart_bookings_heading');
+    }
 
     protected function getType(): string
     {
@@ -49,7 +50,7 @@ class BookingsTrendWidget extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Total Bookings',
+                    'label' => __('klinica.dashboard.chart_bookings_total'),
                     'data' => $bookingCounts->values()->toArray(),
                     'backgroundColor' => 'rgba(47, 128, 130, 0.7)',
                     'borderColor' => '#2F8082',
@@ -57,7 +58,7 @@ class BookingsTrendWidget extends ChartWidget
                     'borderRadius' => 4,
                 ],
                 [
-                    'label' => 'Completed',
+                    'label' => __('klinica.dashboard.chart_bookings_completed'),
                     'data' => $completedCounts->values()->toArray(),
                     'backgroundColor' => 'rgba(141, 170, 145, 0.8)',
                     'borderColor' => '#8DAA91',
@@ -65,7 +66,7 @@ class BookingsTrendWidget extends ChartWidget
                     'borderRadius' => 4,
                 ],
                 [
-                    'label' => 'Cancelled',
+                    'label' => __('klinica.dashboard.chart_bookings_cancelled'),
                     'data' => $cancelledCounts->values()->toArray(),
                     'backgroundColor' => 'rgba(204, 78, 78, 0.6)',
                     'borderColor' => '#CC4E4E',

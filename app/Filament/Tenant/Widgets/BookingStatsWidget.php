@@ -41,7 +41,6 @@ class BookingStatsWidget extends BaseWidget
 
         $newPatientsThisMonth = Patient::where('created_at', '>=', $thisMonth)->count();
 
-        // Revenue from completed bookings (joins service price)
         $revenueToday = Booking::join('services', 'bookings.service_id', '=', 'services.id')
             ->whereDate('bookings.start_at', $today)
             ->where('bookings.status', BookingStatus::Completed)
@@ -59,44 +58,48 @@ class BookingStatsWidget extends BaseWidget
 
         $currency = ClinicSetting::current()->currency ?? 'DA';
 
+        $monthTrendDesc = $monthTrend >= 0
+            ? __('klinica.dashboard.stat_this_month_desc_up', ['percent' => $monthTrend])
+            : __('klinica.dashboard.stat_this_month_desc_down', ['percent' => $monthTrend]);
+
         return [
-            Stat::make("Today's Appointments", $todayCount)
-                ->description("{$confirmedToday} confirmed · {$completedToday} completed")
+            Stat::make(__('klinica.dashboard.stat_today_appointments'), $todayCount)
+                ->description(__('klinica.dashboard.stat_today_appointments_desc', ['confirmed' => $confirmedToday, 'completed' => $completedToday]))
                 ->icon('heroicon-o-calendar')
                 ->color('info'),
 
-            Stat::make('Pending Approvals', $pendingCount)
-                ->description('Awaiting confirmation')
+            Stat::make(__('klinica.dashboard.stat_pending_approvals'), $pendingCount)
+                ->description(__('klinica.dashboard.stat_pending_approvals_desc'))
                 ->icon('heroicon-o-clock')
                 ->color('warning'),
 
-            Stat::make('This Month', $thisMonthCount)
-                ->description($monthTrend >= 0 ? "+{$monthTrend}% vs last month" : "{$monthTrend}% vs last month")
+            Stat::make(__('klinica.dashboard.stat_this_month'), $thisMonthCount)
+                ->description($monthTrendDesc)
                 ->icon('heroicon-o-chart-bar')
                 ->color($monthTrend >= 0 ? 'success' : 'danger'),
 
-            Stat::make('Completion Rate', $completionRate.'%')
-                ->description("{$completedMonth} completed · {$cancelledMonth} cancelled this month")
+            Stat::make(__('klinica.dashboard.stat_completion_rate'), $completionRate.'%')
+                ->description(__('klinica.dashboard.stat_completion_rate_desc', ['completed' => $completedMonth, 'cancelled' => $cancelledMonth]))
                 ->icon('heroicon-o-check-circle')
                 ->color($completionRate >= 70 ? 'success' : ($completionRate >= 40 ? 'warning' : 'danger')),
 
-            Stat::make('Revenue Today', number_format((float) $revenueToday, 0, '.', ' ').' '.$currency)
-                ->description('From completed bookings')
+            Stat::make(__('klinica.dashboard.stat_revenue_today'), number_format((float) $revenueToday, 0, '.', ' ').' '.$currency)
+                ->description(__('klinica.dashboard.stat_revenue_desc'))
                 ->icon('heroicon-o-banknotes')
                 ->color('success'),
 
-            Stat::make('Revenue This Month', number_format((float) $revenueMonth, 0, '.', ' ').' '.$currency)
-                ->description('From completed bookings')
+            Stat::make(__('klinica.dashboard.stat_revenue_month'), number_format((float) $revenueMonth, 0, '.', ' ').' '.$currency)
+                ->description(__('klinica.dashboard.stat_revenue_desc'))
                 ->icon('heroicon-o-currency-dollar')
                 ->color('success'),
 
-            Stat::make('New Patients', $newPatientsThisMonth)
-                ->description('Registered this month')
+            Stat::make(__('klinica.dashboard.stat_new_patients'), $newPatientsThisMonth)
+                ->description(__('klinica.dashboard.stat_new_patients_desc'))
                 ->icon('heroicon-o-user-plus')
                 ->color('primary'),
 
-            Stat::make('Landing Page Visits', number_format((int) $visitsToday))
-                ->description('Today · '.number_format((int) $visitsMonth).' this month')
+            Stat::make(__('klinica.dashboard.stat_page_visits'), number_format((int) $visitsToday))
+                ->description(__('klinica.dashboard.stat_page_visits_desc', ['month' => number_format((int) $visitsMonth)]))
                 ->icon('heroicon-o-globe-alt')
                 ->color('info'),
         ];
