@@ -23,7 +23,19 @@ class EnforceTenantSubscription
         }
 
         if ($tenant->isTrialExpired() && ! $tenant->isOnActivePlan()) {
-            abort(402, 'Your subscription has expired. Please renew to continue.');
+            $billingRoute = 'filament.clinic.pages.billing-page';
+
+            // Let billing page through so tenant can actually subscribe.
+            // Also let Livewire component-update requests through — they power the billing
+            // page UI and enforce their own per-component authorization.
+            if ($request->routeIs($billingRoute) || $request->hasHeader('X-Livewire')) {
+                return $next($request);
+            }
+
+            return redirect()->route($billingRoute)->with(
+                'warning',
+                'Your trial has expired. Please subscribe to continue.'
+            );
         }
 
         return $next($request);

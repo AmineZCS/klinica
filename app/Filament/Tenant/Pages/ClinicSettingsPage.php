@@ -22,9 +22,40 @@ use Illuminate\Support\Facades\Storage;
 
 class ClinicSettingsPage extends Page
 {
-    protected static string|\UnitEnum|null $navigationGroup = 'Settings';
+    /** @var array<string, array{primary: string, secondary: string}> */
+    public const COLOR_THEMES = [
+        'sage' => ['primary' => '#7A9E8A', 'secondary' => '#A8C5B5'],
+        'lavender' => ['primary' => '#9B8DC4', 'secondary' => '#C8B8E0'],
+        'ocean' => ['primary' => '#6BA8C4', 'secondary' => '#8ECFCA'],
+        'blush' => ['primary' => '#C47B8E', 'secondary' => '#E8A8B8'],
+        'peach' => ['primary' => '#C49080', 'secondary' => '#E8C0A8'],
+        'mint' => ['primary' => '#6BAA96', 'secondary' => '#A4D4C4'],
+        'periwinkle' => ['primary' => '#7B90C8', 'secondary' => '#A8C0E8'],
+        'mauve' => ['primary' => '#B47AA0', 'secondary' => '#D8AAC8'],
+        'slate' => ['primary' => '#7A8EA0', 'secondary' => '#9AB0C4'],
+        'terracotta' => ['primary' => '#C47A60', 'secondary' => '#E8B89A'],
+        'forest' => ['primary' => '#7A9E78', 'secondary' => '#A8C4A4'],
+        'dusk' => ['primary' => '#9880C4', 'secondary' => '#C4B0D8'],
+    ];
+
+    protected static string|\UnitEnum|null $navigationGroup = null;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-cog-6-tooth';
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('klinica.settings.nav_group');
+    }
+
+    public function getTitle(): string
+    {
+        return __('klinica.settings.nav_label');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('klinica.settings.nav_label');
+    }
 
     protected string $view = 'filament.tenant.pages.clinic-settings-page';
 
@@ -46,18 +77,11 @@ class ClinicSettingsPage extends Page
 
     public ?string $hero_cta_text = null;
 
+    public string $color_theme = 'custom';
+
     public ?string $primary_color = null;
 
     public ?string $secondary_color = null;
-
-    /**
-     * Temp logo value stored by FileUpload.
-     * Must be untyped (or mixed) — Livewire 4 cannot serialize typed nullable
-     * when the FileUpload component passes back a TemporaryUploadedFile or null.
-     *
-     * @var string|array<int,string>|null
-     */
-    public $logo_upload = null;
 
     // ── Contact ───────────────────────────────────────────────────────────
     public ?string $contact_phone = null;
@@ -73,7 +97,7 @@ class ClinicSettingsPage extends Page
 
     public string $timezone = 'UTC';
 
-    public string $currency = 'DA';
+    public string $currency = '€';
 
     /** Rendered HTML of the landing page for the live preview iframe. */
     public string $previewHtml = '';
@@ -95,7 +119,11 @@ class ClinicSettingsPage extends Page
             'contact_address',
             'online_booking_enabled',
             'locale',
-            'timezone',            'currency',        ]));
+            'timezone',
+            'currency',
+        ]));
+
+        $this->color_theme = $this->detectTheme();
 
         $this->renderPreview();
     }
@@ -108,88 +136,100 @@ class ClinicSettingsPage extends Page
                 // ── LEFT COLUMN: all settings ────────────────────────────
                 Grid::make(1)->schema([
 
-                    Section::make('Branding & Hero')->schema([
+                    Section::make(__('klinica.settings.section_branding'))->schema([
                         Grid::make(2)->schema([
                             TextInput::make('clinic_name')->required()->maxLength(255)->live(onBlur: true)->afterStateUpdated(fn () => $this->renderPreview())->columnSpanFull(),
                             TextInput::make('tagline')
-                                ->label('Tagline / Sub-heading')
+                                ->label(__('klinica.settings.field_tagline'))
                                 ->maxLength(255)
+                                ->live(onBlur: true)
+                                ->afterStateUpdated(fn () => $this->renderPreview())
                                 ->columnSpanFull(),
                             TextInput::make('hero_title')
-                                ->label('Hero headline')
+                                ->label(__('klinica.settings.field_hero_title'))
                                 ->placeholder('e.g. Your health, our priority')
                                 ->maxLength(120)
                                 ->live(onBlur: true)
                                 ->afterStateUpdated(fn () => $this->renderPreview())
                                 ->columnSpanFull(),
                             TextInput::make('hero_subtitle')
-                                ->label('Hero sub-text')
+                                ->label(__('klinica.settings.field_hero_subtitle'))
                                 ->placeholder('e.g. Book an appointment in 60 seconds')
                                 ->maxLength(200)
                                 ->live(onBlur: true)
                                 ->afterStateUpdated(fn () => $this->renderPreview())
                                 ->columnSpanFull(),
                             TextInput::make('hero_cta_text')
-                                ->label('CTA button text')
+                                ->label(__('klinica.settings.field_hero_cta'))
                                 ->placeholder('Book Now')
                                 ->maxLength(40)
                                 ->live(onBlur: true)
-                                ->afterStateUpdated(fn () => $this->renderPreview()),
-                            ColorPicker::make('primary_color')->live()->afterStateUpdated(fn () => $this->renderPreview()),
-                            ColorPicker::make('secondary_color')->live()->afterStateUpdated(fn () => $this->renderPreview()),
-                            FileUpload::make('logo_upload')
-                                ->label('Logo (transparent PNG/SVG recommended)')
-                                ->helperText('Displayed in the nav and footer of your landing page.')
-                                ->image()
-                                ->disk('public')
-                                ->directory('logos')
-                                ->imagePreviewHeight('72')
-                                ->acceptedFileTypes(['image/png', 'image/svg+xml', 'image/webp'])
-                                ->nullable()
+                                ->afterStateUpdated(fn () => $this->renderPreview())
                                 ->columnSpanFull(),
+
+                            View::make('filament.tenant.pages.partials.color-theme-picker')
+                                ->columnSpanFull(),
+
+                            ColorPicker::make('primary_color')
+                                ->live()
+                                ->afterStateUpdated(fn () => $this->renderPreview())
+                                ->visible(fn (): bool => $this->color_theme === 'custom'),
+                            ColorPicker::make('secondary_color')
+                                ->live()
+                                ->afterStateUpdated(fn () => $this->renderPreview())
+                                ->visible(fn (): bool => $this->color_theme === 'custom'),
                         ]),
                     ]),
 
-                    Section::make('Contact')->schema([
+                    Section::make(__('klinica.settings.section_contact'))->schema([
                         Grid::make(2)->schema([
-                            TextInput::make('contact_phone')->tel(),
-                            TextInput::make('contact_email')->email(),
-                            TextInput::make('contact_address')->columnSpanFull(),
+                            TextInput::make('contact_phone')->tel()->live(onBlur: true)->afterStateUpdated(fn () => $this->renderPreview()),
+                            TextInput::make('contact_email')->email()->live(onBlur: true)->afterStateUpdated(fn () => $this->renderPreview()),
+                            TextInput::make('contact_address')->columnSpanFull()->live(onBlur: true)->afterStateUpdated(fn () => $this->renderPreview()),
                         ]),
                     ]),
 
-                    Section::make('Localisation & Booking')->schema([
+                    Section::make(__('klinica.settings.section_localisation'))->schema([
                         Grid::make(2)->schema([
                             Select::make('locale')
-                                ->options(['en' => 'English', 'fr' => 'Français', 'de' => 'Deutsch'])
-                                ->required(),
+                                ->options([
+                                    'en' => __('klinica.settings.locale_en'),
+                                    'fr' => __('klinica.settings.locale_fr'),
+                                    'de' => __('klinica.settings.locale_de'),
+                                    'es' => __('klinica.settings.locale_es'),
+                                ])
+                                ->required()
+                                ->live()
+                                ->afterStateUpdated(fn () => $this->renderPreview()),
                             Select::make('timezone')
                                 ->options(\DateTimeZone::listIdentifiers())
                                 ->searchable()
                                 ->required(),
                             Select::make('currency')
-                                ->label('Currency symbol')
+                                ->label(__('klinica.settings.field_currency'))
                                 ->options([
-                                    'DA' => 'DA — Algerian Dinar',
                                     '€' => '€ — Euro',
                                     '$' => '$ — US Dollar',
                                     '£' => '£ — British Pound',
-                                    'SAR' => 'SAR — Saudi Riyal',
-                                    'MAD' => 'MAD — Moroccan Dirham',
-                                    'TND' => 'TND — Tunisian Dinar',
-                                    'AED' => 'AED — UAE Dirham',
+                                    'A$' => 'A$ — Australian Dollar',
+                                    'C$' => 'C$ — Canadian Dollar',
+                                    'CHF' => 'CHF — Swiss Franc',
                                 ])
-                                ->required(),
+                                ->required()
+                                ->live()
+                                ->afterStateUpdated(fn () => $this->renderPreview()),
                             Toggle::make('online_booking_enabled')
-                                ->label('Enable online booking')
+                                ->label(__('klinica.settings.field_online_booking'))
+                                ->live()
+                                ->afterStateUpdated(fn () => $this->renderPreview())
                                 ->columnSpanFull(),
                         ]),
                     ]),
                 ]),
 
                 // ── RIGHT COLUMN: live preview ───────────────────────────
-                Section::make('Live Preview')
-                    ->description('Updates as you change the fields on the left.')
+                Section::make(__('klinica.settings.section_preview'))
+                    ->description(__('klinica.settings.section_preview_desc'))
                     ->schema([
                         View::make('filament.tenant.pages.partials.settings-preview'),
                     ]),
@@ -200,8 +240,42 @@ class ClinicSettingsPage extends Page
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('uploadLogo')
+                ->label(__('klinica.settings.field_logo'))
+                ->icon('heroicon-o-photo')
+                ->color('gray')
+                ->form([
+                    FileUpload::make('logo')
+                        ->label(__('klinica.settings.field_logo'))
+                        ->helperText(__('klinica.settings.field_logo_helper'))
+                        ->image()
+                        ->disk('public')
+                        ->directory('logos')
+                        ->imagePreviewHeight('120')
+                        ->acceptedFileTypes(['image/png', 'image/svg+xml', 'image/webp'])
+                        ->required(),
+                ])
+                ->action(function (array $data): void {
+                    $path = is_array($data['logo']) ? reset($data['logo']) : $data['logo'];
+
+                    if ($path && Storage::disk('public')->exists($path)) {
+                        $settings = ClinicSetting::current();
+                        $settings->clearMediaCollection('logo');
+                        $settings->addMediaFromDisk($path, 'public')
+                            ->usingFileName(basename($path))
+                            ->toMediaCollection('logo');
+
+                        Notification::make()
+                            ->title(__('klinica.settings.saved'))
+                            ->success()
+                            ->send();
+
+                        $this->redirect(static::getUrl(), navigate: true);
+                    }
+                }),
+
             Action::make('save')
-                ->label('Save Settings')
+                ->label(__('klinica.settings.save_action'))
                 ->action('save'),
         ];
     }
@@ -220,7 +294,7 @@ class ClinicSettingsPage extends Page
             'contact_email' => ['nullable', 'email'],
             'contact_address' => ['nullable', 'string'],
             'online_booking_enabled' => ['boolean'],
-            'locale' => ['required', 'in:en,fr,de'],
+            'locale' => ['required', 'in:en,fr,de,es'],
             'timezone' => ['required', 'timezone'],
             'currency' => ['required', 'string', 'max:10'],
         ]);
@@ -228,29 +302,12 @@ class ClinicSettingsPage extends Page
         $settings = ClinicSetting::current();
         $settings->update($data);
 
-        // Handle logo upload → store in media library
-        if (! empty($this->logo_upload)) {
-            $path = is_array($this->logo_upload)
-                ? reset($this->logo_upload)
-                : $this->logo_upload;
-
-            if ($path && Storage::disk('public')->exists($path)) {
-                $settings->clearMediaCollection('logo');
-                $settings->addMediaFromDisk($path, 'public')
-                    ->usingFileName(basename($path))
-                    ->toMediaCollection('logo');
-
-                // Reset the upload field so the FileUpload doesn't render a broken URL
-                $this->logo_upload = null;
-            }
-        }
-
         Notification::make()
             ->title(__('klinica.settings.saved'))
             ->success()
             ->send();
 
-        $this->renderPreview();
+        $this->redirect(static::getUrl(), navigate: true);
     }
 
     public function renderPreview(): void
@@ -294,5 +351,29 @@ class ClinicSettingsPage extends Page
         } catch (\Throwable $e) {
             $this->previewHtml = '<p style="padding:20px;font-family:sans-serif;color:#CC4E4E;">Preview unavailable: '.e($e->getMessage()).'</p>';
         }
+    }
+
+    public function selectTheme(string $theme): void
+    {
+        $this->color_theme = $theme;
+
+        if ($theme !== 'custom' && isset(self::COLOR_THEMES[$theme])) {
+            $this->primary_color = self::COLOR_THEMES[$theme]['primary'];
+            $this->secondary_color = self::COLOR_THEMES[$theme]['secondary'];
+        }
+
+        $this->renderPreview();
+    }
+
+    private function detectTheme(): string
+    {
+        foreach (self::COLOR_THEMES as $key => $colors) {
+            if (strtolower($colors['primary']) === strtolower($this->primary_color ?? '')
+                && strtolower($colors['secondary']) === strtolower($this->secondary_color ?? '')) {
+                return $key;
+            }
+        }
+
+        return 'custom';
     }
 }

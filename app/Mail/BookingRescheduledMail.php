@@ -22,7 +22,11 @@ class BookingRescheduledMail extends Mailable implements ShouldQueue
     public function __construct(
         public readonly Booking $booking,
         public readonly Carbon $previousStartAt,
-    ) {}
+        string $locale = 'en',
+        public readonly string $tenantUrl = '',
+    ) {
+        $this->locale($locale);
+    }
 
     public function envelope(): Envelope
     {
@@ -33,7 +37,7 @@ class BookingRescheduledMail extends Mailable implements ShouldQueue
         $recipientEmail = $this->booking->patient?->email ?? $this->booking->guest_email;
 
         return new Envelope(
-            subject: 'Your booking has been rescheduled — '.($this->booking->service?->name ?? 'Klinica'),
+            subject: __('klinica.email.booking_rescheduled_subject', ['service' => $this->booking->service?->name ?? 'Klinica']),
             to: $recipientEmail ? [new Address($recipientEmail, $recipientName)] : [],
         );
     }
@@ -48,6 +52,7 @@ class BookingRescheduledMail extends Mailable implements ShouldQueue
                 'patientName' => $this->booking->patient
                     ? "{$this->booking->patient->first_name} {$this->booking->patient->last_name}"
                     : ($this->booking->guest_name ?? 'Guest'),
+                'tenantUrl' => $this->tenantUrl ?: config('app.url'),
             ],
         );
     }

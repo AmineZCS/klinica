@@ -21,7 +21,7 @@ class BillingPage extends Page
 
     public static function getNavigationLabel(): string
     {
-        return 'Billing';
+        return __('klinica.billing.nav_label');
     }
 
     public static function canAccess(): bool
@@ -37,44 +37,20 @@ class BillingPage extends Page
             return [];
         }
 
-        $actions = [];
-        $tier = $tenant->effectiveTier();
-
-        if ($tenant->plan === TenantPlan::Trial) {
-            $actions[] = Action::make('subscribe_current_plan')
-                ->label($tier === 'pro' ? 'Subscribe to Pro — €49/mo' : 'Subscribe to Starter — €19/mo')
-                ->color($tier === 'pro' ? 'success' : 'primary')
-                ->icon($tier === 'pro' ? 'heroicon-o-rocket-launch' : 'heroicon-o-check-circle')
-                ->url(route('billing.checkout', ['plan' => $tier]))
-                ->openUrlInNewTab(false);
-
-            if ($tier === 'starter') {
-                $actions[] = Action::make('upgrade_pro')
-                    ->label('Upgrade to Pro — €49/mo')
+        // Trial users subscribe via Paddle.js overlay in the page cards below.
+        // Only show a header action for active-plan swaps (server-side API call).
+        if ($tenant->plan === TenantPlan::Starter) {
+            return [
+                Action::make('upgrade_pro')
+                    ->label(__('klinica.billing.upgrade_pro_action'))
                     ->color('success')
                     ->icon('heroicon-o-rocket-launch')
                     ->url(route('billing.checkout', ['plan' => 'pro']))
-                    ->openUrlInNewTab(false);
-            } else {
-                $actions[] = Action::make('switch_to_starter')
-                    ->label('Choose Starter — €19/mo')
-                    ->color('gray')
-                    ->icon('heroicon-o-arrow-path-rounded-square')
-                    ->url(route('billing.checkout', ['plan' => 'starter']))
-                    ->openUrlInNewTab(false);
-            }
+                    ->openUrlInNewTab(false),
+            ];
         }
 
-        if ($tenant->plan === TenantPlan::Starter) {
-            $actions[] = Action::make('upgrade_pro')
-                ->label('Upgrade to Pro — €49/mo')
-                ->color('success')
-                ->icon('heroicon-o-rocket-launch')
-                ->url(route('billing.checkout', ['plan' => 'pro']))
-                ->openUrlInNewTab(false);
-        }
-
-        return $actions;
+        return [];
     }
 
     /** @return array<string, mixed> */
@@ -100,6 +76,11 @@ class BillingPage extends Page
             'isActive' => $tenant->isOnActivePlan(),
             'planLabel' => $tenant->plan?->value ?? 'trial',
             'planExpiresAt' => $tenant->plan_expires_at,
+            'planCancelsAt' => $tenant->plan_cancels_at,
+            'paddleClientToken' => (string) config('services.paddle.client_token'),
+            'paddleSandbox' => (bool) config('services.paddle.sandbox'),
+            'paddlePriceStarter' => (string) config('services.paddle.price_starter'),
+            'paddlePricePro' => (string) config('services.paddle.price_pro'),
         ];
     }
 }

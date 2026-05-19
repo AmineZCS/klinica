@@ -17,6 +17,10 @@ class TenantWelcomeMail extends Mailable implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
+    public int $timeout = 120;
+
+    public int $tries = 3;
+
     public function __construct(
         public readonly string $tenantName,
         public readonly string $ownerName,
@@ -24,12 +28,15 @@ class TenantWelcomeMail extends Mailable implements ShouldQueue
         public readonly ?CarbonInterface $trialEndsAt,
         public readonly string $dashboardLoginUrl,
         public readonly string $billingPageUrl,
-    ) {}
+        string $locale = 'en',
+    ) {
+        $this->locale($locale);
+    }
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Welcome to Klinica - your trial starts now',
+            subject: __('klinica.email.welcome_subject', ['clinic' => $this->tenantName]),
             tags: ['tenant-welcome'],
         );
     }

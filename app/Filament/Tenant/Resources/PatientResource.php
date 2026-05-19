@@ -31,6 +31,16 @@ class PatientResource extends Resource
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-user-group';
 
+    public static function getModelLabel(): string
+    {
+        return __('klinica.patient.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('klinica.patient.label_plural');
+    }
+
     public static function canAccess(): bool
     {
         $user = auth('tenant')->user();
@@ -60,12 +70,13 @@ class PatientResource extends Resource
         return $schema->components([
             Section::make(__('klinica.patient.personal_info'))->schema([
                 Grid::make(2)->schema([
-                    TextInput::make('first_name')->required()->maxLength(255),
-                    TextInput::make('last_name')->required()->maxLength(255),
-                    TextInput::make('email')->email()->nullable(),
-                    TextInput::make('phone')->tel()->required(),
-                    DatePicker::make('date_of_birth'),
+                    TextInput::make('first_name')->label(__('klinica.patient.field_first_name'))->required()->maxLength(255),
+                    TextInput::make('last_name')->label(__('klinica.patient.field_last_name'))->required()->maxLength(255),
+                    TextInput::make('email')->label(__('klinica.patient.field_email'))->email()->nullable(),
+                    TextInput::make('phone')->label(__('klinica.patient.field_phone'))->tel()->required(),
+                    DatePicker::make('date_of_birth')->label(__('klinica.patient.field_dob')),
                     Select::make('gender')
+                        ->label(__('klinica.patient.field_gender'))
                         ->options(collect(Gender::cases())->mapWithKeys(
                             fn (Gender $g) => [$g->value => $g->label()]
                         ))
@@ -77,8 +88,8 @@ class PatientResource extends Resource
                     ->label(__('klinica.patient.health_notes'))
                     ->rows(4)
                     ->nullable(),
-                Textarea::make('notes')->rows(3)->nullable(),
-                Toggle::make('is_active')->default(true),
+                Textarea::make('notes')->label(__('klinica.patient.field_notes'))->rows(3)->nullable(),
+                Toggle::make('is_active')->label(__('klinica.common.is_active'))->default(true),
             ]),
         ]);
     }
@@ -87,12 +98,12 @@ class PatientResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('first_name')->searchable()->sortable(),
-                TextColumn::make('last_name')->searchable()->sortable(),
-                TextColumn::make('email')->searchable()->toggleable(),
-                TextColumn::make('phone')->searchable(),
-                IconColumn::make('is_active')->boolean()->sortable(),
-                TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('first_name')->label(__('klinica.patient.field_first_name'))->searchable()->sortable(),
+                TextColumn::make('last_name')->label(__('klinica.patient.field_last_name'))->searchable()->sortable(),
+                TextColumn::make('email')->label(__('klinica.patient.field_email'))->searchable()->toggleable(),
+                TextColumn::make('phone')->label(__('klinica.patient.field_phone'))->searchable(),
+                IconColumn::make('is_active')->label(__('klinica.common.is_active'))->boolean()->sortable(),
+                TextColumn::make('created_at')->label(__('klinica.common.created_at'))->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 TernaryFilter::make('is_active'),

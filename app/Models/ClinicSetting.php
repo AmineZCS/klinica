@@ -58,7 +58,21 @@ class ClinicSetting extends Model implements HasMedia
 
     public static function current(): self
     {
-        return static::firstOrCreate([]);
+        $request = request();
+
+        if ($cached = $request->attributes->get('_clinic_setting')) {
+            return $cached;
+        }
+
+        $instance = static::firstOrCreate([]);
+        $request->attributes->set('_clinic_setting', $instance);
+
+        return $instance;
+    }
+
+    public static function forgetCurrent(): void
+    {
+        request()->attributes->remove('_clinic_setting');
     }
 
     public function getTimezone(): string

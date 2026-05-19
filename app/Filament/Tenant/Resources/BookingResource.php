@@ -40,6 +40,16 @@ class BookingResource extends Resource
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-calendar';
 
+    public static function getModelLabel(): string
+    {
+        return __('klinica.booking.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('klinica.booking.label_plural');
+    }
+
     public static function canAccess(): bool
     {
         $user = auth('tenant')->user();
@@ -80,10 +90,10 @@ class BookingResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Booking Details')->schema([
+            Section::make(__('klinica.booking.section_details'))->schema([
                 Grid::make(2)->schema([
                     Select::make('patient_id')
-                        ->label('Patient')
+                        ->label(__('klinica.booking.col_patient'))
                         ->options(Patient::query()->get()->mapWithKeys(
                             fn (Patient $p) => [$p->id => "{$p->first_name} {$p->last_name}"]
                         ))
@@ -91,7 +101,7 @@ class BookingResource extends Resource
                         ->nullable(),
 
                     Select::make('service_id')
-                        ->label('Service')
+                        ->label(__('klinica.booking.col_service'))
                         ->options(Service::query()->where('is_active', true)->pluck('name', 'id'))
                         ->required()
                         ->searchable()
@@ -109,7 +119,7 @@ class BookingResource extends Resource
                         }),
 
                     Select::make('employee_id')
-                        ->label('Employee')
+                        ->label(__('klinica.booking.col_employee'))
                         ->options(function (Get $get): array {
                             $startAt = $get('start_at');
                             $serviceId = $get('service_id');
@@ -140,7 +150,7 @@ class BookingResource extends Resource
 
                             return $employees->mapWithKeys(function (User $user) use ($bookedIds): array {
                                 $label = in_array($user->id, $bookedIds)
-                                    ? "{$user->name} — already booked at this time"
+                                    ? __('klinica.booking.employee_busy', ['name' => $user->name])
                                     : $user->name;
 
                                 return [$user->id => $label];
@@ -196,8 +206,8 @@ class BookingResource extends Resource
                 ]),
             ]),
 
-            Section::make('Guest Information')
-                ->description('Filled automatically from public booking form when no patient is selected.')
+            Section::make(__('klinica.booking.section_guest'))
+                ->description(__('klinica.booking.section_guest_desc'))
                 ->collapsed()
                 ->schema([
                     Grid::make(3)->schema([
@@ -207,7 +217,7 @@ class BookingResource extends Resource
                     ]),
                 ]),
 
-            Section::make('Notes')->schema([
+            Section::make(__('klinica.booking.section_notes'))->schema([
                 Textarea::make('notes')->rows(3)->columnSpanFull()->nullable(),
                 Textarea::make('cancellation_reason')
                     ->rows(2)
@@ -222,7 +232,7 @@ class BookingResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('patient.first_name')
-                    ->label('Patient')
+                    ->label(__('klinica.booking.col_patient'))
                     ->formatStateUsing(fn ($state, Booking $record): string => $record->patient
                         ? "{$record->patient->first_name} {$record->patient->last_name}"
                         : ($record->guest_name ?? '—'))
@@ -231,9 +241,9 @@ class BookingResource extends Resource
                         ? null
                         : ($record->guest_email ?? $record->guest_phone)),
 
-                TextColumn::make('service.name')->label('Service')->sortable(),
-                TextColumn::make('employee.name')->label('Employee')->sortable()->toggleable(),
-                TextColumn::make('start_at')->dateTime('D, M j Y · g:i A')->sortable()->label('Date & Time'),
+                TextColumn::make('service.name')->label(__('klinica.booking.col_service'))->sortable(),
+                TextColumn::make('employee.name')->label(__('klinica.booking.col_employee'))->sortable()->toggleable(),
+                TextColumn::make('start_at')->dateTime('D, M j Y · g:i A')->sortable()->label(__('klinica.booking.col_datetime')),
                 TextColumn::make('status')
                     ->badge()
                     ->sortable(),
@@ -247,20 +257,20 @@ class BookingResource extends Resource
                 EditAction::make(),
 
                 Action::make('confirm')
-                    ->label('Confirm & Notify')
+                    ->label(__('klinica.booking.action_confirm_label'))
                     ->color('success')
                     ->icon('heroicon-o-check-circle')
                     ->requiresConfirmation()
-                    ->modalHeading('Confirm this booking?')
-                    ->modalDescription('The patient will receive a confirmation email.')
+                    ->modalHeading(__('klinica.booking.action_confirm_heading'))
+                    ->modalDescription(__('klinica.booking.action_confirm_desc'))
                     ->visible(fn (Booking $record): bool => $record->status === BookingStatus::Pending)
                     ->action(function (Booking $record): void {
                         app(ConfirmBookingAction::class)->execute($record);
-                        Notification::make()->title('Booking confirmed and patient notified.')->success()->send();
+                        Notification::make()->title(__('klinica.booking.action_confirm_notification'))->success()->send();
                     }),
 
                 Action::make('cancel')
-                    ->label('Cancel')
+                    ->label(__('klinica.booking.action_cancel_label'))
                     ->color('danger')
                     ->icon('heroicon-o-x-circle')
                     ->requiresConfirmation()
@@ -270,23 +280,23 @@ class BookingResource extends Resource
                     ->visible(fn (Booking $record): bool => $record->status !== BookingStatus::Cancelled)
                     ->action(function (Booking $record, array $data): void {
                         app(CancelBookingAction::class)->execute($record, $data['cancellation_reason'] ?? null);
-                        Notification::make()->title('Booking cancelled and patient notified.')->success()->send();
+                        Notification::make()->title(__('klinica.booking.action_cancel_notification'))->success()->send();
                     }),
 
                 Action::make('create_patient')
-                    ->label('Create Patient')
-                    ->tooltip('Create a patient record from this booking\'s guest information')
+                    ->label(__('klinica.booking.action_create_patient_label'))
+                    ->tooltip(__('klinica.booking.action_create_patient_tooltip'))
                     ->color('info')
                     ->icon('heroicon-o-user-plus')
                     ->requiresConfirmation()
-                    ->modalHeading('Create patient from this booking?')
-                    ->modalDescription('A patient record will be created using the guest name, email, and phone. If a matching patient already exists, the booking will be linked to them instead.')
+                    ->modalHeading(__('klinica.booking.action_create_patient_heading'))
+                    ->modalDescription(__('klinica.booking.action_create_patient_desc'))
                     ->visible(fn (Booking $record): bool => $record->patient_id === null
                         && ($record->guest_name !== null || $record->guest_email !== null || $record->guest_phone !== null))
                     ->action(function (Booking $record): void {
                         $patient = app(CreatePatientFromBookingAction::class)->execute($record);
                         Notification::make()
-                            ->title("Patient \"{$patient->first_name} {$patient->last_name}\" linked to this booking.")
+                            ->title(__('klinica.booking.action_create_patient_notification', ['name' => "{$patient->first_name} {$patient->last_name}"]))
                             ->success()
                             ->send();
                     }),

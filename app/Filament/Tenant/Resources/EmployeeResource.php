@@ -28,9 +28,15 @@ class EmployeeResource extends Resource
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-users';
 
-    protected static ?string $label = 'Employee';
+    public static function getModelLabel(): string
+    {
+        return __('klinica.employee.label');
+    }
 
-    protected static ?string $pluralLabel = 'Employees';
+    public static function getPluralModelLabel(): string
+    {
+        return __('klinica.employee.label_plural');
+    }
 
     public static function canAccess(): bool
     {
@@ -61,18 +67,19 @@ class EmployeeResource extends Resource
         return $schema->components([
             Section::make()->schema([
                 Grid::make(2)->schema([
-                    TextInput::make('name')->required()->maxLength(255),
-                    TextInput::make('email')->email()->required()->unique(ignoreRecord: true),
+                    TextInput::make('name')->label(__('klinica.employee.field_name'))->required()->maxLength(255),
+                    TextInput::make('email')->label(__('klinica.employee.field_email'))->email()->required()->unique(ignoreRecord: true),
                     TextInput::make('password')
+                        ->label(__('klinica.employee.field_password'))
                         ->password()
                         ->minLength(8)
                         ->dehydrated(fn (?string $state): bool => filled($state))
                         ->required(fn (string $operation): bool => $operation === 'create'),
                     Toggle::make('is_active')
-                        ->label('Active')
+                        ->label(__('klinica.employee.field_active'))
                         ->default(true),
                     Select::make('roles')
-                        ->label('Role')
+                        ->label(__('klinica.employee.field_role'))
                         ->options(
                             Role::where('guard_name', 'tenant')
                                 ->pluck('name', 'name')
@@ -90,11 +97,11 @@ class EmployeeResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')->searchable()->sortable(),
-                TextColumn::make('email')->searchable(),
-                TextColumn::make('roles.name')->label('Role')->badge(),
-                IconColumn::make('is_active')->boolean()->sortable(),
-                TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('name')->label(__('klinica.employee.field_name'))->searchable()->sortable(),
+                TextColumn::make('email')->label(__('klinica.employee.field_email'))->searchable(),
+                TextColumn::make('roles.name')->label(__('klinica.employee.field_role'))->badge(),
+                IconColumn::make('is_active')->label(__('klinica.employee.field_active'))->boolean()->sortable(),
+                TextColumn::make('created_at')->label(__('klinica.common.created_at'))->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->actions([EditAction::make()])
             ->bulkActions([

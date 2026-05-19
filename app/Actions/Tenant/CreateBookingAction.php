@@ -50,8 +50,14 @@ class CreateBookingAction
             $phone = $data['guest_phone'] ?? null;
 
             $patient = Patient::query()
-                ->when($email, fn ($q) => $q->where('email', $email))
-                ->orWhen($phone, fn ($q) => $q->where('phone', $phone))
+                ->where(function ($q) use ($email, $phone): void {
+                    if ($email) {
+                        $q->where('email', $email);
+                    }
+                    if ($phone) {
+                        $q->orWhere('phone', $phone);
+                    }
+                })
                 ->first();
 
             if ($patient) {

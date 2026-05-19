@@ -26,7 +26,25 @@ class RoleResource extends Resource
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shield-check';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Settings';
+    public static function getModelLabel(): string
+    {
+        return __('klinica.role.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('klinica.role.label_plural');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('klinica.role.label_plural');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('klinica.settings.nav_group');
+    }
 
     protected static ?int $navigationSort = 10;
 
@@ -49,12 +67,13 @@ class RoleResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Role Details')->schema([
+            Section::make(__('klinica.role.section_details'))->schema([
                 TextInput::make('name')
+                    ->label(__('klinica.employee.field_name'))
                     ->required()
                     ->maxLength(255)
                     ->unique(table: 'roles', column: 'name', ignoreRecord: true)
-                    ->helperText('e.g. "receptionist", "nurse", "doctor"'),
+                    ->helperText(__('klinica.role.field_name_helper')),
 
                 Select::make('permissions')
                     ->multiple()
@@ -82,12 +101,12 @@ class RoleResource extends Resource
                 TextColumn::make('name')->searchable()->sortable(),
                 TextColumn::make('permissions_count')
                     ->counts('permissions')
-                    ->label('Permissions')
+                    ->label(__('klinica.role.col_permissions'))
                     ->badge()
                     ->color('primary'),
                 TextColumn::make('users_count')
                     ->counts('users')
-                    ->label('Users')
+                    ->label(__('klinica.role.col_users'))
                     ->badge()
                     ->color('info'),
             ])

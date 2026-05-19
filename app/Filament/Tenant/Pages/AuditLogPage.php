@@ -21,15 +21,25 @@ class AuditLogPage extends Page implements HasTable
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-list';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Settings';
+    protected static string|\UnitEnum|null $navigationGroup = null;
 
     protected static ?int $navigationSort = 99;
 
     protected string $view = 'filament.tenant.pages.audit-log-page';
 
+    public function getTitle(): string
+    {
+        return __('klinica.audit_log.nav_label');
+    }
+
     public static function getNavigationLabel(): string
     {
-        return 'Audit Log';
+        return __('klinica.audit_log.nav_label');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('klinica.settings.nav_group');
     }
 
     public static function canAccess(): bool
@@ -43,11 +53,11 @@ class AuditLogPage extends Page implements HasTable
     private static function subjectTypeLabels(): array
     {
         return [
-            'App\\Models\\Booking' => 'Booking',
-            'App\\Models\\Patient' => 'Patient',
-            'App\\Models\\Service' => 'Service',
-            'App\\Models\\ClinicSetting' => 'Clinic Settings',
-            'App\\Models\\User' => 'Employee',
+            'App\\Models\\Booking' => __('klinica.audit_log.subject_booking'),
+            'App\\Models\\Patient' => __('klinica.audit_log.subject_patient'),
+            'App\\Models\\Service' => __('klinica.audit_log.subject_service'),
+            'App\\Models\\ClinicSetting' => __('klinica.audit_log.subject_clinic_settings'),
+            'App\\Models\\User' => __('klinica.audit_log.subject_employee'),
         ];
     }
 
@@ -57,22 +67,27 @@ class AuditLogPage extends Page implements HasTable
             ->query(Activity::query()->latest())
             ->columns([
                 TextColumn::make('created_at')
-                    ->label('Time')
+                    ->label(__('klinica.audit_log.col_time'))
                     ->dateTime('d M Y, H:i')
                     ->description(fn (Activity $record): string => $record->created_at?->diffForHumans() ?? '')
                     ->sortable()
                     ->width('170px'),
 
                 TextColumn::make('causer.name')
-                    ->label('User')
+                    ->label(__('klinica.audit_log.col_user'))
                     ->default('—')
                     ->searchable()
                     ->weight(FontWeight::Medium),
 
                 TextColumn::make('event')
-                    ->label('Event')
+                    ->label(__('klinica.audit_log.col_event'))
                     ->badge()
-                    ->formatStateUsing(fn (?string $state): string => ucfirst($state ?? 'unknown'))
+                    ->formatStateUsing(fn (?string $state): string => match ($state) {
+                        'created' => __('klinica.audit_log.event_created'),
+                        'updated' => __('klinica.audit_log.event_updated'),
+                        'deleted' => __('klinica.audit_log.event_deleted'),
+                        default => ucfirst($state ?? 'unknown'),
+                    })
                     ->color(fn (?string $state): string => match ($state) {
                         'created' => 'success',
                         'updated' => 'info',
@@ -81,7 +96,7 @@ class AuditLogPage extends Page implements HasTable
                     }),
 
                 TextColumn::make('subject_type')
-                    ->label('Resource')
+                    ->label(__('klinica.audit_log.col_resource'))
                     ->formatStateUsing(function (?string $state, Activity $record): string {
                         $label = static::subjectTypeLabels()[$state ?? ''] ?? class_basename($state ?? '');
                         $subject = $record->subject;
@@ -90,7 +105,7 @@ class AuditLogPage extends Page implements HasTable
                         if ($subject !== null) {
                             $name = $subject->name ?? $subject->title ?? ('#'.$subject->getKey());
                         } elseif ($record->subject_id !== null) {
-                            $name = '#'.$record->subject_id.' (deleted)';
+                            $name = '#'.$record->subject_id.' '.__('klinica.audit_log.deleted_suffix');
                         }
 
                         return $name !== null ? "{$label}: {$name}" : $label;
@@ -98,7 +113,7 @@ class AuditLogPage extends Page implements HasTable
                     ->description(fn (Activity $record): string => $record->description ?? ''),
 
                 TextColumn::make('attribute_changes')
-                    ->label('Changes')
+                    ->label(__('klinica.audit_log.col_changes'))
                     ->formatStateUsing(function (mixed $state, Activity $record): string {
                         $changes = $record->attribute_changes;
 
@@ -112,10 +127,8 @@ class AuditLogPage extends Page implements HasTable
                         if (empty($old) && ! empty($new)) {
                             $keys = array_keys($new);
 
-                            return implode(', ', array_map(
-                                fn (string $k): string => $k,
-                                array_slice($keys, 0, 4)
-                            )).(count($keys) > 4 ? ' +'.(count($keys) - 4).' more' : '');
+                            return implode(', ', array_slice($keys, 0, 4))
+                                .(count($keys) > 4 ? ' '.__('klinica.audit_log.more', ['count' => count($keys) - 4]) : '');
                         }
 
                         $changed = array_keys(array_filter(
@@ -129,7 +142,7 @@ class AuditLogPage extends Page implements HasTable
                         }
 
                         return implode(', ', array_slice($changed, 0, 4))
-                            .(count($changed) > 4 ? ' +'.(count($changed) - 4).' more' : '');
+                            .(count($changed) > 4 ? ' '.__('klinica.audit_log.more', ['count' => count($changed) - 4]) : '');
                     })
                     ->wrap()
                     ->html()
@@ -138,23 +151,23 @@ class AuditLogPage extends Page implements HasTable
             ])
             ->filters([
                 SelectFilter::make('event')
-                    ->label('Event')
+                    ->label(__('klinica.audit_log.filter_event'))
                     ->options([
-                        'created' => 'Created',
-                        'updated' => 'Updated',
-                        'deleted' => 'Deleted',
+                        'created' => __('klinica.audit_log.event_created'),
+                        'updated' => __('klinica.audit_log.event_updated'),
+                        'deleted' => __('klinica.audit_log.event_deleted'),
                     ]),
 
                 SelectFilter::make('subject_type')
-                    ->label('Resource')
+                    ->label(__('klinica.audit_log.filter_resource'))
                     ->options(static::subjectTypeLabels()),
 
                 Filter::make('today')
-                    ->label('Today only')
+                    ->label(__('klinica.audit_log.filter_today'))
                     ->query(fn (Builder $query): Builder => $query->whereDate('created_at', today())),
 
                 Filter::make('this_week')
-                    ->label('This week')
+                    ->label(__('klinica.audit_log.filter_this_week'))
                     ->query(fn (Builder $query): Builder => $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])),
             ])
             ->defaultSort('created_at', 'desc')

@@ -27,7 +27,7 @@ class ConfirmBookingAction
         $recipientEmail = $booking->patient?->email ?? $booking->guest_email;
 
         if ($recipientEmail) {
-            Mail::send(new BookingConfirmedMail($booking));
+            Mail::to($recipientEmail)->queue(new BookingConfirmedMail($booking, app()->getLocale(), tenancy()->tenant?->tenantBaseUrl() ?? ''));
         }
 
         return $booking;

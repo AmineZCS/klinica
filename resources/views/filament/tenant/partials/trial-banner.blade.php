@@ -13,11 +13,16 @@
         'bg-warning-100 text-warning-800' => ! $expired && $daysLeft > 3,
     ])>
         @if ($expired)
-            Your free trial has expired.
-            <a href="{{ \App\Filament\Tenant\Pages\BillingPage::getUrl() }}" class="underline font-semibold">Subscribe now</a> to continue using Klinica.
+            {{ __('klinica.trial.banner_expired') }}
+            <a href="{{ \App\Filament\Tenant\Pages\BillingPage::getUrl() }}" class="underline font-semibold">
+                {{ __('klinica.trial.banner_subscribe') }}
+            </a>
+            {{ __('klinica.trial.banner_continue') }}
         @else
-            You have <strong>{{ $daysLeft }} {{ Str::plural('day', $daysLeft) }}</strong> left in your free trial.
-            <a href="{{ \App\Filament\Tenant\Pages\BillingPage::getUrl() }}" class="underline font-semibold ml-1">Upgrade now &rarr;</a>
+            {!! __('klinica.trial.banner_days_left', ['days' => $daysLeft, 'word' => Str::plural('day', $daysLeft)]) !!}
+            <a href="{{ \App\Filament\Tenant\Pages\BillingPage::getUrl() }}" class="underline font-semibold ml-1">
+                {!! __('klinica.trial.banner_upgrade') !!}
+            </a>
         @endif
     </div>
 @endif

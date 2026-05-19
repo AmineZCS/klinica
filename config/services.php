@@ -37,6 +37,7 @@ return [
 
     'paddle' => [
         'api_key' => env('PADDLE_API_KEY'),
+        'client_token' => env('PADDLE_CLIENT_TOKEN'),
         'webhook_secret' => env('PADDLE_WEBHOOK_SECRET'),
         'sandbox' => env('PADDLE_SANDBOX', true),
         'price_starter' => env('PADDLE_PRICE_STARTER'),

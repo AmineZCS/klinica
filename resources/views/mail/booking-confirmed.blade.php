@@ -1,35 +1,34 @@
 <x-mail::message>
-# Your booking is confirmed!
+# {{ __('klinica.email.booking_confirmed_heading') }}
 
-Hi **{{ $patientName }}**,
+{{ __('klinica.email.greeting', ['name' => $patientName]) }}
 
-Great news! Your booking has been confirmed.
+{{ __('klinica.email.booking_confirmed_intro') }}
 
 <x-mail::panel>
 
-**Service:** {{ $booking->service?->name ?? 'N/A' }}
+**{{ __('klinica.email.label_service') }}:** {{ $booking->service?->name ?? 'N/A' }}
 
-**Date:** {{ $booking->start_at->format('l, F j, Y') }}
+**{{ __('klinica.email.label_date') }}:** {{ $booking->start_at->format('l, F j, Y') }}
 
-**Time:** {{ $booking->start_at->format('g:i A') }} – {{ $booking->end_at?->format('g:i A') }}
+**{{ __('klinica.email.label_time') }}:** {{ $booking->start_at->format('g:i A') }} – {{ $booking->end_at?->format('g:i A') }}
 
 @if($booking->employee)
-**Assigned to:** {{ $booking->employee->name }}
+**{{ __('klinica.email.label_assigned_to') }}:** {{ $booking->employee->name }}
 @endif
 
 </x-mail::panel>
 
-<x-mail::button :url="config('app.url')">
-Visit Our Website
+<x-mail::button :url="$tenantUrl">
+{{ __('klinica.email.booking_confirmed_cta') }}
 </x-mail::button>
 
 @if($booking->notes)
 > {{ $booking->notes }}
 @endif
 
-We look forward to seeing you. If you need to make any changes, please contact us as soon as possible.
+{{ __('klinica.email.booking_confirmed_outro') }}
 
-Thanks,
+{{ __('klinica.email.salutation') }}
 {{ config('app.name') }}
 </x-mail::message>
-

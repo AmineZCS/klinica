@@ -6,6 +6,7 @@ namespace App\Console\Commands;
 
 use App\Enums\TenantPlan;
 use App\Mail\TrialEndingReminderMail;
+use App\Models\ClinicSetting;
 use App\Models\Tenant;
 use Carbon\Carbon;
 use Illuminate\Console\Attributes\Description;
@@ -34,12 +35,23 @@ class SendTrialEndingReminders extends Command
         foreach ($tenants as $tenant) {
             $daysLeft = $tenant->trialDaysRemaining();
 
+            $locale = 'en';
+
+            try {
+                tenancy()->initialize($tenant);
+                $locale = ClinicSetting::current()->locale ?? 'en';
+                tenancy()->end();
+            } catch (\Throwable) {
+                // Tenant DB unavailable; fall back to English
+            }
+
             Mail::to((string) $tenant->owner_email)->queue(new TrialEndingReminderMail(
                 tenantName: $tenant->name ?? 'Your Clinic',
                 ownerName: $tenant->owner_name ?? 'there',
                 daysLeft: $daysLeft,
                 trialEndsAt: $tenant->trial_ends_at,
                 billingPageUrl: $tenant->billingPageUrl(),
+                locale: $locale,
             ));
 
             $tenant->forceFill([

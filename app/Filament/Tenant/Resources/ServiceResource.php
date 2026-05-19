@@ -32,6 +32,16 @@ class ServiceResource extends Resource
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-briefcase';
 
+    public static function getModelLabel(): string
+    {
+        return __('klinica.service.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('klinica.service.label_plural');
+    }
+
     public static function canAccess(): bool
     {
         $user = auth('tenant')->user();
@@ -44,22 +54,24 @@ class ServiceResource extends Resource
         return $schema->components([
             Section::make()->schema([
                 Grid::make(2)->schema([
-                    TextInput::make('name')->required()->maxLength(255)->columnSpanFull(),
-                    Textarea::make('description')->rows(3)->columnSpanFull(),
+                    TextInput::make('name')->label(__('klinica.service.field_name'))->required()->maxLength(255)->columnSpanFull(),
+                    Textarea::make('description')->label(__('klinica.service.field_description'))->rows(3)->columnSpanFull(),
                     TextInput::make('price')
+                        ->label(__('klinica.service.field_price'))
                         ->numeric()
                         ->prefix('€')
                         ->required()
                         ->minValue(0),
                     TextInput::make('duration_minutes')
+                        ->label(__('klinica.service.field_duration'))
                         ->numeric()
                         ->required()
                         ->minValue(5)
                         ->suffix('min'),
-                    ColorPicker::make('color')->nullable(),
-                    Toggle::make('is_active')->default(true)->columnSpanFull(),
+                    ColorPicker::make('color')->label(__('klinica.service.field_color'))->nullable(),
+                    Toggle::make('is_active')->label(__('klinica.common.is_active'))->default(true)->columnSpanFull(),
                     FileUpload::make('image_path')
-                        ->label('Service Image (3:2 ratio recommended — e.g. 900×600 px)')
+                        ->label(__('klinica.service.field_image'))
                         ->image()
                         ->disk('public')
                         ->directory('services')
@@ -91,15 +103,15 @@ class ServiceResource extends Resource
         return $table
             ->columns([
                 ImageColumn::make('image_path')
-                    ->label('Image')
+                    ->label(__('klinica.service.field_image_short'))
                     ->getStateUsing(fn (Service $record): ?string => $record->image_path ? klinica_asset($record->image_path) : null)
                     ->square()
                     ->toggleable(),
-                TextColumn::make('name')->searchable()->sortable(),
-                TextColumn::make('price')->money('EUR')->sortable(),
-                TextColumn::make('duration_minutes')->suffix(' min')->sortable(),
-                ColorColumn::make('color')->toggleable(),
-                IconColumn::make('is_active')->boolean()->sortable(),
+                TextColumn::make('name')->label(__('klinica.service.field_name'))->searchable()->sortable(),
+                TextColumn::make('price')->label(__('klinica.service.field_price'))->money('EUR')->sortable(),
+                TextColumn::make('duration_minutes')->label(__('klinica.service.field_duration'))->suffix(' min')->sortable(),
+                ColorColumn::make('color')->label(__('klinica.service.field_color'))->toggleable(),
+                IconColumn::make('is_active')->label(__('klinica.common.is_active'))->boolean()->sortable(),
             ])
             ->filters([
                 TernaryFilter::make('is_active'),
