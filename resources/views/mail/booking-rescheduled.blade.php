@@ -1,33 +1,32 @@
 <x-mail::message>
-# Your booking has been rescheduled
+# {{ __('klinica.email.booking_rescheduled_heading') }}
 
-Hi **{{ $patientName }}**,
+{{ __('klinica.email.greeting', ['name' => $patientName]) }}
 
-Your booking has been updated to a new date and time. Here are the new details:
+{{ __('klinica.email.booking_rescheduled_intro') }}
 
 <x-mail::panel>
 
-**Service:** {{ $booking->service?->name ?? 'N/A' }}
+**{{ __('klinica.email.label_service') }}:** {{ $booking->service?->name ?? 'N/A' }}
 
-**New Date:** {{ $booking->start_at->format('l, F j, Y') }}
+**{{ __('klinica.email.booking_rescheduled_label_new_date') }}:** {{ $booking->start_at->format('l, F j, Y') }}
 
-**New Time:** {{ $booking->start_at->format('g:i A') }} – {{ $booking->end_at?->format('g:i A') }}
+**{{ __('klinica.email.booking_rescheduled_label_new_time') }}:** {{ $booking->start_at->format('g:i A') }} – {{ $booking->end_at?->format('g:i A') }}
 
 @if($booking->employee)
-**Assigned to:** {{ $booking->employee->name }}
+**{{ __('klinica.email.label_assigned_to') }}:** {{ $booking->employee->name }}
 @endif
 
 </x-mail::panel>
 
-<x-mail::button :url="config('app.url')">
-Visit Our Website
+<x-mail::button :url="$tenantUrl">
+{{ __('klinica.email.booking_rescheduled_cta') }}
 </x-mail::button>
 
-**Previous appointment was:** {{ $previousStartAt->format('l, F j, Y') }} at {{ $previousStartAt->format('g:i A') }}
+**{{ __('klinica.email.booking_rescheduled_previous', ['date' => $previousStartAt->format('l, F j, Y'), 'time' => $previousStartAt->format('g:i A')]) }}**
 
-If you did not expect this change or have questions, please contact us.
+{{ __('klinica.email.booking_rescheduled_outro') }}
 
-Thanks,
+{{ __('klinica.email.salutation') }}
 {{ config('app.name') }}
 </x-mail::message>
-

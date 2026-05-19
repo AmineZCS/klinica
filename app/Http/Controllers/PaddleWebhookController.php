@@ -83,6 +83,7 @@ class PaddleWebhookController extends Controller
             'plan' => $plan,
             'plan_tier' => $plan->tierKey(),
             'plan_expires_at' => $expiresAt,
+            'plan_cancels_at' => null,
         ]);
     }
 
@@ -97,7 +98,10 @@ class PaddleWebhookController extends Controller
             return;
         }
 
-        $tenant->update(['plan' => TenantPlan::Cancelled]);
+        $tenant->update([
+            'plan' => TenantPlan::Cancelled,
+            'plan_cancels_at' => null,
+        ]);
     }
 
     /**

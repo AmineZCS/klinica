@@ -23,12 +23,15 @@ class TrialEndingReminderMail extends Mailable implements ShouldQueue
         public readonly int $daysLeft,
         public readonly ?CarbonInterface $trialEndsAt,
         public readonly string $billingPageUrl,
-    ) {}
+        string $locale = 'en',
+    ) {
+        $this->locale($locale);
+    }
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Your Klinica trial is ending soon',
+            subject: __('klinica.email.trial_ending_subject'),
             tags: ['trial-ending-reminder'],
         );
     }

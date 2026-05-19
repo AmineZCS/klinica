@@ -32,7 +32,7 @@ class CancelBookingAction
         $recipientEmail = $booking->patient?->email ?? $booking->guest_email;
 
         if ($recipientEmail) {
-            Mail::send(new BookingCancelledMail($booking));
+            Mail::send(new BookingCancelledMail($booking, app()->getLocale(), tenancy()->tenant?->tenantBaseUrl() ?? ''));
         }
 
         return $booking;

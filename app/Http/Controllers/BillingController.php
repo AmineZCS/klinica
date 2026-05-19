@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Contracts\PaymentGatewayContract;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 class BillingController extends Controller
 {
@@ -39,7 +41,10 @@ class BillingController extends Controller
             return back()->with('success', 'Plan change requested successfully. It should reflect shortly after the update is confirmed.');
         }
 
-        $successUrl = route('billing.return', ['tenant' => $tenant->id]);
+        // Use APP_URL (central domain) explicitly — route() would use the current
+        // tenant subdomain as base, which Paddle won't accept as an approved checkout URL.
+        $successUrl = rtrim((string) config('app.url'), '/')
+            .'/billing/return?tenant='.urlencode((string) $tenant->id);
 
         $checkoutUrl = $gateway->createCheckoutUrl(
             priceId: $priceId,
@@ -54,5 +59,37 @@ class BillingController extends Controller
         }
 
         return redirect()->away($checkoutUrl);
+    }
+
+    public function cancel(Request $request): JsonResponse
+    {
+        $tenant = tenancy()->tenant;
+
+        if (! $tenant) {
+            abort(403);
+        }
+
+        if (! $tenant->isOnActivePlan() || empty($tenant->paddle_subscription_id)) {
+            return response()->json(['error' => 'No active subscription to cancel.'], 422);
+        }
+
+        $reason = $request->input('reason');
+
+        $gateway = app(PaymentGatewayContract::class);
+        $cancelled = $gateway->cancelSubscription((string) $tenant->paddle_subscription_id);
+
+        if (! $cancelled) {
+            return response()->json(['error' => 'Unable to cancel at this time. Please try again or contact support.'], 500);
+        }
+
+        $tenant->update([
+            'cancellation_reason' => $reason,
+            'plan_cancels_at' => $tenant->plan_expires_at,
+        ]);
+
+        return response()->json([
+            'ok' => true,
+            'access_until' => $tenant->plan_expires_at?->format('M j, Y'),
+        ]);
     }
 }

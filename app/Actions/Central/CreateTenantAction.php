@@ -6,6 +6,7 @@ namespace App\Actions\Central;
 
 use App\Enums\TenantPlan;
 use App\Mail\TenantWelcomeMail;
+use App\Models\ClinicSetting;
 use App\Models\Tenant;
 use App\Models\User;
 use Carbon\Carbon;
@@ -20,7 +21,7 @@ class CreateTenantAction
     /**
      * Create a new tenant, run migrations/seeding, then optionally create an admin user.
      *
-     * @param  array{name: string, subdomain: string, admin_name?: string, admin_email?: string, admin_password?: string, plan_tier?: string}  $data
+     * @param  array{name: string, subdomain: string, admin_name?: string, admin_email?: string, admin_password?: string, plan_tier?: string, locale?: string}  $data
      */
     public function execute(array $data): Tenant
     {
@@ -60,6 +61,10 @@ class CreateTenantAction
 
                     $adminRole = Role::where('name', 'admin')->where('guard_name', 'tenant')->firstOrFail();
                     $admin->assignRole($adminRole);
+
+                    if (isset($data['locale'])) {
+                        ClinicSetting::current()->update(['locale' => $data['locale']]);
+                    }
                 } finally {
                     tenancy()->end();
                 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Providers\Filament;
@@ -9,6 +10,7 @@ use App\Filament\Tenant\Widgets\PageVisitsWidget;
 use App\Filament\Tenant\Widgets\RevenueChartWidget;
 use App\Http\Middleware\EnforceTenantSubscription;
 use App\Http\Middleware\SetTenantLocale;
+use App\Models\ClinicSetting;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -19,6 +21,7 @@ use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
+use Illuminate\Contracts\View\View;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
@@ -49,6 +52,30 @@ class TenantPanelProvider extends PanelProvider
             ->renderHook(
                 PanelsRenderHook::BODY_START,
                 fn () => view('filament.tenant.partials.trial-banner'),
+            )
+            ->renderHook(
+                PanelsRenderHook::BODY_START,
+                function (): View|string {
+                    if (! auth('tenant')->check()) {
+                        return '';
+                    }
+
+                    if (ClinicSetting::current()->onboarding_completed_at !== null) {
+                        return '';
+                    }
+
+                    return view('filament.tenant.partials.onboarding-tour-mount');
+                },
+            )
+            ->renderHook(
+                PanelsRenderHook::TOPBAR_END,
+                function (): View|string {
+                    if (! auth('tenant')->check()) {
+                        return '';
+                    }
+
+                    return view('filament.tenant.partials.topbar-clinic-link');
+                },
             )
             ->discoverResources(in: app_path('Filament/Tenant/Resources'), for: 'App\Filament\Tenant\Resources')
             ->discoverPages(in: app_path('Filament/Tenant/Pages'), for: 'App\Filament\Tenant\Pages')

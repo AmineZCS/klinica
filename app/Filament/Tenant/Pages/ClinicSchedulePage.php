@@ -19,13 +19,24 @@ use Filament\Schemas\Schema;
 
 class ClinicSchedulePage extends Page
 {
-    protected static string|\UnitEnum|null $navigationGroup = 'Settings';
+    protected static string|\UnitEnum|null $navigationGroup = null;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-clock';
 
-    protected static ?string $navigationLabel = 'Working Hours';
+    public function getTitle(): string
+    {
+        return __('klinica.schedule.title');
+    }
 
-    protected static ?string $title = 'Working Hours & Scheduling';
+    public static function getNavigationLabel(): string
+    {
+        return __('klinica.schedule.nav_label');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('klinica.settings.nav_group');
+    }
 
     public static function canAccess(): bool
     {
@@ -128,13 +139,13 @@ class ClinicSchedulePage extends Page
 
     /** @var array<int, array{int, string, string}> */
     private const DAYS = [
-        [0, 'sun', 'Sunday'],
-        [1, 'mon', 'Monday'],
-        [2, 'tue', 'Tuesday'],
-        [3, 'wed', 'Wednesday'],
-        [4, 'thu', 'Thursday'],
-        [5, 'fri', 'Friday'],
-        [6, 'sat', 'Saturday'],
+        [0, 'sun', 'klinica.schedule.day_sun'],
+        [1, 'mon', 'klinica.schedule.day_mon'],
+        [2, 'tue', 'klinica.schedule.day_tue'],
+        [3, 'wed', 'klinica.schedule.day_wed'],
+        [4, 'thu', 'klinica.schedule.day_thu'],
+        [5, 'fri', 'klinica.schedule.day_fri'],
+        [6, 'sat', 'klinica.schedule.day_sat'],
     ];
 
     public function mount(): void
@@ -163,40 +174,39 @@ class ClinicSchedulePage extends Page
     {
         $rows = [];
 
-        foreach (self::DAYS as [$idx, $prefix, $label]) {
+        foreach (self::DAYS as [$idx, $prefix, $labelKey]) {
             $rows[] = Grid::make(['default' => 1, 'sm' => 4])->schema([
                 Toggle::make("{$prefix}_open")
-                    ->label($label)
+                    ->label(__($labelKey))
                     ->live()
                     ->inline(false),
                 TimePicker::make("{$prefix}_from")
-                    ->label('Opens at')
+                    ->label(__('klinica.schedule.label_opens_at'))
                     ->seconds(false)
                     ->visible(fn (Get $get): bool => (bool) $get("{$prefix}_open"))
                     ->required(fn (Get $get): bool => (bool) $get("{$prefix}_open")),
                 TimePicker::make("{$prefix}_to")
-                    ->label('Closes at')
+                    ->label(__('klinica.schedule.label_closes_at'))
                     ->seconds(false)
                     ->visible(fn (Get $get): bool => (bool) $get("{$prefix}_open"))
                     ->required(fn (Get $get): bool => (bool) $get("{$prefix}_open")),
                 Toggle::make("{$prefix}_has_lunch")
-                    ->label('Lunch break')
-                    ->helperText('Block a mid-day break when no bookings are accepted.')
+                    ->label(__('klinica.schedule.label_lunch'))
+                    ->helperText(__('klinica.schedule.label_lunch_helper'))
                     ->live()
                     ->inline(false)
                     ->visible(fn (Get $get): bool => (bool) $get("{$prefix}_open")),
             ]);
 
-            // Lunch break time row — visible only when lunch is enabled
             $rows[] = Grid::make(['default' => 1, 'sm' => 4])->schema([
                 TimePicker::make("{$prefix}_lunch_from")
-                    ->label('Lunch from')
+                    ->label(__('klinica.schedule.label_lunch_from'))
                     ->seconds(false)
                     ->visible(fn (Get $get): bool => (bool) $get("{$prefix}_open") && (bool) $get("{$prefix}_has_lunch"))
                     ->required(fn (Get $get): bool => (bool) $get("{$prefix}_open") && (bool) $get("{$prefix}_has_lunch"))
                     ->columnStart(2),
                 TimePicker::make("{$prefix}_lunch_to")
-                    ->label('Lunch until')
+                    ->label(__('klinica.schedule.label_lunch_until'))
                     ->seconds(false)
                     ->visible(fn (Get $get): bool => (bool) $get("{$prefix}_open") && (bool) $get("{$prefix}_has_lunch"))
                     ->required(fn (Get $get): bool => (bool) $get("{$prefix}_open") && (bool) $get("{$prefix}_has_lunch")),
@@ -204,25 +214,25 @@ class ClinicSchedulePage extends Page
         }
 
         return $schema->components([
-            Section::make('Weekly Schedule')
-                ->description('Booking slots will only be offered during open hours. Each day can have its own hours and an optional lunch break.')
+            Section::make(__('klinica.schedule.section_weekly'))
+                ->description(__('klinica.schedule.section_weekly_desc'))
                 ->schema($rows),
 
-            Section::make('Scheduling Rules')
-                ->description('These settings apply globally to all services and employees.')
+            Section::make(__('klinica.schedule.section_rules'))
+                ->description(__('klinica.schedule.section_rules_desc'))
                 ->schema([
                     Grid::make(2)->schema([
                         TextInput::make('session_interval_minutes')
-                            ->label('Buffer between appointments (minutes)')
-                            ->helperText('Time left between back-to-back sessions for preparation, cleaning, or admin work. E.g. set 10 mins so a 30-min service occupies a 40-min slot.')
+                            ->label(__('klinica.schedule.field_interval'))
+                            ->helperText(__('klinica.schedule.field_interval_helper'))
                             ->numeric()
                             ->minValue(0)
                             ->maxValue(120)
                             ->suffix('min')
                             ->required(),
                         TextInput::make('max_sessions_per_slot')
-                            ->label('Maximum bookings per time slot')
-                            ->helperText('How many patients can book the same time slot simultaneously. Set to 1 for a standard single-appointment clinic. Increase if multiple rooms or staff can serve clients in parallel.')
+                            ->label(__('klinica.schedule.field_max_sessions'))
+                            ->helperText(__('klinica.schedule.field_max_sessions_helper'))
                             ->numeric()
                             ->minValue(1)
                             ->maxValue(50)
@@ -236,7 +246,7 @@ class ClinicSchedulePage extends Page
     {
         return [
             Action::make('save')
-                ->label('Save Schedule')
+                ->label(__('klinica.schedule.save_action'))
                 ->icon('heroicon-o-check')
                 ->action('save'),
         ];
@@ -261,7 +271,7 @@ class ClinicSchedulePage extends Page
         ]);
 
         Notification::make()
-            ->title('Schedule and scheduling rules saved.')
+            ->title(__('klinica.schedule.saved'))
             ->success()
             ->send();
     }

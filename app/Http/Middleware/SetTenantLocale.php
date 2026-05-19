@@ -16,7 +16,7 @@ class SetTenantLocale
         try {
             $locale = ClinicSetting::current()->locale;
 
-            if (in_array($locale, ['en', 'fr', 'de'], strict: true)) {
+            if (in_array($locale, ['en', 'fr', 'de', 'es'], strict: true)) {
                 app()->setLocale($locale);
             }
         } catch (\Throwable) {

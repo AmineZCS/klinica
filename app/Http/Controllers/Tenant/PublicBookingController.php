@@ -47,9 +47,10 @@ class PublicBookingController extends Controller
             'service_id' => ['required', 'integer', 'exists:services,id'],
             'employee_id' => ['nullable', 'integer', 'exists:users,id'],
             'start_at' => ['required', 'date'],
-            'guest_name' => ['nullable', 'string', 'max:255'],
-            'guest_email' => ['nullable', 'email', 'max:255'],
-            'guest_phone' => ['nullable', 'string', 'max:30'],
+            'guest_name' => ['required_without:patient_id', 'string', 'max:255'],
+            'guest_email' => ['required_without:patient_id', 'email', 'max:255'],
+            'guest_phone' => ['required_without:patient_id', 'string', 'max:30'],
+            'patient_id' => ['nullable', 'integer', 'exists:patients,id'],
         ]);
 
         $this->createBooking->execute($validated);

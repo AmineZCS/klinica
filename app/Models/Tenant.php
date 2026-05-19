@@ -20,6 +20,7 @@ class Tenant extends BaseTenant implements TenantWithDatabase
         'trial_ends_at' => 'datetime',
         'trial_reminder_sent_at' => 'datetime',
         'plan_expires_at' => 'datetime',
+        'plan_cancels_at' => 'datetime',
         'plan' => TenantPlan::class,
         'is_active' => 'boolean',
     ];
@@ -100,6 +101,8 @@ class Tenant extends BaseTenant implements TenantWithDatabase
             'plan_expires_at',
             'paddle_customer_id',
             'paddle_subscription_id',
+            'plan_cancels_at',
+            'cancellation_reason',
             'discount_code',
         ];
     }

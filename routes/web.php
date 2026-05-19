@@ -57,6 +57,27 @@ Route::get('/billing/return', function (Request $request) {
     return redirect()->away($tenant->billingPageUrl().'?checkout=complete');
 })->name('billing.return');
 
+// Billing plan status — polled by the billing page JS after checkout completes.
+Route::get('/billing/plan-status', function () {
+    $tenant = tenancy()->tenant;
+
+    if (! $tenant) {
+        abort(403);
+    }
+
+    $tenant->refresh();
+
+    return response()->json([
+        'is_active' => $tenant->isOnActivePlan(),
+        'plan' => $tenant->plan?->value ?? 'trial',
+    ]);
+})->middleware(['auth:tenant'])->name('billing.plan-status');
+
+// Cancel active subscription — cancels at end of current billing period.
+Route::post('/billing/cancel', [BillingController::class, 'cancel'])
+    ->middleware(['auth:tenant'])
+    ->name('billing.cancel');
+
 // Paddle webhooks (CSRF excluded in bootstrap/app.php)
 Route::post('/webhooks/paddle', [PaddleWebhookController::class, 'handle'])->name('webhooks.paddle');
 

@@ -41,7 +41,7 @@ class EditBooking extends EditRecord
             $recipientEmail = $record->patient?->email ?? $record->guest_email;
 
             if ($recipientEmail) {
-                Mail::send(new BookingRescheduledMail($record, $previousStartAt));
+                Mail::send(new BookingRescheduledMail($record, $previousStartAt, app()->getLocale(), tenancy()->tenant?->tenantBaseUrl() ?? ''));
             }
         }
     }

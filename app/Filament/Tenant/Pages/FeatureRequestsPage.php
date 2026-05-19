@@ -22,17 +22,25 @@ class FeatureRequestsPage extends Page implements HasTable
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-light-bulb';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Settings';
+    protected static string|\UnitEnum|null $navigationGroup = null;
 
     protected static ?int $navigationSort = 999;
 
-    protected static ?string $title = 'Feature Requests';
+    public function getTitle(): string
+    {
+        return __('klinica.feature_requests.title');
+    }
 
     protected string $view = 'filament.tenant.pages.feature-requests-page';
 
     public static function getNavigationLabel(): string
     {
-        return 'Feature Requests';
+        return __('klinica.feature_requests.nav_label');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('klinica.settings.nav_group');
     }
 
     public static function canAccess(): bool
@@ -44,26 +52,26 @@ class FeatureRequestsPage extends Page implements HasTable
     {
         return [
             Action::make('request_feature')
-                ->label('Request New Feature')
+                ->label(__('klinica.feature_requests.action_new'))
                 ->icon('heroicon-o-plus-circle')
                 ->color('primary')
                 ->schema([
                     TextInput::make('title')
-                        ->label('Feature title')
+                        ->label(__('klinica.feature_requests.field_title'))
                         ->required()
                         ->maxLength(255)
-                        ->placeholder('Example: Recurring appointment templates'),
+                        ->placeholder(__('klinica.feature_requests.field_title_placeholder')),
                     Select::make('priority')
-                        ->label('Priority')
+                        ->label(__('klinica.feature_requests.field_priority'))
                         ->options(FeatureRequest::priorityOptions())
                         ->default(FeatureRequest::PRIORITY_MEDIUM)
                         ->required(),
                     Textarea::make('description')
-                        ->label('Why is this useful?')
+                        ->label(__('klinica.feature_requests.field_description'))
                         ->rows(5)
                         ->required()
                         ->maxLength(3000)
-                        ->placeholder('Describe the workflow, pain point, and expected behavior.'),
+                        ->placeholder(__('klinica.feature_requests.field_description_placeholder')),
                 ])
                 ->action(function (array $data): void {
                     $tenant = tenancy()->tenant;
@@ -71,7 +79,7 @@ class FeatureRequestsPage extends Page implements HasTable
 
                     if ($tenant === null || $user === null) {
                         Notification::make()
-                            ->title('Unable to submit request.')
+                            ->title(__('klinica.feature_requests.notification_error'))
                             ->danger()
                             ->send();
 
@@ -89,7 +97,7 @@ class FeatureRequestsPage extends Page implements HasTable
                     ]);
 
                     Notification::make()
-                        ->title('Feature request sent successfully.')
+                        ->title(__('klinica.feature_requests.notification_success'))
                         ->success()
                         ->send();
                 }),
@@ -130,11 +138,11 @@ class FeatureRequestsPage extends Page implements HasTable
                     })
                     ->formatStateUsing(fn (string $state): string => FeatureRequest::statusOptions()[$state] ?? ucfirst($state)),
                 TextColumn::make('created_at')
-                    ->label('Requested')
+                    ->label(__('klinica.feature_requests.col_requested'))
                     ->dateTime('d M Y, H:i')
                     ->sortable(),
                 TextColumn::make('admin_notes')
-                    ->label('Admin notes')
+                    ->label(__('klinica.feature_requests.col_admin_notes'))
                     ->placeholder('—')
                     ->limit(70)
                     ->toggleable(),

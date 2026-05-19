@@ -456,7 +456,7 @@
                         <label class="plan-card selected" id="card-starter" style="cursor:pointer;border:2px solid var(--teal);border-radius:12px;padding:20px;background:#f0fafb;display:block">
                             <input type="radio" name="_plan_radio" value="starter" style="display:none" checked>
                             <div style="font-weight:700;font-size:16px;color:var(--teal)">Starter</div>
-                            <div style="font-size:22px;font-weight:800;margin:4px 0"><sup style="font-size:14px">€</sup>19<span style="font-size:12px;font-weight:400;color:#888">/mo</span></div>
+                            <div style="font-size:22px;font-weight:800;margin:4px 0"><sup style="font-size:14px">€</sup>29<span style="font-size:12px;font-weight:400;color:#888">/mo</span></div>
                             <ul style="margin:12px 0 0;padding:0;list-style:none;font-size:13px;color:#555;line-height:1.8">
                                 <li>✓ Up to 20 patients</li>
                                 <li>✓ 1 employee</li>
@@ -524,6 +524,24 @@
                             <div class="field-error">{{ $message }}</div>
                         @enderror
                         <div class="field-hint">Lowercase letters, numbers and hyphens only.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="locale">Dashboard language <span class="required">*</span></label>
+                        <select
+                            class="form-input {{ $errors->has('locale') ? 'is-error' : '' }}"
+                            id="locale" name="locale"
+                            style="appearance:auto;"
+                        >
+                            <option value="en" {{ old('locale', 'en') === 'en' ? 'selected' : '' }}>🇬🇧 English</option>
+                            <option value="fr" {{ old('locale') === 'fr' ? 'selected' : '' }}>🇫🇷 Français</option>
+                            <option value="de" {{ old('locale') === 'de' ? 'selected' : '' }}>🇩🇪 Deutsch</option>
+                            <option value="es" {{ old('locale') === 'es' ? 'selected' : '' }}>🇪🇸 Español</option>
+                        </select>
+                        <div class="field-hint">Sets the language for your dashboard and public booking page.</div>
+                        @error('locale')
+                            <div class="field-error">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="btn-row" style="justify-content:flex-end;">
@@ -817,7 +835,7 @@
                 const sub = document.getElementById('subdomain').value.trim();
                 const plan = document.getElementById('selectedPlan').value;
                 document.getElementById('review-plan').textContent =
-                    plan === 'pro' ? 'Pro - €49/mo' : 'Starter - €19/mo';
+                    plan === 'pro' ? 'Pro - €49/mo' : 'Starter - €29/mo';
                 document.getElementById('review-clinic-name').textContent =
                     document.getElementById('clinic_name').value.trim() || 'Not set';
                 document.getElementById('review-url').textContent =

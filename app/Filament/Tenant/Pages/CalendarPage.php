@@ -25,6 +25,6 @@ class CalendarPage extends Page
 
     public static function getNavigationLabel(): string
     {
-        return 'Calendar';
+        return __('klinica.calendar.nav_label');
     }
 }

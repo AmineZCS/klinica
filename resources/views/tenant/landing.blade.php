@@ -85,7 +85,7 @@
         }
         @media (max-width: 767px) { .nav-inner { padding: 0 20px; } }
         .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
-        .nav-logo-img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; }
+        .nav-logo-img { height: 40px; max-width: 180px; border-radius: 8px; object-fit: contain; }
         .nav-logo-placeholder {
             width: 40px; height: 40px; border-radius: 8px;
             background: var(--primary); color: #fff;
@@ -355,13 +355,13 @@
                 <span class="nav-name">{{ $settings->clinic_name }}</span>
             </a>
             <div class="nav-links">
-                <a href="#services">Services</a>
+                <a href="#services">{{ __('klinica.landing.nav_services') }}</a>
                 @if ($settings->online_booking_enabled)
-                    <a href="#booking">Booking</a>
+                    <a href="#booking">{{ __('klinica.landing.nav_booking') }}</a>
                 @endif
-                <a href="#contact">Contact</a>
+                <a href="#contact">{{ __('klinica.landing.nav_contact') }}</a>
                 @if ($settings->online_booking_enabled)
-                    <a href="#booking" class="nav-book-btn">Book now</a>
+                    <a href="#booking" class="nav-book-btn">{{ __('klinica.landing.nav_book_now') }}</a>
                 @endif
             </div>
         </div>
@@ -373,24 +373,24 @@
             <div>
                 <div class="hero-eyebrow">{{ $settings->clinic_name }}</div>
                 <h1 class="serif">
-                    <em>{{ $settings->hero_title ?: ($settings->tagline ?: 'Care you can trust.') }}</em>
+                    <em>{{ $settings->hero_title ?: ($settings->tagline ?: __('klinica.landing.hero_default_title')) }}</em>
                 </h1>
                 @if ($settings->hero_subtitle || $settings->tagline)
                     <p class="hero-tagline">{{ $settings->hero_subtitle ?: $settings->tagline }}</p>
                 @endif
                 <div class="hero-actions">
                     @if ($settings->online_booking_enabled)
-                        <a href="#booking" class="btn-primary">{{ $settings->hero_cta_text ?: 'Book an appointment' }}</a>
+                        <a href="#booking" class="btn-primary">{{ $settings->hero_cta_text ?: __('klinica.landing.hero_book_appointment') }}</a>
                     @endif
                     <a href="#services" class="btn-ghost">
-                        Our services
+                        {{ __('klinica.landing.hero_our_services') }}
                         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                     </a>
                 </div>
             </div>
             <div>
                 <div class="hero-card" aria-hidden="true">
-                    <div class="hero-card-label">Our services</div>
+                    <div class="hero-card-label">{{ __('klinica.landing.hero_card_label') }}</div>
                     @foreach ($services->take(3) as $service)
                         <div class="hc-service">
                             <div class="hc-dot" style="background: {{ $service->color ?: '#E1F079' }};"></div>
@@ -405,7 +405,7 @@
                         <div class="hc-service">
                             <div class="hc-dot" style="background:#E1F079;"></div>
                             <div style="flex:1">
-                                <div class="hc-name">General Consultation</div>
+                                <div class="hc-name">{{ __('klinica.landing.general_consultation') }}</div>
                                 <div class="hc-meta">45 min</div>
                             </div>
                             <span class="hc-price">{{ $settings->currency ?? '€' }}50</span>
@@ -420,10 +420,10 @@
     @if ($settings->online_booking_enabled)
         <div class="quickbook">
             <form class="quickbook-inner" method="GET" action="{{ route('book.create') }}">
-                <span class="quickbook-label">Book quickly:</span>
+                <span class="quickbook-label">{{ __('klinica.landing.quickbook_label') }}</span>
                 <div class="qb-field">
-                    <select name="service_id" class="qb-input" aria-label="Select a service">
-                        <option value="">Choose a service…</option>
+                    <select name="service_id" class="qb-input" aria-label="{{ __('klinica.landing.quickbook_choose_service') }}">
+                        <option value="">{{ __('klinica.landing.quickbook_choose_service') }}</option>
                         @foreach ($services as $service)
                             <option value="{{ $service->id }}">{{ $service->name }} — {{ $service->duration_minutes }} min</option>
                         @endforeach
@@ -439,7 +439,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                     </span>
                 </div>
-                <button type="submit" class="quickbook-btn">Check availability →</button>
+                <button type="submit" class="quickbook-btn">{{ __('klinica.landing.quickbook_check') }}</button>
             </form>
         </div>
     @endif
@@ -447,12 +447,12 @@
     {{-- SERVICES --}}
     <section class="section services-bg" id="services" aria-label="Services">
         <div class="container">
-            <div class="section-label">What we offer</div>
-            <h2 class="section-heading serif">Our services</h2>
+            <div class="section-label">{{ __('klinica.landing.services_label') }}</div>
+            <h2 class="section-heading serif">{{ __('klinica.landing.services_heading') }}</h2>
             @if ($services->isEmpty())
-                <p class="section-sub">We offer a range of personalised healthcare services. Contact us to learn more.</p>
+                <p class="section-sub">{{ __('klinica.landing.services_empty_desc') }}</p>
             @else
-                <p class="section-sub">Choose from {{ $services->count() }} specialist {{ Str::plural('service', $services->count()) }} designed around your wellbeing.</p>
+                <p class="section-sub">{{ __('klinica.landing.services_count', ['count' => $services->count(), 'word' => trans_choice('klinica.landing.services_word', $services->count())]) }}</p>
                 <div class="services-grid" role="list">
                     @foreach ($services as $service)
                         <article class="service-card" role="listitem">
@@ -467,7 +467,7 @@
                             <div class="service-card-body">
                                 <div class="service-color-dot" style="background: {{ $service->color ?: '#2F8082' }};"></div>
                                 <h3 class="service-name serif">{{ $service->name }}</h3>
-                                <p class="service-desc">{{ $service->description ?: 'Professional care tailored to your needs.' }}</p>
+                                <p class="service-desc">{{ $service->description ?: __('klinica.landing.service_desc_default') }}</p>
                                 <div class="service-meta">
                                     <span class="service-duration">
                                         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
@@ -479,7 +479,7 @@
                                 </div>
                                 @if ($settings->online_booking_enabled)
                                     <a href="{{ route('book.create', ['service_id' => $service->id]) }}" class="service-book-link">
-                                        Book this service &rarr;
+                                        {{ __('klinica.landing.service_book_link') }}
                                     </a>
                                 @endif
                             </div>
@@ -496,19 +496,19 @@
             <div class="container">
                 <div class="booking-inner">
                     <div>
-                        <div class="section-label">Book online</div>
-                        <div class="booking-info-title serif">Schedule your visit</div>
-                        <p class="booking-info-text">Book your appointment in minutes — available 24/7. We'll confirm your slot by email.</p>
+                        <div class="section-label">{{ __('klinica.landing.booking_label') }}</div>
+                        <div class="booking-info-title serif">{{ __('klinica.landing.booking_title') }}</div>
+                        <p class="booking-info-text">{{ __('klinica.landing.booking_text') }}</p>
                         <ul class="booking-bullets">
-                            <li>Instant confirmation</li>
-                            <li>No account required — just your name and email</li>
-                            <li>Free cancellation up to 24 hours before</li>
-                            <li>Choose your preferred service and time</li>
+                            <li>{{ __('klinica.landing.booking_bullet_1') }}</li>
+                            <li>{{ __('klinica.landing.booking_bullet_2') }}</li>
+                            <li>{{ __('klinica.landing.booking_bullet_3') }}</li>
+                            <li>{{ __('klinica.landing.booking_bullet_4') }}</li>
                         </ul>
                     </div>
                     <div>
                         <div class="booking-form-wrap">
-                            <h3 class="serif" style="font-size:22px;font-weight:300;color:var(--navy);margin-bottom:24px">New appointment</h3>
+                            <h3 class="serif" style="font-size:22px;font-weight:300;color:var(--navy);margin-bottom:24px">{{ __('klinica.landing.form_title') }}</h3>
 
                             @if (session('success'))
                                 <div class="alert-success" role="alert"><span>✓</span><span>{{ session('success') }}</span></div>
@@ -525,10 +525,10 @@
                             <form method="POST" action="{{ route('book.store') }}">
                                 @csrf
                                 <div class="form-group">
-                                    <label class="form-label" for="lb_service">Service *</label>
+                                    <label class="form-label" for="lb_service">{{ __('klinica.landing.form_service') }}</label>
                                     <div class="form-field-wrap">
                                         <select class="form-select" id="lb_service" name="service_id" required>
-                                            <option value="">— Select a service —</option>
+                                            <option value="">{{ __('klinica.landing.form_service_placeholder') }}</option>
                                             @foreach ($services as $service)
                                                 <option value="{{ $service->id }}" @selected(old('service_id') == $service->id)>
                                                     {{ $service->name }} ({{ $service->duration_minutes }} min{{ $service->price > 0 ? ' · '.($settings->currency ?? '€').number_format((float) $service->price, 0) : '' }})
@@ -539,7 +539,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label" for="lb_date">Preferred date *</label>
+                                    <label class="form-label" for="lb_date">{{ __('klinica.landing.form_date') }}</label>
                                     <div class="form-field-wrap">
                                         <input class="form-input" type="date" id="lb_date" name="date"
                                             value="{{ old('date', now()->toDateString()) }}"
@@ -549,26 +549,25 @@
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label class="form-label" for="lb_name">Your name</label>
+                                        <label class="form-label" for="lb_name">{{ __('klinica.landing.form_name') }}</label>
                                         <input class="form-input" type="text" id="lb_name" name="guest_name"
                                             value="{{ old('guest_name') }}" placeholder="Jane Smith">
                                     </div>
                                     <div class="form-group">
-                                        <label class="form-label" for="lb_phone">Phone</label>
+                                        <label class="form-label" for="lb_phone">{{ __('klinica.landing.form_phone') }}</label>
                                         <input class="form-input" type="tel" id="lb_phone" name="guest_phone"
                                             value="{{ old('guest_phone') }}" placeholder="+1 555 0100">
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label" for="lb_email">Email address</label>
+                                    <label class="form-label" for="lb_email">{{ __('klinica.landing.form_email') }}</label>
                                     <input class="form-input" type="email" id="lb_email" name="guest_email"
                                         value="{{ old('guest_email') }}" placeholder="jane@example.com">
                                 </div>
                                 <p style="font-size:13px;color:var(--taupe);margin-bottom:16px;font-weight:300">
-                                    For full slot selection, use the
-                                    <a href="{{ route('book.create') }}" style="color:var(--secondary)">booking page</a>.
+                                    {!! __('klinica.landing.form_hint', ['link' => '<a href="'.route('book.create').'" style="color:var(--secondary)">'.__('klinica.landing.form_hint_link').'</a>']) !!}
                                 </p>
-                                <button type="submit" class="form-submit">Request appointment →</button>
+                                <button type="submit" class="form-submit">{{ __('klinica.landing.form_submit') }}</button>
                             </form>
                         </div>
                     </div>
@@ -581,16 +580,16 @@
     @if ($settings->contact_phone || $settings->contact_email || $settings->contact_address)
         <section class="section contact-section" id="contact" aria-label="Contact information">
             <div class="container">
-                <div class="section-label">Find us</div>
-                <h2 class="section-heading serif">Get in touch</h2>
-                <p class="section-sub">We're here to help. Reach out any time.</p>
+                <div class="section-label">{{ __('klinica.landing.contact_label') }}</div>
+                <h2 class="section-heading serif">{{ __('klinica.landing.contact_heading') }}</h2>
+                <p class="section-sub">{{ __('klinica.landing.contact_sub') }}</p>
                 <div class="contact-grid">
                     @if ($settings->contact_phone)
                         <div class="contact-item">
                             <div class="contact-icon" aria-hidden="true">
                                 <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.23h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.8a16 16 0 0 0 6.29 6.29l.95-.96a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                             </div>
-                            <div class="contact-label">Phone</div>
+                            <div class="contact-label">{{ __('klinica.landing.contact_phone') }}</div>
                             <div class="contact-value">
                                 <a href="tel:{{ preg_replace('/[^+\d]/', '', $settings->contact_phone) }}">{{ $settings->contact_phone }}</a>
                             </div>
@@ -601,7 +600,7 @@
                             <div class="contact-icon" aria-hidden="true">
                                 <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                             </div>
-                            <div class="contact-label">Email</div>
+                            <div class="contact-label">{{ __('klinica.landing.contact_email') }}</div>
                             <div class="contact-value">
                                 <a href="mailto:{{ $settings->contact_email }}">{{ $settings->contact_email }}</a>
                             </div>
@@ -612,7 +611,7 @@
                             <div class="contact-icon" aria-hidden="true">
                                 <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                             </div>
-                            <div class="contact-label">Address</div>
+                            <div class="contact-label">{{ __('klinica.landing.contact_address') }}</div>
                             <div class="contact-value">{{ $settings->contact_address }}</div>
                         </div>
                     @endif
@@ -627,7 +626,7 @@
         @if ($settings->tagline)
             <div class="footer-tagline">{{ $settings->tagline }}</div>
         @endif
-        <div class="footer-powered">Powered by <a href="https://klinica.space" target="_blank" rel="noopener">Klinica</a></div>
+        <div class="footer-powered">{{ __('klinica.landing.powered_by') }} <a href="https://klinica.space" target="_blank" rel="noopener">Klinica</a></div>
     </footer>
 
 </body>

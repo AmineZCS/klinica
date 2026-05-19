@@ -68,6 +68,7 @@ class TenantRegistrationController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'locale' => ['required', 'in:en,fr,de,es'],
             'terms_accepted' => ['accepted'],
         ], [
             'subdomain.regex' => 'Subdomain may only contain lowercase letters, numbers, and hyphens, and cannot start or end with a hyphen.',
@@ -83,6 +84,7 @@ class TenantRegistrationController extends Controller
             'admin_email' => $validated['email'],
             'admin_password' => $validated['password'],
             'plan_tier' => $validated['plan'],
+            'locale' => $validated['locale'],
         ]);
 
         return redirect()->away($tenant->dashboardLoginUrl());
