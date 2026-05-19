@@ -10,9 +10,12 @@ use Illuminate\Support\Facades\DB;
 
 class PageVisitsWidget extends ChartWidget
 {
-    protected ?string $heading = 'Landing Page Visits — Last 14 Days';
-
     protected ?string $pollingInterval = '60s';
+
+    public function getHeading(): string
+    {
+        return __('klinica.dashboard.chart_visits_heading');
+    }
 
     protected function getType(): string
     {
@@ -36,7 +39,7 @@ class PageVisitsWidget extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Visits',
+                    'label' => __('klinica.dashboard.chart_visits_label'),
                     'data' => $counts->values()->toArray(),
                     'fill' => true,
                     'tension' => 0.4,

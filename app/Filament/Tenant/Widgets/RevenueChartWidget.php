@@ -6,16 +6,18 @@ namespace App\Filament\Tenant\Widgets;
 
 use App\Enums\BookingStatus;
 use App\Models\Booking;
+use App\Models\ClinicSetting;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Carbon;
 
 class RevenueChartWidget extends ChartWidget
 {
-    protected ?string $heading = 'Monthly Revenue (Last 6 Months)';
-
     protected ?string $pollingInterval = '120s';
 
-    protected int|string|array $columnSpan = 'full';
+    public function getHeading(): string
+    {
+        return __('klinica.dashboard.chart_revenue_heading');
+    }
 
     protected function getType(): string
     {
@@ -24,6 +26,8 @@ class RevenueChartWidget extends ChartWidget
 
     protected function getData(): array
     {
+        $currency = ClinicSetting::current()->currency ?? 'DA';
+
         $months = collect(range(5, 0))->map(
             fn (int $ago) => Carbon::now()->subMonths($ago)->startOfMonth()
         );
@@ -48,7 +52,7 @@ class RevenueChartWidget extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Revenue (DA)',
+                    'label' => __('klinica.dashboard.chart_revenue_label', ['currency' => $currency]),
                     'data' => $revenue->values()->toArray(),
                     'fill' => true,
                     'tension' => 0.4,
@@ -58,7 +62,7 @@ class RevenueChartWidget extends ChartWidget
                     'yAxisID' => 'y',
                 ],
                 [
-                    'label' => 'Bookings',
+                    'label' => __('klinica.dashboard.chart_revenue_bookings_axis'),
                     'data' => $bookingCounts->values()->toArray(),
                     'fill' => false,
                     'tension' => 0.4,
@@ -75,19 +79,21 @@ class RevenueChartWidget extends ChartWidget
 
     protected function getOptions(): array
     {
+        $currency = ClinicSetting::current()->currency ?? 'DA';
+
         return [
             'scales' => [
                 'y' => [
                     'type' => 'linear',
                     'display' => true,
                     'position' => 'left',
-                    'title' => ['display' => true, 'text' => 'Revenue (DA)'],
+                    'title' => ['display' => true, 'text' => __('klinica.dashboard.chart_revenue_axis', ['currency' => $currency])],
                 ],
                 'y1' => [
                     'type' => 'linear',
                     'display' => true,
                     'position' => 'right',
-                    'title' => ['display' => true, 'text' => 'Bookings'],
+                    'title' => ['display' => true, 'text' => __('klinica.dashboard.chart_revenue_bookings_axis')],
                     'grid' => ['drawOnChartArea' => false],
                 ],
             ],
