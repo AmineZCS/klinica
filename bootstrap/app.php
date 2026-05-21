@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\InitializeTenancyBySubdomainIfPresent;
+use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -16,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // update endpoint — run in the correct tenant database context.
         // The middleware safely does nothing on the central domain (no subdomain).
         $middleware->prependToGroup('web', InitializeTenancyBySubdomainIfPresent::class);
+        $middleware->appendToGroup('web', SetLocale::class);
         $middleware->trustProxies(at: '*');
         $middleware->validateCsrfTokens(except: [
             'webhooks/paddle',
