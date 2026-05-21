@@ -548,6 +548,11 @@
 
             Paddle.Initialize({
                 token: '{{ $paddleClientToken }}',
+                @if ($tenant->paddle_customer_id)
+                pwCustomer: { id: '{{ $tenant->paddle_customer_id }}' },
+                @elseif ($tenant->owner_email)
+                pwCustomer: { email: '{{ addslashes($tenant->owner_email) }}' },
+                @endif
                 eventCallback: function (event) {
                     if (event.name === 'checkout.completed') {
                         _startActivationPolling();
