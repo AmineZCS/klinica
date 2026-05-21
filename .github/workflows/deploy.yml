@@ -23,8 +23,13 @@ jobs:
           script: |
             cd /var/www/klinica
 
-            # Pull changes from GitHub to the server
             git pull origin main
 
-            # Rebuild our fast-cached production container layers
-            docker compose -f compose.prod.yaml up -d --build
+            # Build new image before touching running containers
+            docker compose -f compose.prod.yaml build
+
+            # Start/replace containers; --wait blocks until healthchecks pass
+            docker compose -f compose.prod.yaml up -d --wait
+
+            # Remove dangling images from previous builds
+            docker image prune -f
