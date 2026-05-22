@@ -23,7 +23,8 @@ jobs:
           script: |
             cd /var/www/klinica
 
-            git pull origin main
+            git fetch origin main
+            git reset --hard origin/main
 
             # Build new image before touching running containers
             docker compose -f compose.prod.yaml build
