@@ -524,67 +524,15 @@
 
     <x-filament-actions::modals />
 
-    {{-- Paddle.js v2 (Paddle Billing overlay checkout) --}}
-    {{--
-        IMPORTANT — script order:
-        1. Inline script first: declares all variables and functions (safe, no Paddle dependency).
-        2. CDN script second with onload="initPaddle()": Paddle.js loads asynchronously and
-           initialises only after fully loaded. This survives Livewire wire:navigate content-swaps
-           where CDN scripts load async while inline scripts run immediately.
-    --}}
     <script>
-        var paddlePrices = {
-            starter: '{{ $paddlePriceStarter }}',
-            pro: '{{ $paddlePricePro }}',
-        };
-
         var _paddleBtn = null;
-        var _paddleReady = false;
 
-        function initPaddle() {
-            @if ($paddleSandbox)
-            Paddle.Environment.set('sandbox');
-            @endif
-
-            Paddle.Initialize({
-                token: '{{ $paddleClientToken }}',
-                @if ($tenant->paddle_customer_id)
-                pwCustomer: { id: '{{ $tenant->paddle_customer_id }}' },
-                @elseif ($tenant->owner_email)
-                pwCustomer: { email: '{{ addslashes($tenant->owner_email) }}' },
-                @endif
-                eventCallback: function (event) {
-                    if (event.name === 'checkout.completed') {
-                        _startActivationPolling();
-                    }
-                },
-            });
-
-            _paddleReady = true;
+        // Returned from central checkout page after payment — start polling immediately.
+        if (window.location.search.includes('checkout=complete')) {
+            window.addEventListener('DOMContentLoaded', function () { _startActivationPolling(); });
         }
 
         function openPaddleCheckout(plan, btn) {
-            if (!_paddleReady) {
-                if (btn) {
-                    btn.classList.add('loading');
-                    btn.textContent = 'Loading…';
-                }
-                var waited = 0;
-                var waiter = setInterval(function () {
-                    waited++;
-                    if (_paddleReady) {
-                        clearInterval(waiter);
-                        if (btn) { btn.classList.remove('loading'); }
-                        openPaddleCheckout(plan, btn);
-                    } else if (waited > 10) {
-                        clearInterval(waiter);
-                        _resetPaddleBtn();
-                        alert('Payment system failed to load. Please refresh the page and try again.');
-                    }
-                }, 400);
-                return;
-            }
-
             _paddleBtn = btn;
             if (btn) {
                 btn.classList.add('loading');
@@ -603,7 +551,11 @@
             .then(function (res) { return res.json(); })
             .then(function (data) {
                 if (data.transaction_id) {
-                    Paddle.Checkout.open({ transactionId: data.transaction_id });
+                    var returnUrl = encodeURIComponent(window.location.origin + '/clinic/billing-page?checkout=complete');
+                    var cancelUrl = encodeURIComponent(window.location.href);
+                    window.location.href = '{{ $centralBillingOpenUrl }}?txn=' + data.transaction_id
+                        + '&return=' + returnUrl
+                        + '&cancel=' + cancelUrl;
                 } else {
                     _resetPaddleBtn();
                     alert(data.error || 'Checkout failed. Please try again.');
@@ -703,6 +655,5 @@
             }, 2000);
         }
     </script>
-    <script src="https://cdn.paddle.com/paddle/v2/paddle.js" onload="initPaddle()"></script>
 </x-filament-panels::page>
 
