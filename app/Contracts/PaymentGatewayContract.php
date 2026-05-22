@@ -28,6 +28,16 @@ interface PaymentGatewayContract
     public function cancelSubscription(string $subscriptionId): bool;
 
     /**
+     * Create a draft transaction and return its ID for Paddle.Checkout.open().
+     */
+    public function createTransaction(
+        string $priceId,
+        string $tenantId,
+        ?string $customerEmail = null,
+        ?string $gatewayCustomerId = null,
+    ): ?string;
+
+    /**
      * Resolve the gateway price ID for a given plan slug (e.g. "starter", "pro").
      */
     public function priceIdForPlan(string $plan): string;

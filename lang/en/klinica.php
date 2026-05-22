@@ -558,6 +558,11 @@ return [
         'booking_rescheduled_cta' => 'Visit Our Website',
         'booking_rescheduled_previous' => 'Previous appointment was: :date at :time',
         'booking_rescheduled_outro' => 'If you did not expect this change or have questions, please contact us.',
+        'booking_reminder_subject' => 'Reminder: Your appointment in 30 minutes — :service',
+        'booking_reminder_heading' => 'Your appointment is coming up!',
+        'booking_reminder_intro' => 'Just a friendly reminder — you have an appointment in about 30 minutes.',
+        'booking_reminder_cta' => 'Visit Our Website',
+        'booking_reminder_outro' => 'We look forward to seeing you soon. If you need to cancel or reschedule, please contact us as soon as possible.',
     ],
 
     'dashboard' => [

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Contracts\PaymentGatewayContract;
+use App\Enums\TenantPlan;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -121,10 +122,45 @@ class PaddleGateway implements PaymentGatewayContract
         }
     }
 
+    public function createTransaction(
+        string $priceId,
+        string $tenantId,
+        ?string $customerEmail = null,
+        ?string $gatewayCustomerId = null,
+    ): ?string {
+        try {
+            $payload = [
+                'items' => [['price_id' => $priceId, 'quantity' => 1]],
+                'custom_data' => ['tenant_id' => $tenantId],
+            ];
+
+            if ($gatewayCustomerId !== null) {
+                $payload['customer_id'] = $gatewayCustomerId;
+            } elseif ($customerEmail !== null) {
+                $payload['customer'] = ['email' => $customerEmail];
+            }
+
+            $response = $this->client()->post('/transactions', $payload);
+
+            if (! $response->successful()) {
+                Log::error('Paddle transaction create failed', [
+                    'status' => $response->status(),
+                    'body' => $response->json(),
+                ]);
+
+                return null;
+            }
+
+            return $response->json('data.id');
+        } catch (\Throwable $e) {
+            Log::error('Paddle transaction create exception', ['error' => $e->getMessage()]);
+
+            return null;
+        }
+    }
+
     public function priceIdForPlan(string $plan): string
     {
-        return $plan === 'pro'
-            ? (string) config('services.paddle.price_pro')
-            : (string) config('services.paddle.price_starter');
+        return TenantPlan::from($plan)->priceId();
     }
 }

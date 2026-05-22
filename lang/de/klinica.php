@@ -555,6 +555,11 @@ return [
         'booking_rescheduled_cta' => 'Unsere Website besuchen',
         'booking_rescheduled_previous' => 'Vorheriger Termin war: :date um :time',
         'booking_rescheduled_outro' => 'Wenn Sie diese Änderung nicht erwartet haben oder Fragen haben, kontaktieren Sie uns bitte.',
+        'booking_reminder_subject' => 'Erinnerung: Ihr Termin in 30 Minuten — :service',
+        'booking_reminder_heading' => 'Ihr Termin steht bevor!',
+        'booking_reminder_intro' => 'Eine freundliche Erinnerung — Sie haben in etwa 30 Minuten einen Termin.',
+        'booking_reminder_cta' => 'Unsere Website besuchen',
+        'booking_reminder_outro' => 'Wir freuen uns auf Ihren Besuch. Wenn Sie absagen oder umbuchen müssen, kontaktieren Sie uns bitte so bald wie möglich.',
     ],
 
     'dashboard' => [

@@ -555,6 +555,11 @@ return [
         'booking_rescheduled_cta' => 'Visiter notre site',
         'booking_rescheduled_previous' => 'Ancien rendez-vous : :date à :time',
         'booking_rescheduled_outro' => 'Si vous ne vous attendiez pas à ce changement ou avez des questions, veuillez nous contacter.',
+        'booking_reminder_subject' => 'Rappel : Votre rendez-vous dans 30 minutes — :service',
+        'booking_reminder_heading' => 'Votre rendez-vous approche !',
+        'booking_reminder_intro' => 'Un petit rappel — vous avez un rendez-vous dans environ 30 minutes.',
+        'booking_reminder_cta' => 'Visiter notre site',
+        'booking_reminder_outro' => 'Nous vous attendons avec impatience. Si vous devez annuler ou reprogrammer, veuillez nous contacter dès que possible.',
     ],
 
     'dashboard' => [

@@ -122,10 +122,6 @@ class PaddleWebhookController extends Controller
 
     private function planFromPriceId(?string $priceId): TenantPlan
     {
-        return match ($priceId) {
-            config('services.paddle.price_pro') => TenantPlan::Pro,
-            config('services.paddle.price_starter') => TenantPlan::Starter,
-            default => TenantPlan::Starter,
-        };
+        return TenantPlan::fromPriceId($priceId);
     }
 }

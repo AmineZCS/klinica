@@ -34,6 +34,7 @@ class Booking extends Model implements Eventable
         'notes',
         'cancellation_reason',
         'cancelled_at',
+        'reminder_sent_at',
     ];
 
     protected function casts(): array
@@ -43,6 +44,7 @@ class Booking extends Model implements Eventable
             'start_at' => 'datetime',
             'end_at' => 'datetime',
             'cancelled_at' => 'datetime',
+            'reminder_sent_at' => 'datetime',
         ];
     }
 

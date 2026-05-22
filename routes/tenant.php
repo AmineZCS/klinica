@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Tenant\BillingCheckoutController;
 use App\Http\Controllers\Tenant\GdprExportController;
 use App\Http\Controllers\Tenant\LandingController;
 use App\Http\Controllers\Tenant\PublicBookingController;
@@ -32,6 +33,11 @@ Route::middleware([
     Route::prefix('book')->name('book.')->group(function (): void {
         Route::get('/', [PublicBookingController::class, 'create'])->name('create');
         Route::post('/', [PublicBookingController::class, 'store'])->name('store');
+    });
+
+    // Billing checkout (authenticated tenant users only)
+    Route::middleware(['auth:tenant'])->group(function (): void {
+        Route::post('/billing/checkout', [BillingCheckoutController::class, 'create'])->name('tenant.billing.checkout');
     });
 
     // GDPR data exports (authenticated tenant users only)
