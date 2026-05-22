@@ -53,6 +53,17 @@ class BillingPage extends Page
         return [];
     }
 
+    private function buildCentralUrl(string $path): string
+    {
+        $scheme = parse_url((string) config('app.url', 'http://localhost'), PHP_URL_SCHEME) ?: 'https';
+        $centralDomains = config('tenancy.central_domains', []);
+        $host = is_array($centralDomains) && $centralDomains !== []
+            ? (string) $centralDomains[0]
+            : (parse_url((string) config('app.url', 'http://localhost'), PHP_URL_HOST) ?: 'localhost');
+
+        return $scheme.'://'.$host.$path;
+    }
+
     /** @return array<string, mixed> */
     public function getViewData(): array
     {
@@ -81,6 +92,7 @@ class BillingPage extends Page
             'paddleSandbox' => (bool) config('services.paddle.sandbox'),
             'paddlePriceStarter' => (string) config('services.paddle.price_starter'),
             'paddlePricePro' => (string) config('services.paddle.price_pro'),
+            'centralBillingOpenUrl' => $this->buildCentralUrl('/billing/open'),
         ];
     }
 }

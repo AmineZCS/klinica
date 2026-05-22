@@ -39,6 +39,33 @@ Route::get('/billing/checkout/{plan}', [BillingController::class, 'checkout'])
     ->whereIn('plan', ['starter', 'pro'])
     ->name('billing.checkout');
 
+// Central checkout proxy — opens Paddle overlay from the approved central domain.
+// Tenant billing page redirects here with ?txn=... so Paddle domain check passes.
+Route::get('/billing/open', function (Request $request) {
+    $txn = (string) $request->query('txn', '');
+    $returnUrl = (string) $request->query('return', '/');
+    $cancelUrl = (string) $request->query('cancel', '/');
+
+    // Allow only our own domains in redirect targets
+    $allowedHost = parse_url((string) config('app.url', ''), PHP_URL_HOST) ?: '';
+    $centralDomains = (array) config('tenancy.central_domains', [$allowedHost]);
+    $baseDomain = end($centralDomains) ?: $allowedHost;
+
+    $sanitize = function (string $url) use ($baseDomain): string {
+        $host = parse_url($url, PHP_URL_HOST) ?? '';
+
+        return str_ends_with($host, $baseDomain) ? $url : '/';
+    };
+
+    return view('billing.open', [
+        'txn' => $txn,
+        'returnUrl' => $sanitize($returnUrl),
+        'cancelUrl' => $sanitize($cancelUrl),
+        'paddleClientToken' => (string) config('services.paddle.client_token'),
+        'paddleSandbox' => (bool) config('services.paddle.sandbox'),
+    ]);
+})->name('billing.open');
+
 // Paddle posts back to this verified central domain after checkout completes.
 // The ?tenant= param identifies which subdomain to redirect back to.
 // Paddle appends its own ?_ptxn= query param; webhook handles actual state update.
