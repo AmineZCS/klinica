@@ -46,10 +46,13 @@ Route::get('/billing/open', function (Request $request) {
     $returnUrl = (string) $request->query('return', '/');
     $cancelUrl = (string) $request->query('cancel', '/');
 
-    // Allow only our own domains in redirect targets
-    $allowedHost = parse_url((string) config('app.url', ''), PHP_URL_HOST) ?: '';
-    $centralDomains = (array) config('tenancy.central_domains', [$allowedHost]);
-    $baseDomain = end($centralDomains) ?: $allowedHost;
+    // Derive the registrable base domain (e.g. "klinica.space") from APP_URL
+    // so any subdomain like dr-abdelali.klinica.space passes validation.
+    $appHost = parse_url((string) config('app.url', ''), PHP_URL_HOST) ?: '';
+    $hostParts = explode('.', $appHost);
+    $baseDomain = count($hostParts) >= 2
+        ? implode('.', array_slice($hostParts, -2))
+        : $appHost;
 
     $sanitize = function (string $url) use ($baseDomain): string {
         $host = parse_url($url, PHP_URL_HOST) ?? '';
