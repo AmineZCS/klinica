@@ -41,6 +41,7 @@
         var _txn       = '{{ addslashes($txn) }}';
         var _returnUrl = '{{ addslashes($returnUrl) }}';
         var _cancelUrl = '{{ addslashes($cancelUrl) }}';
+        var _completed = false;
 
         function initPaddle() {
             @if ($paddleSandbox)
@@ -51,9 +52,12 @@
                 token: '{{ addslashes($paddleClientToken) }}',
                 eventCallback: function (event) {
                     if (event.name === 'checkout.completed') {
+                        _completed = true;
                         window.location.href = _returnUrl;
                     }
-                    if (event.name === 'checkout.closed') {
+                    // checkout.closed fires on both cancel AND after successful payment —
+                    // only redirect to cancel URL if payment was not completed.
+                    if (event.name === 'checkout.closed' && ! _completed) {
                         window.location.href = _cancelUrl;
                     }
                 },
