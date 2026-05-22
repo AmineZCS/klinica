@@ -591,24 +591,29 @@
                 btn.textContent = 'Opening checkout…';
             }
 
-            try {
-                var checkoutOptions = {
-                    items: [{ priceId: paddlePrices[plan], quantity: 1 }],
-                    customData: { tenant_id: '{{ $tenant->id }}' },
-                };
-
-                @if ($tenant->paddle_customer_id)
-                checkoutOptions.customer = { id: '{{ $tenant->paddle_customer_id }}' };
-                @elseif ($tenant->owner_email)
-                checkoutOptions.customer = { email: '{{ addslashes($tenant->owner_email) }}' };
-                @endif
-
-                Paddle.Checkout.open(checkoutOptions);
-            } catch (e) {
-                console.error('Paddle checkout error:', e);
+            fetch('{{ route('tenant.billing.checkout') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ plan: plan }),
+            })
+            .then(function (res) { return res.json(); })
+            .then(function (data) {
+                if (data.transaction_id) {
+                    Paddle.Checkout.open({ transactionId: data.transaction_id });
+                } else {
+                    _resetPaddleBtn();
+                    alert(data.error || 'Checkout failed. Please try again.');
+                }
+            })
+            .catch(function (e) {
+                console.error('Checkout error:', e);
                 _resetPaddleBtn();
-                alert('Checkout failed: ' + (e.message || 'Unknown error. Please try again.'));
-            }
+                alert('Checkout failed. Please try again.');
+            });
         }
 
         function _resetPaddleBtn() {

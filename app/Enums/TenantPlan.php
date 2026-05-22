@@ -52,4 +52,34 @@ enum TenantPlan: string
             default => 'gray',
         };
     }
+
+    public function priceId(): string
+    {
+        return match ($this) {
+            self::Pro => (string) config('services.paddle.price_pro'),
+            self::Starter => (string) config('services.paddle.price_starter'),
+            default => '',
+        };
+    }
+
+    public static function fromPriceId(?string $priceId): self
+    {
+        if ($priceId === null) {
+            return self::Starter;
+        }
+
+        foreach (self::cases() as $plan) {
+            if ($plan->priceId() !== '' && $plan->priceId() === $priceId) {
+                return $plan;
+            }
+        }
+
+        return self::Starter;
+    }
+
+    /** @return list<string> */
+    public static function checkoutableValues(): array
+    {
+        return [self::Starter->value, self::Pro->value];
+    }
 }

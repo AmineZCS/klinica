@@ -555,6 +555,11 @@ return [
         'booking_rescheduled_cta' => 'Visitar nuestro sitio web',
         'booking_rescheduled_previous' => 'La cita anterior era: :date a las :time',
         'booking_rescheduled_outro' => 'Si no esperaba este cambio o tiene preguntas, por favor contáctenos.',
+        'booking_reminder_subject' => 'Recordatorio: Su cita en 30 minutos — :service',
+        'booking_reminder_heading' => '¡Su cita está próxima!',
+        'booking_reminder_intro' => 'Un recordatorio amistoso — tiene una cita en aproximadamente 30 minutos.',
+        'booking_reminder_cta' => 'Visitar nuestro sitio web',
+        'booking_reminder_outro' => 'Le esperamos. Si necesita cancelar o reprogramar, por favor contáctenos lo antes posible.',
     ],
 
     'dashboard' => [

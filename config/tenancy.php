@@ -8,6 +8,7 @@ use Stancl\Tenancy\Bootstrappers\FilesystemTenancyBootstrapper;
 use Stancl\Tenancy\Bootstrappers\QueueTenancyBootstrapper;
 use Stancl\Tenancy\Database\Models\Domain;
 use Stancl\Tenancy\Database\Models\Tenant;
+use Stancl\Tenancy\Features\ViteBundler;
 use Stancl\Tenancy\TenantDatabaseManagers\MySQLDatabaseManager;
 use Stancl\Tenancy\TenantDatabaseManagers\PostgreSQLDatabaseManager;
 use Stancl\Tenancy\TenantDatabaseManagers\SQLiteDatabaseManager;
@@ -28,7 +29,7 @@ return [
      * testclinic.lvh.me also resolve — set APP_URL=http://lvh.me in .env.
      */
     'central_domains' => array_filter(
-        explode(',', (string) env('TENANCY_CENTRAL_DOMAINS', 'klinica.space,www.klinica.space,127.0.0.1,localhost'))
+        explode(',', (string) env('TENANCY_CENTRAL_DOMAINS', 'klinica.space,www.klinica.space,127.0.0.1,localhost,lvh.me'))
     ),
 
     /**
@@ -55,7 +56,7 @@ return [
          * Connection used as a "template" for the dynamically created tenant database connection.
          * Note: don't name your template connection tenant. That name is reserved by package.
          */
-        'template_tenant_connection' => "mysql_landlord",
+        'template_tenant_connection' => 'mysql_landlord',
 
         /**
          * Tenant database names are created like this:
@@ -182,7 +183,7 @@ return [
         // Stancl\Tenancy\Features\UniversalRoutes::class,
         // Stancl\Tenancy\Features\TenantConfig::class, // https://tenancyforlaravel.com/docs/v3/features/tenant-config
         // Stancl\Tenancy\Features\CrossDomainRedirect::class, // https://tenancyforlaravel.com/docs/v3/features/cross-domain-redirect
-        Stancl\Tenancy\Features\ViteBundler::class,
+        ViteBundler::class,
     ],
 
     /**
