@@ -6,6 +6,7 @@ use App\Http\Controllers\Tenant\BillingCheckoutController;
 use App\Http\Controllers\Tenant\GdprExportController;
 use App\Http\Controllers\Tenant\LandingController;
 use App\Http\Controllers\Tenant\PublicBookingController;
+use App\Http\Controllers\Tenant\SitemapController as TenantSitemapController;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
@@ -28,6 +29,8 @@ Route::middleware([
     PreventAccessFromCentralDomains::class,
 ])->group(function (): void {
     Route::get('/', [LandingController::class, 'index'])->name('tenant.home');
+    Route::get('/sitemap.xml', [TenantSitemapController::class, 'index'])->name('tenant.sitemap');
+    Route::get('/llms.txt', [TenantSitemapController::class, 'llms'])->name('tenant.llms');
 
     // Public booking
     Route::prefix('book')->name('book.')->group(function (): void {

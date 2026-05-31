@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\PaddleWebhookController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\Tenant\LandingController;
 use App\Http\Controllers\TenantRegistrationController;
 use App\Models\Tenant;
@@ -25,6 +26,9 @@ Route::get('/', function () {
 Route::get('/register', [TenantRegistrationController::class, 'create'])->name('register');
 Route::post('/register', [TenantRegistrationController::class, 'store'])->name('register.store');
 Route::get('/api/check-subdomain', [TenantRegistrationController::class, 'checkSubdomain'])->name('register.check-subdomain');
+
+// Sitemap
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
 // Legal pages
 Route::get('/privacy', fn () => view('central.privacy'))->name('privacy');

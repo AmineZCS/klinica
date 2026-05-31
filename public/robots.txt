@@ -1,2 +1,8 @@
 User-agent: *
-Disallow:
+Disallow: /clinic/
+Disallow: /billing/
+Disallow: /api/
+Disallow: /webhooks/
+Disallow: /test-smtp
+
+Sitemap: https://klinica.space/sitemap.xml
