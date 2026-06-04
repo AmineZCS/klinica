@@ -37,6 +37,8 @@ services:
     restart: always
     env_file: .env
     entrypoint: ["php", "artisan", "queue:work", "redis", "--sleep=3", "--tries=3", "--max-time=3600"]
+    healthcheck:
+      disable: true
     depends_on:
       db:
         condition: service_healthy
@@ -50,6 +52,8 @@ services:
     restart: always
     env_file: .env
     entrypoint: ["php", "artisan", "schedule:work"]
+    healthcheck:
+      disable: true
     depends_on:
       db:
         condition: service_healthy
