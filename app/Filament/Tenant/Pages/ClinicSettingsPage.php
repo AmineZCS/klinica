@@ -202,7 +202,7 @@ class ClinicSettingsPage extends Page
                                 ->live()
                                 ->afterStateUpdated(fn () => $this->renderPreview()),
                             Select::make('timezone')
-                                ->options(\DateTimeZone::listIdentifiers())
+                                ->options(array_combine(\DateTimeZone::listIdentifiers(), \DateTimeZone::listIdentifiers()))
                                 ->searchable()
                                 ->required(),
                             Select::make('currency')
