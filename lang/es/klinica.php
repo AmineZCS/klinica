@@ -107,6 +107,10 @@ return [
 
         'section_branding' => 'Marca e imagen',
         'section_contact' => 'Contacto',
+        'field_phone' => 'Teléfono principal',
+        'field_additional_phones' => 'Números de teléfono adicionales',
+        'field_phone_number' => 'Número de teléfono',
+        'add_phone' => 'Añadir número',
         'section_localisation' => 'Localización y citas',
         'section_preview' => 'Vista previa en vivo',
         'section_preview_desc' => 'Se actualiza a medida que cambia los campos de la izquierda.',

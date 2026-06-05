@@ -9,6 +9,7 @@ use App\Models\Service;
 use Filament\Actions\Action;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -94,6 +95,9 @@ class ClinicSettingsPage extends Page
     // ── Contact ───────────────────────────────────────────────────────────
     public ?string $contact_phone = null;
 
+    /** @var array<int, array{number: string}> */
+    public array $contact_phones = [];
+
     public ?string $contact_email = null;
 
     public ?string $contact_address = null;
@@ -130,6 +134,8 @@ class ClinicSettingsPage extends Page
             'timezone',
             'currency',
         ]));
+
+        $this->contact_phones = is_array($settings->contact_phones) ? $settings->contact_phones : [];
 
         $this->color_theme = $this->detectTheme();
 
@@ -191,9 +197,27 @@ class ClinicSettingsPage extends Page
 
                     Section::make(__('klinica.settings.section_contact'))->schema([
                         Grid::make(2)->schema([
-                            TextInput::make('contact_phone')->tel()->live(onBlur: true)->afterStateUpdated(fn () => $this->renderPreview()),
+                            TextInput::make('contact_phone')
+                                ->label(__('klinica.settings.field_phone'))
+                                ->tel()
+                                ->live(onBlur: true)
+                                ->afterStateUpdated(fn () => $this->renderPreview()),
                             TextInput::make('contact_email')->email()->live(onBlur: true)->afterStateUpdated(fn () => $this->renderPreview()),
                             TextInput::make('contact_address')->columnSpanFull()->live(onBlur: true)->afterStateUpdated(fn () => $this->renderPreview()),
+                            Repeater::make('contact_phones')
+                                ->label(__('klinica.settings.field_additional_phones'))
+                                ->schema([
+                                    TextInput::make('number')
+                                        ->label(__('klinica.settings.field_phone_number'))
+                                        ->tel()
+                                        ->required()
+                                        ->maxLength(50),
+                                ])
+                                ->addActionLabel(__('klinica.settings.add_phone'))
+                                ->defaultItems(0)
+                                ->live()
+                                ->afterStateUpdated(fn () => $this->renderPreview())
+                                ->columnSpanFull(),
                         ]),
                     ]),
 
@@ -299,6 +323,8 @@ class ClinicSettingsPage extends Page
             'primary_color' => ['nullable', 'string'],
             'secondary_color' => ['nullable', 'string'],
             'contact_phone' => ['nullable', 'string'],
+            'contact_phones' => ['nullable', 'array'],
+            'contact_phones.*.number' => ['required', 'string', 'max:50'],
             'contact_email' => ['nullable', 'email'],
             'contact_address' => ['nullable', 'string'],
             'online_booking_enabled' => ['boolean'],
@@ -333,6 +359,7 @@ class ClinicSettingsPage extends Page
                 'primary_color' => $this->primary_color,
                 'secondary_color' => $this->secondary_color,
                 'contact_phone' => $this->contact_phone,
+                'contact_phones' => $this->contact_phones,
                 'contact_email' => $this->contact_email,
                 'contact_address' => $this->contact_address,
                 'online_booking_enabled' => $this->online_booking_enabled,

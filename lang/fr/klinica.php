@@ -107,6 +107,10 @@ return [
 
         'section_branding' => 'Identité visuelle',
         'section_contact' => 'Contact',
+        'field_phone' => 'Téléphone principal',
+        'field_additional_phones' => 'Numéros de téléphone supplémentaires',
+        'field_phone_number' => 'Numéro de téléphone',
+        'add_phone' => 'Ajouter un numéro',
         'section_localisation' => 'Localisation & Réservation',
         'section_preview' => 'Aperçu en direct',
         'section_preview_desc' => 'Se met à jour lorsque vous modifiez les champs à gauche.',

@@ -28,7 +28,7 @@
         "name": "{{ addslashes($settings->clinic_name) }}",
         "description": "{{ addslashes($settings->tagline ?? '') }}",
         "url": "{{ url('/') }}",
-        "telephone": "{{ addslashes($settings->contact_phone ?? '') }}",
+        "telephone": "{{ addslashes($settings->contact_phone ?? collect($settings->contact_phones ?? [])->first()['number'] ?? '') }}",
         "email": "{{ addslashes($settings->contact_email ?? '') }}",
         "address": {
             "@@type": "PostalAddress",
@@ -577,21 +577,29 @@
     @endif
 
     {{-- CONTACT --}}
-    @if ($settings->contact_phone || $settings->contact_email || $settings->contact_address)
+    @php $hasPhones = $settings->contact_phone || !empty($settings->contact_phones); @endphp
+    @if ($hasPhones || $settings->contact_email || $settings->contact_address)
         <section class="section contact-section" id="contact" aria-label="Contact information">
             <div class="container">
                 <div class="section-label">{{ __('klinica.landing.contact_label') }}</div>
                 <h2 class="section-heading serif">{{ __('klinica.landing.contact_heading') }}</h2>
                 <p class="section-sub">{{ __('klinica.landing.contact_sub') }}</p>
                 <div class="contact-grid">
-                    @if ($settings->contact_phone)
+                    @if ($hasPhones)
                         <div class="contact-item">
                             <div class="contact-icon" aria-hidden="true">
                                 <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.23h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.8a16 16 0 0 0 6.29 6.29l.95-.96a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                             </div>
                             <div class="contact-label">{{ __('klinica.landing.contact_phone') }}</div>
                             <div class="contact-value">
-                                <a href="tel:{{ preg_replace('/[^+\d]/', '', $settings->contact_phone) }}">{{ $settings->contact_phone }}</a>
+                                @if ($settings->contact_phone)
+                                    <a href="tel:{{ preg_replace('/[^+\d]/', '', $settings->contact_phone) }}">{{ $settings->contact_phone }}</a>
+                                @endif
+                                @foreach ($settings->contact_phones ?? [] as $extraPhone)
+                                    @if (!empty($extraPhone['number']))
+                                        <a href="tel:{{ preg_replace('/[^+\d]/', '', $extraPhone['number']) }}">{{ $extraPhone['number'] }}</a>
+                                    @endif
+                                @endforeach
                             </div>
                         </div>
                     @endif
