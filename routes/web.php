@@ -7,12 +7,15 @@ use App\Http\Controllers\PaddleWebhookController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\Tenant\LandingController;
 use App\Http\Controllers\TenantRegistrationController;
+use App\Http\Middleware\EnsureSuperAdmin;
 use App\Models\Tenant;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Database\Models\Domain;
+use Stancl\Tenancy\Database\Models\ImpersonationToken;
 
 Route::get('/', function () {
     if (tenancy()->initialized) {
@@ -29,6 +32,26 @@ Route::get('/api/check-subdomain', [TenantRegistrationController::class, 'checkS
 
 // Sitemap
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+
+// Admin impersonation — generates a short-lived token and redirects to the tenant's login-as-admin URL.
+Route::get('/admin/impersonate/{tenant}', function (Tenant $tenant) {
+    tenancy()->initialize($tenant);
+    $superAdmin = User::where('is_super_admin', true)->first();
+    tenancy()->end();
+
+    if (! $superAdmin) {
+        abort(404, 'No super admin found for this tenant.');
+    }
+
+    $token = ImpersonationToken::create([
+        'tenant_id' => $tenant->getTenantKey(),
+        'user_id' => (string) $superAdmin->id,
+        'redirect_url' => '/clinic',
+        'auth_guard' => 'tenant',
+    ]);
+
+    return redirect()->away($tenant->tenantBaseUrl().'/impersonate/'.$token->token);
+})->middleware(['web', 'auth', EnsureSuperAdmin::class])->name('admin.impersonate');
 
 // Legal pages
 Route::get('/privacy', fn () => view('central.privacy'))->name('privacy');
