@@ -98,6 +98,12 @@ class TenantResource extends Resource
                 TernaryFilter::make('is_active')->label('Active status'),
             ])
             ->recordActions([
+                Action::make('open_dashboard')
+                    ->label('Open Dashboard')
+                    ->icon('heroicon-o-arrow-top-right-on-square')
+                    ->color('info')
+                    ->url(fn (Tenant $record): string => route('admin.impersonate', $record))
+                    ->openUrlInNewTab(),
                 ActionsEditAction::make(),
                 Action::make('toggle_active')
                     ->label(fn (Tenant $record): string => $record->is_active ? 'Disable' : 'Enable')
