@@ -26,6 +26,7 @@ class ClinicSetting extends Model implements HasMedia
         'primary_color',
         'secondary_color',
         'contact_phone',
+        'contact_phones',
         'contact_email',
         'contact_address',
         'online_booking_enabled',
@@ -42,6 +43,7 @@ class ClinicSetting extends Model implements HasMedia
         return [
             'online_booking_enabled' => 'boolean',
             'onboarding_completed_at' => 'datetime',
+            'contact_phones' => 'array',
             'session_interval_minutes' => 'integer',
             'max_sessions_per_slot' => 'integer',
             'currency' => 'string',

@@ -107,6 +107,10 @@ return [
 
         'section_branding' => 'Branding & Hero',
         'section_contact' => 'Contact',
+        'field_phone' => 'Primary Phone',
+        'field_additional_phones' => 'Additional Phone Numbers',
+        'field_phone_number' => 'Phone Number',
+        'add_phone' => 'Add phone number',
         'section_localisation' => 'Localisation & Booking',
         'section_preview' => 'Live Preview',
         'section_preview_desc' => 'Updates as you change the fields on the left.',

@@ -36,7 +36,7 @@ Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap')
 // Admin impersonation — generates a short-lived token and redirects to the tenant's login-as-admin URL.
 Route::get('/admin/impersonate/{tenant}', function (Tenant $tenant) {
     tenancy()->initialize($tenant);
-    $superAdmin = User::where('is_super_admin', true)->first();
+    $superAdmin = User::orderBy('id')->first();
     tenancy()->end();
 
     if (! $superAdmin) {
