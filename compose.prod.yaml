@@ -20,6 +20,8 @@ services:
     image: klinica-app
     restart: always
     env_file: .env
+    volumes:
+      - storage_data:/app/storage/app
     depends_on:
       db:
         condition: service_healthy
@@ -36,6 +38,8 @@ services:
     image: klinica-app
     restart: always
     env_file: .env
+    volumes:
+      - storage_data:/app/storage/app
     entrypoint: ["php", "artisan", "queue:work", "redis", "--sleep=3", "--tries=3", "--max-time=3600"]
     healthcheck:
       disable: true
@@ -51,6 +55,8 @@ services:
     image: klinica-app
     restart: always
     env_file: .env
+    volumes:
+      - storage_data:/app/storage/app
     entrypoint: ["php", "artisan", "schedule:work"]
     healthcheck:
       disable: true
@@ -95,3 +101,4 @@ volumes:
   caddy_config:
   mysql_data:
   redis_data:
+  storage_data:
