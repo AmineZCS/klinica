@@ -42,7 +42,15 @@ class ClinicSchedulePage extends Page
     {
         $user = auth('tenant')->user();
 
-        return $user?->is_super_admin || ($user?->hasPermissionTo('manage_schedule', 'tenant') ?? false);
+        if (! $user) {
+            return false;
+        }
+
+        try {
+            return (bool) $user->hasPermissionTo('manage_schedule', 'tenant');
+        } catch (\Throwable) {
+            return false;
+        }
     }
 
     protected string $view = 'filament.tenant.pages.clinic-schedule-page';

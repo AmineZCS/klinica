@@ -17,10 +17,15 @@ class CalendarPage extends Page
     {
         $user = Filament::auth()->user();
 
-        return $user !== null && (
-            (bool) ($user->is_super_admin ?? false)
-            || ($user->hasPermissionTo('view_bookings', 'tenant') ?? false)
-        );
+        if (! $user) {
+            return false;
+        }
+
+        try {
+            return (bool) $user->hasPermissionTo('view_bookings', 'tenant');
+        } catch (\Throwable) {
+            return false;
+        }
     }
 
     public static function getNavigationLabel(): string
