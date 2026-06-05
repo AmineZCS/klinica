@@ -52,11 +52,15 @@ class RoleResource extends Resource
     {
         $user = auth('tenant')->user();
 
-        if ($user === null) {
+        if (! $user) {
             return false;
         }
 
-        return $user->is_super_admin || $user->hasPermissionTo('manage_roles', 'tenant');
+        try {
+            return (bool) $user->hasPermissionTo('manage_roles', 'tenant');
+        } catch (\Throwable) {
+            return false;
+        }
     }
 
     public static function getEloquentQuery(): Builder

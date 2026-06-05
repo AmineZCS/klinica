@@ -54,7 +54,15 @@ class BookingResource extends Resource
     {
         $user = auth('tenant')->user();
 
-        return $user?->is_super_admin || ($user?->hasPermissionTo('view_bookings', 'tenant') ?? false);
+        if (! $user) {
+            return false;
+        }
+
+        try {
+            return (bool) $user->hasPermissionTo('view_bookings', 'tenant');
+        } catch (\Throwable) {
+            return false;
+        }
     }
 
     public static function canCreate(): bool

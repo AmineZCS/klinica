@@ -63,7 +63,15 @@ class ClinicSettingsPage extends Page
     {
         $user = auth('tenant')->user();
 
-        return $user?->is_super_admin || ($user?->hasPermissionTo('view_clinic_settings', 'tenant') ?? false);
+        if (! $user) {
+            return false;
+        }
+
+        try {
+            return (bool) $user->hasPermissionTo('view_clinic_settings', 'tenant');
+        } catch (\Throwable) {
+            return false;
+        }
     }
 
     // ── Branding ──────────────────────────────────────────────────────────
