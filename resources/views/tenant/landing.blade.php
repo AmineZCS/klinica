@@ -4,14 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    {{-- Favicon --}}
+    @if ($settings->hasMedia('logo'))
+        @php $faviconMedia = $settings->getFirstMedia('logo'); @endphp
+        <link rel="icon" href="{{ klinica_asset($faviconMedia->id . '/' . $faviconMedia->file_name) }}">
+    @else
+        <link rel="icon" href="/favicon.ico">
+    @endif
+
     {{-- SEO --}}
-    <title>{{ $settings->clinic_name }} — Online Booking</title>
-    <meta name="description" content="{{ $settings->tagline ?: 'Book your appointment at ' . $settings->clinic_name . ' — easy, fast, and secure.' }}">
+    @php $pageTitle = $settings->clinic_name ?: 'Clinic'; @endphp
+    <title>{{ $pageTitle }} — Online Booking</title>
+    <meta name="description" content="{{ $settings->tagline ?: 'Book your appointment at ' . $pageTitle . ' — easy, fast, and secure.' }}">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="{{ url('/') }}">
 
     {{-- Open Graph --}}
-    <meta property="og:title" content="{{ $settings->clinic_name }}">
+    <meta property="og:title" content="{{ $pageTitle }}">
     <meta property="og:description" content="{{ $settings->tagline ?: 'Book your appointment online.' }}">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url('/') }}">
