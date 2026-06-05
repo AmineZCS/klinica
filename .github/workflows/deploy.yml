@@ -32,5 +32,17 @@ jobs:
             # Start/replace containers; --wait blocks until healthchecks pass
             docker compose -f compose.prod.yaml up -d --wait
 
+            # Ensure storage subdirs exist in the named volume (needed on first deploy)
+            docker compose -f compose.prod.yaml exec -T web mkdir -p /app/storage/app/public /app/storage/app/private /app/storage/app/livewire-tmp
+
+            # Re-link storage (symlink lives in container, target is the named volume)
+            docker compose -f compose.prod.yaml exec -T web php artisan storage:link --force
+
+            # Run central DB migrations
+            docker compose -f compose.prod.yaml exec -T web php artisan migrate --force
+
+            # Run tenant DB migrations
+            docker compose -f compose.prod.yaml exec -T web php artisan tenants:migrate --force
+
             # Remove dangling images from previous builds
             docker image prune -f
