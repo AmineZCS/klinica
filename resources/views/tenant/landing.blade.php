@@ -13,10 +13,13 @@
     @endif
 
     {{-- SEO --}}
-    @php $pageTitle = $settings->clinic_name ?: 'Clinic'; @endphp
+    @php
+        $pageTitle = $settings->clinic_name ?: 'Clinic';
+        $isReady = $settings->clinic_name && $services->isNotEmpty();
+    @endphp
     <title>{{ $pageTitle }} — Online Booking</title>
     <meta name="description" content="{{ $settings->tagline ?: 'Book your appointment at ' . $pageTitle . ' — easy, fast, and secure.' }}">
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="{{ $isReady ? 'index, follow' : 'noindex, nofollow' }}">
     <link rel="canonical" href="{{ url('/') }}">
 
     {{-- Open Graph --}}
