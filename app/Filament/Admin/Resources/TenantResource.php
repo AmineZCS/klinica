@@ -8,7 +8,9 @@ use App\Actions\Central\ExtendTrialAction;
 use App\Enums\TenantPlan;
 use App\Filament\Admin\Resources\TenantResource\Pages;
 use App\Models\Tenant;
+use App\Services\IndexNowService;
 use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup as ActionsBulkActionGroup;
 use Filament\Actions\DeleteBulkAction as ActionsDeleteBulkAction;
 use Filament\Actions\EditAction as ActionsEditAction;
@@ -16,6 +18,7 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -25,6 +28,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
 
 class TenantResource extends Resource
 {
@@ -128,9 +132,48 @@ class TenantResource extends Resource
                     ->action(function (Tenant $record, array $data): void {
                         app(ExtendTrialAction::class)->execute($record, (int) $data['days']);
                     }),
+                Action::make('index_now')
+                    ->label('Submit to IndexNow')
+                    ->icon('heroicon-o-magnifying-glass')
+                    ->color('warning')
+                    ->requiresConfirmation()
+                    ->modalHeading('Submit to IndexNow')
+                    ->modalDescription(fn (Tenant $record): string => "Submit {$record->tenantBaseUrl()}/ to search engine indexing via IndexNow.")
+                    ->action(function (Tenant $record): void {
+                        $success = app(IndexNowService::class)->submitTenant($record);
+
+                        if ($success) {
+                            Notification::make()
+                                ->title('Submitted to IndexNow')
+                                ->body("{$record->id} queued for search engine indexing.")
+                                ->success()
+                                ->send();
+                        } else {
+                            Notification::make()
+                                ->title('IndexNow submission failed')
+                                ->body('Check the application logs for details.')
+                                ->danger()
+                                ->send();
+                        }
+                    }),
             ])
             ->toolbarActions([
                 ActionsBulkActionGroup::make([
+                    BulkAction::make('bulk_index_now')
+                        ->label('Submit to IndexNow')
+                        ->icon('heroicon-o-magnifying-glass')
+                        ->requiresConfirmation()
+                        ->modalHeading('Submit selected tenants to IndexNow')
+                        ->modalDescription('This will submit the landing page URL of each selected tenant to IndexNow for search engine indexing.')
+                        ->action(function (Collection $records): void {
+                            $count = app(IndexNowService::class)->submitTenants($records);
+
+                            Notification::make()
+                                ->title("IndexNow: {$count}/{$records->count()} submitted")
+                                ->body($count < $records->count() ? 'Some submissions failed. Check the application logs.' : 'All tenants queued for search engine indexing.')
+                                ->color($count === $records->count() ? 'success' : 'warning')
+                                ->send();
+                        }),
                     ActionsDeleteBulkAction::make(),
                 ]),
             ]);
