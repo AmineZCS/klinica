@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Contracts\PaymentGatewayContract;
+use App\Services\IndexNowService;
 use App\Services\PaddleGateway;
 use Illuminate\Support\ServiceProvider;
 use Stancl\Tenancy\Controllers\TenantAssetsController;
@@ -16,6 +17,11 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(PaymentGatewayContract::class, PaddleGateway::class);
+
+        $this->app->singleton(IndexNowService::class, fn () => new IndexNowService(
+            key: config('services.indexnow.key'),
+            keyLocation: config('services.indexnow.key_location'),
+        ));
 
         if ($this->app->environment('local') && class_exists(\Laravel\Telescope\TelescopeServiceProvider::class)) {
             $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);

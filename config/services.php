@@ -35,6 +35,11 @@ return [
         ],
     ],
 
+    'indexnow' => [
+        'key' => env('INDEXNOW_KEY'),
+        'key_location' => env('INDEXNOW_KEY_LOCATION', 'https://klinica.space/'.env('INDEXNOW_KEY').'.txt'),
+    ],
+
     'paddle' => [
         'api_key' => env('PADDLE_API_KEY'),
         'client_token' => env('PADDLE_CLIENT_TOKEN'),
