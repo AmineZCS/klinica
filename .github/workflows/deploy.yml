@@ -33,7 +33,7 @@ jobs:
             docker compose -f compose.prod.yaml up -d --wait
 
             # Ensure storage subdirs exist in the named volume (needed on first deploy)
-            docker compose -f compose.prod.yaml exec -T web mkdir -p /app/storage/app/public /app/storage/app/private /app/storage/app/livewire-tmp
+            docker compose -f compose.prod.yaml exec -T web mkdir -p /app/storage/app/public /app/storage/app/private /app/storage/app/livewire-tmp /app/storage/framework/cache /app/storage/framework/sessions /app/storage/framework/views /app/storage/logs
 
             # Re-link storage (symlink lives in container, target is the named volume)
             docker compose -f compose.prod.yaml exec -T web php artisan storage:link --force
