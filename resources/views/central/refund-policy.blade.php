@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -230,18 +230,18 @@
     <nav>
         <div class="nav-inner">
             <a href="{{ url('/') }}" class="nav-logo">Klinica<span>.</span></a>
-            <a href="{{ url('/') }}" class="nav-back">← Back to home</a>
+            <a href="{{ url('/') }}" class="nav-back">{{ __('central.back_to_home') }}</a>
         </div>
     </nav>
 
     {{-- HERO --}}
     <div class="legal-hero">
-        <div class="legal-hero-badge">Legal Document</div>
-        <h1>Refund Policy</h1>
+        <div class="legal-hero-badge">{{ __('central.legal_badge') }}</div>
+        <h1>{{ __('central.footer_refund') }}</h1>
         <p>Our billing terms, refund eligibility conditions, and cancellation rules for Klinica subscriptions.</p>
         <div class="legal-meta">
             <div class="legal-meta-item"><strong>Version:</strong> 1.0</div>
-            <div class="legal-meta-item"><strong>Effective:</strong> {{ date('F j, Y') }}</div>
+            <div class="legal-meta-item"><strong>{{ __('central.effective_label') }}</strong> {{ date('F j, Y') }}</div>
             <div class="legal-meta-item"><strong>Applies to:</strong> All paid subscriptions</div>
         </div>
     </div>
@@ -480,12 +480,12 @@
     {{-- FOOTER --}}
     <footer>
         <p class="footer-copy">
-            &copy; {{ date('Y') }} Klinica. All rights reserved. &mdash;
+            &copy; {{ date('Y') }} Klinica. {{ __('central.all_rights_reserved') }} &mdash;
             <a href="{{ url('/') }}">Home</a> &middot;
-            <a href="{{ route('terms') }}">Terms of Service</a> &middot;
-            <a href="{{ route('privacy') }}">Privacy Policy</a> &middot;
-            <a href="{{ route('dpa') }}">DPA</a> &middot;
-            <a href="{{ route('refund-policy') }}">Refund Policy</a> &middot;
+            <a href="{{ route('terms') }}">{{ __('central.footer_terms') }}</a> &middot;
+            <a href="{{ route('privacy') }}">{{ __('central.footer_privacy') }}</a> &middot;
+            <a href="{{ route('dpa') }}">{{ __('central.footer_dpa') }}</a> &middot;
+            <a href="{{ route('refund-policy') }}">{{ __('central.footer_refund') }}</a> &middot;
             <a href="mailto:support@klinica.space">Contact</a>
         </p>
     </footer>
