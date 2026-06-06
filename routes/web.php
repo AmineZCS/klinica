@@ -30,8 +30,11 @@ Route::get('/register', [TenantRegistrationController::class, 'create'])->name('
 Route::post('/register', [TenantRegistrationController::class, 'store'])->name('register.store');
 Route::get('/api/check-subdomain', [TenantRegistrationController::class, 'checkSubdomain'])->name('register.check-subdomain');
 
-// Sitemap
-Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+// Sitemap and llms.txt — central domain only (tenant subdomains have their own routes)
+Route::domain(config('tenancy.central_domains')[0])->group(function (): void {
+    Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+    Route::get('/llms.txt', [SitemapController::class, 'llms'])->name('llms');
+});
 
 // Admin impersonation — generates a short-lived token and redirects to the tenant's login-as-admin URL.
 Route::get('/admin/impersonate/{tenant}', function (Tenant $tenant) {
