@@ -1,10 +1,37 @@
+@php
+    $i18n = [
+        'enterClinicName'      => __('registration.js_enter_clinic_name'),
+        'enterSubdomain'       => __('registration.js_enter_subdomain'),
+        'subdomainFormat'      => __('registration.js_subdomain_format'),
+        'subdomainUnavailable' => __('registration.js_subdomain_unavailable'),
+        'enterName'            => __('registration.js_enter_name'),
+        'enterEmail'           => __('registration.js_enter_email'),
+        'invalidEmail'         => __('registration.js_invalid_email'),
+        'passwordLength'       => __('registration.js_password_length'),
+        'passwordMismatch'     => __('registration.js_password_mismatch'),
+        'subdomainChecking'    => __('registration.js_subdomain_checking'),
+        'subdomainAvailable'   => __('registration.js_subdomain_available'),
+        'subdomainReserved'    => __('registration.js_subdomain_reserved'),
+        'subdomainInvalid'     => __('registration.js_subdomain_invalid'),
+        'subdomainTaken'       => __('registration.js_subdomain_taken'),
+        'previewEmpty'         => __('registration.booking_url_preview_empty'),
+        'previewUrl'           => __('registration.booking_url_preview'),
+        'reviewNotSet'         => __('registration.review_not_set'),
+        'reviewPlanStarter'    => __('registration.review_plan_starter'),
+        'reviewPlanPro'        => __('registration.review_plan_pro'),
+        'creatingClinic'       => __('registration.creating_clinic'),
+        'consentError'         => __('registration.consent_error'),
+        'passwordShow'         => __('registration.password_show'),
+        'passwordHide'         => __('registration.password_hide'),
+    ];
+@endphp
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Start Your Free Trial | Klinica</title>
-    <meta name="description" content="Create your free Klinica clinic account in minutes. Get a branded subdomain, online booking page, and patient management dashboard — no credit card required.">
+    <title>{{ __('registration.title') }}</title>
+    <meta name="description" content="{{ __('registration.meta_description') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
@@ -392,16 +419,16 @@
     {{-- ── NAV ── --}}
     <nav class="nav">
         <a href="{{ url('/') }}" class="nav-logo">Klinica<span>.</span></a>
-        <a href="#" class="nav-login">Already have an account? <strong>Sign in →</strong></a>
+        <a href="#" class="nav-login">{{ __('registration.already_have_account') }} <strong>{{ __('registration.sign_in') }}</strong></a>
     </nav>
 
     {{-- ── HERO STRIP ── --}}
     <div class="hero-strip">
         <div class="hero-strip-badge">
-            Free for 14 days, no credit card required
+            {{ __('registration.free_trial_badge') }}
         </div>
-        <h1>Set up your clinic in minutes</h1>
-        <p>Your booking page, patient management, and scheduling, all in one place.</p>
+        <h1>{{ __('registration.hero_title') }}</h1>
+        <p>{{ __('registration.hero_subtitle') }}</p>
     </div>
 
     {{-- ── STEPPER ── --}}
@@ -409,22 +436,22 @@
         <div class="stepper" id="stepperBar">
             <div class="step-item">
                 <div class="step-circle active" id="sc1">1</div>
-                <span class="step-label active" id="sl1">Choose Plan</span>
+                <span class="step-label active" id="sl1">{{ __('registration.step_plan') }}</span>
             </div>
             <div class="step-connector" id="conn1"></div>
             <div class="step-item">
                 <div class="step-circle" id="sc2">2</div>
-                <span class="step-label" id="sl2">Your Clinic</span>
+                <span class="step-label" id="sl2">{{ __('registration.step_clinic') }}</span>
             </div>
             <div class="step-connector" id="conn2"></div>
             <div class="step-item">
                 <div class="step-circle" id="sc3">3</div>
-                <span class="step-label" id="sl3">Your Account</span>
+                <span class="step-label" id="sl3">{{ __('registration.step_account') }}</span>
             </div>
             <div class="step-connector" id="conn3"></div>
             <div class="step-item">
                 <div class="step-circle" id="sc4">4</div>
-                <span class="step-label" id="sl4">Confirm</span>
+                <span class="step-label" id="sl4">{{ __('registration.step_confirm') }}</span>
             </div>
         </div>
     </div>
@@ -434,7 +461,7 @@
         {{-- Server-side validation errors shown on step 1 if redirected back --}}
         @if ($errors->any())
             <div class="alert-errors" style="margin-bottom:24px;">
-                <strong>Please fix the following:</strong>
+                <strong>{{ __('registration.errors_heading') }}</strong>
                 <ul style="margin-top:8px;">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
@@ -450,53 +477,53 @@
 
                 {{-- ═══════ STEP 1: PLAN ═══════ --}}
                 <div class="step-panel active" id="panel1">
-                    <div class="panel-heading">Choose your plan</div>
-                    <p class="panel-sub">Start a 14-day free trial. No credit card required.</p>
+                    <div class="panel-heading">{{ __('registration.plan_heading') }}</div>
+                    <p class="panel-sub">{{ __('registration.plan_sub') }}</p>
 
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0" id="planCards">
                         <label class="plan-card selected" id="card-starter" style="cursor:pointer;border:2px solid var(--teal);border-radius:12px;padding:20px;background:#f0fafb;display:block">
                             <input type="radio" name="_plan_radio" value="starter" style="display:none" checked>
-                            <div style="font-weight:700;font-size:16px;color:var(--teal)">Starter</div>
-                            <div style="font-size:22px;font-weight:800;margin:4px 0"><sup style="font-size:14px">€</sup>29<span style="font-size:12px;font-weight:400;color:#888">/mo</span></div>
+                            <div style="font-weight:700;font-size:16px;color:var(--teal)">{{ __('registration.starter_label') }}</div>
+                            <div style="font-size:22px;font-weight:800;margin:4px 0"><sup style="font-size:14px">€</sup>29<span style="font-size:12px;font-weight:400;color:#888">{{ __('registration.starter_price_suffix') }}</span></div>
                             <ul style="margin:12px 0 0;padding:0;list-style:none;font-size:13px;color:#555;line-height:1.8">
-                                <li>✓ Up to 20 patients</li>
-                                <li>✓ 1 employee</li>
-                                <li>✓ 30 bookings/month</li>
-                                <li>✓ AES-256 encryption</li>
-                                <li>✓ Audit logs</li>
+                                <li>✓ {{ __('registration.starter_feature_1') }}</li>
+                                <li>✓ {{ __('registration.starter_feature_2') }}</li>
+                                <li>✓ {{ __('registration.starter_feature_3') }}</li>
+                                <li>✓ {{ __('registration.starter_feature_4') }}</li>
+                                <li>✓ {{ __('registration.starter_feature_5') }}</li>
                             </ul>
                         </label>
                         <label class="plan-card" id="card-pro" style="cursor:pointer;border:2px solid #e2e8f0;border-radius:12px;padding:20px;background:#fff;display:block">
                             <input type="radio" name="_plan_radio" value="pro" style="display:none">
-                            <div style="font-weight:700;font-size:16px;color:#2F8082">Pro</div>
-                            <div style="font-size:22px;font-weight:800;margin:4px 0"><sup style="font-size:14px">€</sup>49<span style="font-size:12px;font-weight:400;color:#888">/mo</span></div>
+                            <div style="font-weight:700;font-size:16px;color:#2F8082">{{ __('registration.pro_label') }}</div>
+                            <div style="font-size:22px;font-weight:800;margin:4px 0"><sup style="font-size:14px">€</sup>49<span style="font-size:12px;font-weight:400;color:#888">{{ __('registration.pro_price_suffix') }}</span></div>
                             <ul style="margin:12px 0 0;padding:0;list-style:none;font-size:13px;color:#555;line-height:1.8">
-                                <li>✓ Unlimited patients</li>
-                                <li>✓ Unlimited employees</li>
-                                <li>✓ Unlimited bookings</li>
-                                <li>✓ 10 GB storage</li>
-                                <li>✓ Email reminders</li>
+                                <li>✓ {{ __('registration.pro_feature_1') }}</li>
+                                <li>✓ {{ __('registration.pro_feature_2') }}</li>
+                                <li>✓ {{ __('registration.pro_feature_3') }}</li>
+                                <li>✓ {{ __('registration.pro_feature_4') }}</li>
+                                <li>✓ {{ __('registration.pro_feature_5') }}</li>
                             </ul>
                         </label>
                     </div>
 
                     <div class="btn-row" style="justify-content:flex-end">
-                        <button type="button" class="btn-primary" onclick="goToStep(2)">Continue →</button>
+                        <button type="button" class="btn-primary" onclick="goToStep(2)">{{ __('registration.continue') }}</button>
                     </div>
                 </div>
 
                 {{-- ═══════ STEP 2: CLINIC ═══════ --}}
                 <div class="step-panel" id="panel2">
-                    <div class="panel-heading">Tell us about your clinic</div>
-                    <p class="panel-sub">This will be your clinic's public identity on Klinica.</p>
+                    <div class="panel-heading">{{ __('registration.clinic_heading') }}</div>
+                    <p class="panel-sub">{{ __('registration.clinic_sub') }}</p>
 
                     <div class="form-group">
-                        <label class="form-label" for="clinic_name">Clinic name <span class="required">*</span></label>
+                        <label class="form-label" for="clinic_name">{{ __('registration.clinic_name_label') }} <span class="required">*</span></label>
                         <input
                             class="form-input {{ $errors->has('clinic_name') ? 'is-error' : '' }}"
                             id="clinic_name" type="text" name="clinic_name"
                             value="{{ old('clinic_name') }}"
-                            placeholder="e.g. Dr. Martin's Physiotherapy"
+                            placeholder="{{ __('registration.clinic_name_placeholder') }}"
                             autocomplete="organization"
                         >
                         @error('clinic_name')
@@ -505,66 +532,66 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label" for="subdomain">Your booking URL <span class="required">*</span></label>
+                        <label class="form-label" for="subdomain">{{ __('registration.booking_url_label') }} <span class="required">*</span></label>
                         <div class="input-wrap">
                             <input
                                 class="form-input has-suffix {{ $errors->has('subdomain') ? 'is-error' : '' }}"
                                 id="subdomain" type="text" name="subdomain"
                                 value="{{ old('subdomain') }}"
-                                placeholder="yourclinic"
+                                placeholder="{{ __('registration.booking_url_placeholder') }}"
                                 autocomplete="off"
                                 inputmode="url"
                             >
                             <span class="input-suffix">.klinica.space</span>
                         </div>
                         <div class="subdomain-preview" id="subdomainPreview">
-                            Enter a subdomain to preview your URL
+                            {{ __('registration.booking_url_preview_empty') }}
                         </div>
                         <div id="subdomainStatus"></div>
                         @error('subdomain')
                             <div class="field-error">{{ $message }}</div>
                         @enderror
-                        <div class="field-hint">Lowercase letters, numbers and hyphens only.</div>
+                        <div class="field-hint">{{ __('registration.subdomain_hint') }}</div>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label" for="locale">Dashboard language <span class="required">*</span></label>
+                        <label class="form-label" for="locale">{{ __('registration.locale_label') }} <span class="required">*</span></label>
                         <select
                             class="form-input {{ $errors->has('locale') ? 'is-error' : '' }}"
                             id="locale" name="locale"
                             style="appearance:auto;"
                         >
-                            <option value="en" {{ old('locale', 'en') === 'en' ? 'selected' : '' }}>🇬🇧 English</option>
-                            <option value="fr" {{ old('locale') === 'fr' ? 'selected' : '' }}>🇫🇷 Français</option>
-                            <option value="de" {{ old('locale') === 'de' ? 'selected' : '' }}>🇩🇪 Deutsch</option>
-                            <option value="es" {{ old('locale') === 'es' ? 'selected' : '' }}>🇪🇸 Español</option>
+                            <option value="en" {{ old('locale', app()->getLocale()) === 'en' ? 'selected' : '' }}>🇬🇧 English</option>
+                            <option value="fr" {{ old('locale', app()->getLocale()) === 'fr' ? 'selected' : '' }}>🇫🇷 Français</option>
+                            <option value="de" {{ old('locale', app()->getLocale()) === 'de' ? 'selected' : '' }}>🇩🇪 Deutsch</option>
+                            <option value="es" {{ old('locale', app()->getLocale()) === 'es' ? 'selected' : '' }}>🇪🇸 Español</option>
                         </select>
-                        <div class="field-hint">Sets the language for your dashboard and public booking page.</div>
+                        <div class="field-hint">{{ __('registration.locale_hint') }}</div>
                         @error('locale')
                             <div class="field-error">{{ $message }}</div>
                         @enderror
                     </div>
 
                     <div class="btn-row" style="justify-content:flex-end;">
-                        <button type="button" class="btn-ghost" onclick="goToStep(1)">← Back</button>
+                        <button type="button" class="btn-ghost" onclick="goToStep(1)">{{ __('registration.back') }}</button>
                         <button type="button" class="btn-primary" onclick="goToStep(3)">
-                            Continue <span>→</span>
+                            {{ __('registration.continue') }}
                         </button>
                     </div>
                 </div>
 
                 {{-- ═══════ STEP 3: ACCOUNT ═══════ --}}
                 <div class="step-panel" id="panel3">
-                    <div class="panel-heading">Create your account</div>
-                    <p class="panel-sub">This will be your admin login for the Klinica dashboard.</p>
+                    <div class="panel-heading">{{ __('registration.account_heading') }}</div>
+                    <p class="panel-sub">{{ __('registration.account_sub') }}</p>
 
                     <div class="form-group">
-                        <label class="form-label" for="name">Your full name <span class="required">*</span></label>
+                        <label class="form-label" for="name">{{ __('registration.full_name_label') }} <span class="required">*</span></label>
                         <input
                             class="form-input {{ $errors->has('name') ? 'is-error' : '' }}"
                             id="name" type="text" name="name"
                             value="{{ old('name') }}"
-                            placeholder="Dr. Anna Martin"
+                            placeholder="{{ __('registration.full_name_placeholder') }}"
                             autocomplete="name"
                         >
                         @error('name')
@@ -573,12 +600,12 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label" for="email">Work email <span class="required">*</span></label>
+                        <label class="form-label" for="email">{{ __('registration.email_label') }} <span class="required">*</span></label>
                         <input
                             class="form-input {{ $errors->has('email') ? 'is-error' : '' }}"
                             id="email" type="email" name="email"
                             value="{{ old('email') }}"
-                            placeholder="anna@yourclinic.com"
+                            placeholder="{{ __('registration.email_placeholder') }}"
                             autocomplete="email"
                         >
                         @error('email')
@@ -588,15 +615,15 @@
 
                     <div class="form-row">
                         <div class="form-group" style="margin-bottom:0;">
-                            <label class="form-label" for="password">Password <span class="required">*</span></label>
+                            <label class="form-label" for="password">{{ __('registration.password_label') }} <span class="required">*</span></label>
                             <div class="input-wrap">
                                 <input
                                     class="form-input has-toggle {{ $errors->has('password') ? 'is-error' : '' }}"
                                     id="password" type="password" name="password"
-                                    placeholder="Min. 8 characters"
+                                    placeholder="{{ __('registration.password_placeholder') }}"
                                     autocomplete="new-password"
                                 >
-                                <button type="button" class="password-toggle" onclick="togglePwd('password', this)" aria-label="Toggle password visibility">Show</button>
+                                <button type="button" class="password-toggle" onclick="togglePwd('password', this)" aria-label="Toggle password visibility">{{ __('registration.password_show') }}</button>
                             </div>
                             @error('password')
                                 <div class="field-error">{{ $message }}</div>
@@ -604,31 +631,31 @@
                         </div>
 
                         <div class="form-group" style="margin-bottom:0;">
-                            <label class="form-label" for="password_confirmation">Confirm password <span class="required">*</span></label>
+                            <label class="form-label" for="password_confirmation">{{ __('registration.confirm_password_label') }} <span class="required">*</span></label>
                             <div class="input-wrap">
                                 <input
                                     class="form-input has-toggle"
                                     id="password_confirmation" type="password" name="password_confirmation"
-                                    placeholder="Repeat password"
+                                    placeholder="{{ __('registration.confirm_password_placeholder') }}"
                                     autocomplete="new-password"
                                 >
-                                <button type="button" class="password-toggle" onclick="togglePwd('password_confirmation', this)" aria-label="Toggle password visibility">Show</button>
+                                <button type="button" class="password-toggle" onclick="togglePwd('password_confirmation', this)" aria-label="Toggle password visibility">{{ __('registration.password_show') }}</button>
                             </div>
                         </div>
                     </div>
 
                     <div class="btn-row">
-                        <button type="button" class="btn-ghost" onclick="goToStep(2)">← Back</button>
+                        <button type="button" class="btn-ghost" onclick="goToStep(2)">{{ __('registration.back') }}</button>
                         <button type="button" class="btn-primary" onclick="goToStep(4)">
-                            Review <span>→</span>
+                            {{ __('registration.review') }}
                         </button>
                     </div>
                 </div>
 
                 {{-- ═══════ STEP 4: CONFIRM ═══════ --}}
                 <div class="step-panel" id="panel4">
-                    <div class="panel-heading">Looks good, let's launch!</div>
-                    <p class="panel-sub">Review your details before we create your clinic.</p>
+                    <div class="panel-heading">{{ __('registration.review_heading') }}</div>
+                    <p class="panel-sub">{{ __('registration.review_sub') }}</p>
 
                     <div class="review-grid">
                         <div class="review-row">
@@ -636,50 +663,50 @@
                                 <svg viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M2.5 10h19"/></svg>
                             </div>
                             <div>
-                                <div class="review-label">Plan</div>
-                                <div class="review-value" id="review-plan">Not set</div>
+                                <div class="review-label">{{ __('registration.review_plan_label') }}</div>
+                                <div class="review-value" id="review-plan">{{ __('registration.review_not_set') }}</div>
                             </div>
-                            <button type="button" class="review-edit" onclick="goToStep(1)">Edit</button>
+                            <button type="button" class="review-edit" onclick="goToStep(1)">{{ __('registration.review_edit') }}</button>
                         </div>
                         <div class="review-row">
                             <div class="review-icon" aria-hidden="true">
                                 <svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M9 21v-6h6v6"/></svg>
                             </div>
                             <div>
-                                <div class="review-label">Clinic Name</div>
-                                <div class="review-value" id="review-clinic-name">Not set</div>
+                                <div class="review-label">{{ __('registration.review_clinic_label') }}</div>
+                                <div class="review-value" id="review-clinic-name">{{ __('registration.review_not_set') }}</div>
                             </div>
-                            <button type="button" class="review-edit" onclick="goToStep(2)">Edit</button>
+                            <button type="button" class="review-edit" onclick="goToStep(2)">{{ __('registration.review_edit') }}</button>
                         </div>
                         <div class="review-row">
                             <div class="review-icon" aria-hidden="true">
                                 <svg viewBox="0 0 24 24"><path d="M10 14a5 5 0 007.07 0l2.83-2.83a5 5 0 00-7.07-7.07L10 6"/><path d="M14 10a5 5 0 00-7.07 0L4.1 12.83a5 5 0 007.07 7.07L14 18"/></svg>
                             </div>
                             <div>
-                                <div class="review-label">Booking URL</div>
-                                <div class="review-value" id="review-url">Not set</div>
+                                <div class="review-label">{{ __('registration.review_url_label') }}</div>
+                                <div class="review-value" id="review-url">{{ __('registration.review_not_set') }}</div>
                             </div>
-                            <button type="button" class="review-edit" onclick="goToStep(2)">Edit</button>
+                            <button type="button" class="review-edit" onclick="goToStep(2)">{{ __('registration.review_edit') }}</button>
                         </div>
                         <div class="review-row">
                             <div class="review-icon" aria-hidden="true">
                                 <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/></svg>
                             </div>
                             <div>
-                                <div class="review-label">Name</div>
-                                <div class="review-value" id="review-name">Not set</div>
+                                <div class="review-label">{{ __('registration.review_name_label') }}</div>
+                                <div class="review-value" id="review-name">{{ __('registration.review_not_set') }}</div>
                             </div>
-                            <button type="button" class="review-edit" onclick="goToStep(3)">Edit</button>
+                            <button type="button" class="review-edit" onclick="goToStep(3)">{{ __('registration.review_edit') }}</button>
                         </div>
                         <div class="review-row">
                             <div class="review-icon" aria-hidden="true">
                                 <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
                             </div>
                             <div>
-                                <div class="review-label">Email</div>
-                                <div class="review-value" id="review-email">Not set</div>
+                                <div class="review-label">{{ __('registration.review_email_label') }}</div>
+                                <div class="review-value" id="review-email">{{ __('registration.review_not_set') }}</div>
                             </div>
-                            <button type="button" class="review-edit" onclick="goToStep(3)">Edit</button>
+                            <button type="button" class="review-edit" onclick="goToStep(3)">{{ __('registration.review_edit') }}</button>
                         </div>
                     </div>
 
@@ -688,19 +715,19 @@
                             <div class="trust-badge-icon" aria-hidden="true">
                                 <svg viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 5-3.5 8.5-7 9-3.5-.5-7-4-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
                             </div>
-                            Encrypted & GDPR compliant
+                            {{ __('registration.badge_encrypted') }}
                         </div>
                         <div class="trust-badge">
                             <div class="trust-badge-icon" aria-hidden="true">
                                 <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
                             </div>
-                            Live in under 2 minutes
+                            {{ __('registration.badge_live') }}
                         </div>
                         <div class="trust-badge">
                             <div class="trust-badge-icon" aria-hidden="true">
                                 <svg viewBox="0 0 24 24"><path d="M8 4h8"/><path d="M8 4v4l4 3 4-3V4"/><rect x="3" y="8" width="18" height="12" rx="2"/></svg>
                             </div>
-                            14-day free trial
+                            {{ __('registration.badge_trial') }}
                         </div>
                     </div>
 
@@ -714,27 +741,26 @@
                         >
                         <div>
                             <label class="consent-label" for="terms_accepted">
-                                I have read and agree to Klinica's
-                                <a href="{{ route('terms') }}" target="_blank">Terms of Service</a>,
-                                <a href="{{ route('privacy') }}" target="_blank">Privacy Policy</a>,
-                                and <a href="{{ route('dpa') }}" target="_blank">Data Processing Agreement (DPA)</a>.
-                                I understand that my clinic's data will be processed in accordance with GDPR
-                                and hosted on ISO 27001 certified servers in Germany.
+                                {{ __('registration.consent_part1') }}
+                                <a href="{{ route('terms') }}" target="_blank">{{ __('registration.consent_terms') }}</a>{{ __('registration.consent_comma') }}
+                                <a href="{{ route('privacy') }}" target="_blank">{{ __('registration.consent_privacy') }}</a>,
+                                {{ __('registration.consent_and') }} <a href="{{ route('dpa') }}" target="_blank">{{ __('registration.consent_dpa') }}</a>.
+                                {{ __('registration.consent_part2') }}
                             </label>
                             @error('terms_accepted')
                                 <p style="font-size:12px;color:var(--error);margin-top:6px">{{ $message }}</p>
                             @enderror
-                            <p class="consent-error" id="consentError">You must accept the terms to continue.</p>
+                            <p class="consent-error" id="consentError">{{ __('registration.consent_error') }}</p>
                         </div>
                     </div>
 
                     <div class="btn-row">
-                        <button type="button" class="btn-ghost" onclick="goToStep(3)">← Back</button>
+                        <button type="button" class="btn-ghost" onclick="goToStep(3)">{{ __('registration.back') }}</button>
                         <button type="submit" class="btn-primary" id="submitBtn">
-                            Create my clinic
+                            {{ __('registration.create_clinic') }}
                         </button>
                     </div>
-                    <p style="text-align:center;font-size:12px;color:#888;margin-top:16px">Your data is encrypted and hosted on ISO 27001 certified servers in Germany. We never share or sell your data.</p>
+                    <p style="text-align:center;font-size:12px;color:#888;margin-top:16px">{{ __('registration.disclaimer') }}</p>
                 </div>
 
             </form>
@@ -743,14 +769,16 @@
 
     <footer class="page-footer">
         &copy; {{ date('Y') }} Klinica &mdash;
-        <a href="{{ route('terms') }}">Terms of Service</a> &middot;
-        <a href="{{ route('privacy') }}">Privacy Policy</a> &middot;
-        <a href="{{ route('dpa') }}">DPA</a> &middot;
-        <a href="{{ route('refund-policy') }}">Refund Policy</a>
+        <a href="{{ route('terms') }}">{{ __('registration.footer_terms') }}</a> &middot;
+        <a href="{{ route('privacy') }}">{{ __('registration.footer_privacy') }}</a> &middot;
+        <a href="{{ route('dpa') }}">{{ __('registration.footer_dpa') }}</a> &middot;
+        <a href="{{ route('refund-policy') }}">{{ __('registration.footer_refund') }}</a>
     </footer>
 
     <script>
-        let currentStep = {{ $errors->any() ? 1 : 1 }};
+        const i18n = @json($i18n);
+
+        let currentStep = 1;
 
         // If server returned validation errors, show the correct step
         @if ($errors->hasAny(['clinic_name', 'subdomain']))
@@ -798,14 +826,14 @@
             if (step === 2) {
                 const clinic = document.getElementById('clinic_name').value.trim();
                 const sub = document.getElementById('subdomain').value.trim();
-                if (!clinic) { alert('Please enter your clinic name.'); return false; }
-                if (!sub)    { alert('Please enter a subdomain.'); return false; }
+                if (!clinic) { alert(i18n.enterClinicName); return false; }
+                if (!sub)    { alert(i18n.enterSubdomain); return false; }
                 if (!/^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/.test(sub)) {
-                    alert('Subdomain may only contain lowercase letters, numbers and hyphens, and cannot start or end with a hyphen.');
+                    alert(i18n.subdomainFormat);
                     return false;
                 }
                 if (lastCheckedSubdomain === sub && ! subdomainAvailable) {
-                    alert('That subdomain is not available. Please choose a different one.');
+                    alert(i18n.subdomainUnavailable);
                     return false;
                 }
                 return true;
@@ -815,14 +843,14 @@
                 const email = document.getElementById('email').value.trim();
                 const pwd   = document.getElementById('password').value;
                 const conf  = document.getElementById('password_confirmation').value;
-                if (!name)  { alert('Please enter your full name.'); return false; }
-                if (!email) { alert('Please enter your email address.'); return false; }
+                if (!name)  { alert(i18n.enterName); return false; }
+                if (!email) { alert(i18n.enterEmail); return false; }
                 if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                    alert('Please enter a valid email address.');
+                    alert(i18n.invalidEmail);
                     return false;
                 }
-                if (pwd.length < 8) { alert('Password must be at least 8 characters.'); return false; }
-                if (pwd !== conf)   { alert('Passwords do not match.'); return false; }
+                if (pwd.length < 8) { alert(i18n.passwordLength); return false; }
+                if (pwd !== conf)   { alert(i18n.passwordMismatch); return false; }
                 return true;
             }
             return true;
@@ -836,15 +864,15 @@
                 const sub = document.getElementById('subdomain').value.trim();
                 const plan = document.getElementById('selectedPlan').value;
                 document.getElementById('review-plan').textContent =
-                    plan === 'pro' ? 'Pro - €49/mo' : 'Starter - €29/mo';
+                    plan === 'pro' ? i18n.reviewPlanPro : i18n.reviewPlanStarter;
                 document.getElementById('review-clinic-name').textContent =
-                    document.getElementById('clinic_name').value.trim() || 'Not set';
+                    document.getElementById('clinic_name').value.trim() || i18n.reviewNotSet;
                 document.getElementById('review-url').textContent =
-                    sub ? sub + '.klinica.space' : 'Not set';
+                    sub ? sub + '.klinica.space' : i18n.reviewNotSet;
                 document.getElementById('review-name').textContent =
-                    document.getElementById('name').value.trim() || 'Not set';
+                    document.getElementById('name').value.trim() || i18n.reviewNotSet;
                 document.getElementById('review-email').textContent =
-                    document.getElementById('email').value.trim() || 'Not set';
+                    document.getElementById('email').value.trim() || i18n.reviewNotSet;
             }
 
             document.getElementById('panel' + currentStep).classList.remove('active');
@@ -872,7 +900,7 @@
             }
             if (val === lastCheckedSubdomain) { return; }
 
-            setSubdomainStatus('checking', '⏳ Checking availability…');
+            setSubdomainStatus('checking', i18n.subdomainChecking);
 
             fetch('{{ route('register.check-subdomain') }}?subdomain=' + encodeURIComponent(val))
                 .then(r => r.json())
@@ -880,13 +908,13 @@
                     lastCheckedSubdomain = val;
                     subdomainAvailable = data.available;
                     if (data.available) {
-                        setSubdomainStatus('available', '✓ Available');
+                        setSubdomainStatus('available', i18n.subdomainAvailable);
                     } else if (data.reason === 'reserved') {
-                        setSubdomainStatus('unavailable', '✗ Reserved — choose a different name');
+                        setSubdomainStatus('unavailable', i18n.subdomainReserved);
                     } else if (data.reason === 'invalid') {
-                        setSubdomainStatus('unavailable', '✗ Invalid format');
+                        setSubdomainStatus('unavailable', i18n.subdomainInvalid);
                     } else {
-                        setSubdomainStatus('unavailable', '✗ Already taken — try another');
+                        setSubdomainStatus('unavailable', i18n.subdomainTaken);
                     }
                 })
                 .catch(() => {
@@ -899,9 +927,9 @@
             this.value = val;
             const preview = document.getElementById('subdomainPreview');
             if (val) {
-                preview.innerHTML = 'Your URL will be: <strong>' + val + '.klinica.space</strong>';
+                preview.innerHTML = i18n.previewUrl.replace(':url', '<strong>' + val + '.klinica.space</strong>');
             } else {
-                preview.innerHTML = 'Enter a subdomain to preview your URL';
+                preview.innerHTML = i18n.previewEmpty;
                 document.getElementById('subdomainStatus').textContent = '';
                 return;
             }
@@ -937,10 +965,10 @@
             const input = document.getElementById(id);
             if (input.type === 'password') {
                 input.type = 'text';
-                btn.textContent = 'Hide';
+                btn.textContent = i18n.passwordHide;
             } else {
                 input.type = 'password';
-                btn.textContent = 'Show';
+                btn.textContent = i18n.passwordShow;
             }
         }
 
@@ -957,7 +985,7 @@
             }
             consentError.style.display = 'none';
             document.getElementById('submitBtn').disabled = true;
-            document.getElementById('submitBtn').textContent = 'Creating your clinic...';
+            document.getElementById('submitBtn').textContent = i18n.creatingClinic;
         });
 
         // Clear consent error on check
