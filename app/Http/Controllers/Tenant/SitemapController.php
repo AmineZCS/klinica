@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
 use App\Models\ClinicSetting;
+use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
 use Spatie\Sitemap\Sitemap;
@@ -17,11 +18,16 @@ class SitemapController extends Controller
     public function index(Request $request): Response
     {
         $settings = ClinicSetting::current();
-        $lastMod = $settings?->updated_at ?? now();
+        $hasServices = Service::where('is_active', true)->exists();
 
+        if (! $settings?->clinic_name || ! $hasServices) {
+            return Sitemap::create()->toResponse($request);
+        }
+
+        $lastMod = $settings->updated_at ?? now();
         $base = rtrim(url('/'), '/');
 
-        $sitemap = Sitemap::create()
+        return Sitemap::create()
             ->add(
                 Url::create($base.'/')
                     ->setPriority(1.0)
@@ -33,14 +39,14 @@ class SitemapController extends Controller
                     ->setPriority(0.8)
                     ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
                     ->setLastModificationDate($lastMod)
-            );
-
-        return $sitemap->toResponse($request);
+            )
+            ->toResponse($request);
     }
 
     public function llms(): HttpResponse
     {
         $settings = ClinicSetting::current();
+        $services = Service::where('is_active', true)->orderBy('name')->get();
         $base = rtrim(url('/'), '/');
 
         $name = $settings?->clinic_name ?? (string) (tenancy()->tenant?->id ?? 'This clinic');
@@ -48,6 +54,7 @@ class SitemapController extends Controller
         $phone = $settings?->contact_phone ?? null;
         $email = $settings?->contact_email ?? null;
         $address = $settings?->contact_address ?? null;
+        $currency = $settings?->currency ?? '€';
 
         $description = $tagline
             ? "{$name} — {$tagline}"
@@ -65,6 +72,20 @@ class SitemapController extends Controller
             "- [Home]({$base}/): Clinic overview and services",
             "- [Book an Appointment]({$base}/book): Online booking form",
         ];
+
+        if ($services->isNotEmpty()) {
+            $lines[] = '';
+            $lines[] = '## Services';
+            $lines[] = '';
+            foreach ($services as $service) {
+                $price = $service->price ? "{$currency}{$service->price}" : null;
+                $duration = $service->duration ? "{$service->duration} min" : null;
+                $meta = implode(', ', array_filter([$price, $duration]));
+                $lines[] = $meta
+                    ? "- **{$service->name}** ({$meta})".($service->description ? " — {$service->description}" : '')
+                    : "- **{$service->name}**".($service->description ? " — {$service->description}" : '');
+            }
+        }
 
         if ($phone || $email || $address) {
             $lines[] = '';
