@@ -23,6 +23,10 @@ class TenantOnboardingTour extends Component
     public function mount(): void
     {
         $this->step = session('onboarding_step', 1);
+
+        if (session('onboarding_dismissed', false)) {
+            $this->visible = false;
+        }
     }
 
     /** @return array<int, array{title: string, description: string, icon: string, action_label: string|null, action_url: string|null}> */
@@ -99,7 +103,8 @@ class TenantOnboardingTour extends Component
 
     public function skip(): void
     {
-        $this->complete();
+        session(['onboarding_dismissed' => true]);
+        $this->visible = false;
     }
 
     public function render(): View

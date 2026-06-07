@@ -53,6 +53,11 @@ class ClinicSettingsPage extends Page
         return __('klinica.settings.nav_label');
     }
 
+    public function getSubheading(): ?string
+    {
+        return __('klinica.settings.page_description');
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('klinica.settings.nav_label');

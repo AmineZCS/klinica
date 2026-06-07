@@ -24,6 +24,11 @@ class BillingPage extends Page
         return __('klinica.billing.nav_label');
     }
 
+    public function getSubheading(): ?string
+    {
+        return __('klinica.billing.page_description');
+    }
+
     public static function canAccess(): bool
     {
         return auth('tenant')->check();

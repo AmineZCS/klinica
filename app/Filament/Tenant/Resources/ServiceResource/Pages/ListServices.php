@@ -12,6 +12,11 @@ class ListServices extends ListRecords
 {
     protected static string $resource = ServiceResource::class;
 
+    public function getSubheading(): ?string
+    {
+        return __('klinica.service.page_description');
+    }
+
     protected function getHeaderActions(): array
     {
         return [

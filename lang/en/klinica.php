@@ -25,6 +25,7 @@ return [
         'field_dob' => 'Date of Birth',
         'field_gender' => 'Gender',
         'field_notes' => 'Notes',
+        'page_description' => 'Patient records are created when someone books. View booking history, add clinical notes, and manage records here.',
     ],
 
     // ── Booking ───────────────────────────────────────────────────────────
@@ -61,6 +62,7 @@ return [
         'action_create_patient_notification' => 'Patient ":name" linked to this booking.',
 
         'employee_busy' => ':name — already booked at this time',
+        'page_description' => 'Appointments booked through your public page appear here. You can also create, reschedule, or cancel bookings manually.',
     ],
 
     // ── Employee ──────────────────────────────────────────────────────────
@@ -73,6 +75,7 @@ return [
         'field_password' => 'Password',
         'field_active' => 'Active',
         'field_role' => 'Role',
+        'page_description' => 'Add staff members who can log in and manage bookings. Assign roles to control what each person can access.',
     ],
 
     // ── Service ───────────────────────────────────────────────────────────
@@ -87,6 +90,7 @@ return [
         'field_color' => 'Color',
         'field_image' => 'Service Image (3:2 ratio recommended — e.g. 900×600 px)',
         'field_image_short' => 'Image',
+        'page_description' => 'Services appear on your public booking page. Add each treatment you offer with its name, duration, price, and colour.',
     ],
 
     // ── Role ──────────────────────────────────────────────────────────────
@@ -103,7 +107,8 @@ return [
     'settings' => [
         'saved' => 'Settings saved successfully.',
         'nav_group' => 'Settings',
-        'nav_label' => 'Settings',
+        'nav_label' => 'Booking Page',
+        'page_description' => 'Customise your public booking page — logo, colour theme, contact details, language, and timezone. Changes preview live on the right.',
 
         'section_branding' => 'Branding & Hero',
         'section_contact' => 'Contact',
@@ -164,7 +169,8 @@ return [
 
     // ── Navigation labels (pages) ─────────────────────────────────────────
     'billing' => [
-        'nav_label' => 'Billing',
+        'nav_label' => 'Plan & Billing',
+        'page_description' => 'Manage your Klinica subscription — upgrade, downgrade, or cancel at any time.',
         'current_plan' => 'Current Plan',
         'badge_trial_expired' => 'Trial expired',
         'badge_trial_days' => 'Trial &mdash; :days :word left',
@@ -390,8 +396,9 @@ return [
     ],
     'calendar' => ['nav_label' => 'Calendar'],
     'schedule' => [
-        'nav_label' => 'Working Hours',
-        'title' => 'Working Hours & Scheduling',
+        'nav_label' => 'Opening Hours',
+        'title' => 'Opening Hours & Scheduling',
+        'page_description' => 'Set the days and hours your clinic is open. These determine the time slots available to patients on your booking page.',
         'day_sun' => 'Sunday',
         'day_mon' => 'Monday',
         'day_tue' => 'Tuesday',
@@ -417,7 +424,8 @@ return [
         'saved' => 'Schedule and scheduling rules saved.',
     ],
     'audit_log' => [
-        'nav_label' => 'Audit Log',
+        'nav_label' => 'Activity Log',
+        'page_description' => 'A complete history of all changes in your dashboard — who changed what and when.',
         'col_time' => 'Time',
         'col_user' => 'User',
         'col_event' => 'Event',
@@ -513,11 +521,11 @@ return [
 
         'step_2_title' => 'Set your working hours',
         'step_2_desc' => 'Define when your clinic is open and configure time slot intervals. This controls which booking slots appear on your public booking page.',
-        'step_2_action' => 'Go to Working Hours',
+        'step_2_action' => 'Set Opening Hours',
 
         'step_3_title' => 'Customise your clinic page',
         'step_3_desc' => 'Add your logo, choose a colour theme, set your contact details, timezone, and language. This is what your patients will see when they visit your clinic page.',
-        'step_3_action' => 'Go to Clinic Settings',
+        'step_3_action' => 'Customise Booking Page',
 
         'step_4_title' => 'Add your services',
         'step_4_desc' => 'Create the services your clinic offers — name, price, duration, and colour. Each service will be bookable on your public page.',
@@ -531,6 +539,18 @@ return [
         'step_6_desc' => 'Your clinic is ready to accept bookings. Share your clinic link with patients to start getting appointments. You can always revisit these settings from the sidebar.',
 
         'view_clinic' => 'View clinic page',
+
+        'checklist_title' => 'Complete your clinic setup',
+        'checklist_subtitle' => 'Finish these 3 steps before sharing your booking link.',
+        'checklist_dismiss' => 'Dismiss',
+        'checklist_schedule' => 'Set your opening hours',
+        'checklist_schedule_desc' => "Tell patients when you're available for bookings.",
+        'checklist_services' => 'Add at least one service',
+        'checklist_services_desc' => 'Patients book a specific service — add yours now.',
+        'checklist_branding' => 'Upload your logo',
+        'checklist_branding_desc' => 'Your logo appears on your booking page and confirmation emails.',
+        'checklist_all_done' => 'All done — your clinic is live! Share your link to start getting bookings.',
+        'checklist_view_page' => 'Open your booking page →',
     ],
 
     // ── Email subjects ────────────────────────────────────────────────────
@@ -547,6 +567,16 @@ return [
         'label_time' => 'Time',
         'label_assigned_to' => 'Assigned to',
         'label_reason' => 'Reason',
+        'new_booking_alert_subject' => 'New booking — :service — :date',
+        'new_booking_alert_heading' => 'New booking received',
+        'new_booking_alert_intro' => 'A new appointment has been booked at your clinic.',
+        'new_booking_alert_patient' => 'Patient',
+        'new_booking_alert_name' => 'Name',
+        'new_booking_alert_phone' => 'Phone',
+        'new_booking_alert_service_section' => 'Appointment',
+        'new_booking_alert_action' => 'View booking in dashboard',
+        'new_booking_alert_note' => 'Please log in to confirm or reschedule this appointment. Your patient will receive their confirmation email once you confirm.',
+
         'booking_confirmed_heading' => 'Your booking is confirmed!',
         'booking_confirmed_intro' => 'Great news! Your booking has been confirmed.',
         'booking_confirmed_cta' => 'Visit Our Website',

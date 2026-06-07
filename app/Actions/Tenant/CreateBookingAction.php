@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace App\Actions\Tenant;
 
 use App\Enums\BookingStatus;
+use App\Mail\NewBookingAlertMail;
 use App\Models\Booking;
+use App\Models\ClinicSetting;
 use App\Models\Patient;
 use App\Models\Service;
 use App\Services\Booking\AvailabilityService;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 
 class CreateBookingAction
@@ -65,7 +68,7 @@ class CreateBookingAction
             }
         }
 
-        return Booking::create([
+        $booking = Booking::create([
             'patient_id' => $patientId,
             'employee_id' => $data['employee_id'] ?? null,
             'service_id' => $service->id,
@@ -77,5 +80,29 @@ class CreateBookingAction
             'status' => BookingStatus::Pending,
             'notes' => $data['notes'] ?? null,
         ]);
+
+        $this->notifyTenant($booking);
+
+        return $booking;
+    }
+
+    private function notifyTenant(Booking $booking): void
+    {
+        $tenant = tenancy()->tenant;
+
+        if ($tenant === null) {
+            return;
+        }
+
+        $ownerEmail = (string) $tenant->owner_email;
+
+        if (! $ownerEmail) {
+            return;
+        }
+
+        $locale = ClinicSetting::current()->locale ?? 'en';
+        $dashboardUrl = $tenant->tenantBaseUrl().'/clinic/bookings';
+
+        Mail::to($ownerEmail)->queue(new NewBookingAlertMail($booking, $dashboardUrl, $locale));
     }
 }

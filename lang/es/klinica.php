@@ -25,6 +25,7 @@ return [
         'field_dob' => 'Fecha de nacimiento',
         'field_gender' => 'Género',
         'field_notes' => 'Notas',
+        'page_description' => 'Los registros de pacientes se crean automáticamente al reservar. Consulte el historial, añada notas clínicas y gestione los expedientes.',
     ],
 
     // ── Booking ───────────────────────────────────────────────────────────
@@ -61,6 +62,7 @@ return [
         'action_create_patient_notification' => 'Paciente ":name" vinculado a esta cita.',
 
         'employee_busy' => ':name — ya tiene una cita en este horario',
+        'page_description' => 'Las citas reservadas a través de su página pública aparecen aquí. También puede crear, reprogramar o cancelar citas manualmente.',
     ],
 
     // ── Employee ──────────────────────────────────────────────────────────
@@ -73,6 +75,7 @@ return [
         'field_password' => 'Contraseña',
         'field_active' => 'Activo',
         'field_role' => 'Rol',
+        'page_description' => 'Agregue miembros del personal que puedan iniciar sesión y gestionar citas. Asigne roles para controlar el acceso de cada persona.',
     ],
 
     // ── Service ───────────────────────────────────────────────────────────
@@ -87,6 +90,7 @@ return [
         'field_color' => 'Color',
         'field_image' => 'Imagen del servicio (ratio 3:2 recomendado — ej. 900×600 px)',
         'field_image_short' => 'Imagen',
+        'page_description' => 'Los servicios aparecen en su página de reservas pública. Añada cada tratamiento con su nombre, duración, precio y color.',
     ],
 
     // ── Role ──────────────────────────────────────────────────────────────
@@ -103,7 +107,8 @@ return [
     'settings' => [
         'saved' => 'Configuración guardada correctamente.',
         'nav_group' => 'Configuración',
-        'nav_label' => 'Configuración',
+        'nav_label' => 'Página de reservas',
+        'page_description' => 'Personalice su página de reservas pública — logo, tema de color, datos de contacto, idioma y zona horaria. Los cambios se previsualizan en directo.',
 
         'section_branding' => 'Marca e imagen',
         'section_contact' => 'Contacto',
@@ -164,7 +169,8 @@ return [
 
     // ── Navigation labels (pages) ─────────────────────────────────────────
     'billing' => [
-        'nav_label' => 'Facturación',
+        'nav_label' => 'Plan & Facturación',
+        'page_description' => 'Gestione su suscripción a Klinica — actualice, reduzca o cancele en cualquier momento.',
         'current_plan' => 'Plan actual',
         'badge_trial_expired' => 'Prueba expirada',
         'badge_trial_days' => 'Prueba &mdash; :days :word restante(s)',
@@ -387,7 +393,8 @@ return [
     ],
     'calendar' => ['nav_label' => 'Calendario'],
     'schedule' => [
-        'nav_label' => 'Horario laboral',
+        'nav_label' => 'Horario de apertura',
+        'page_description' => 'Defina los días y horarios en que su clínica está abierta. Estos determinan los turnos disponibles en su página de reservas.',
         'title' => 'Horario laboral y planificación',
         'day_sun' => 'Domingo',
         'day_mon' => 'Lunes',
@@ -414,7 +421,8 @@ return [
         'saved' => 'Horario y reglas de planificación guardados.',
     ],
     'audit_log' => [
-        'nav_label' => 'Registro de auditoría',
+        'nav_label' => 'Registro de actividad',
+        'page_description' => 'Historial completo de todos los cambios realizados en su panel — quién cambió qué y cuándo.',
         'col_time' => 'Hora',
         'col_user' => 'Usuario',
         'col_event' => 'Evento',
@@ -510,11 +518,11 @@ return [
 
         'step_2_title' => 'Configure su horario laboral',
         'step_2_desc' => 'Defina cuándo está abierta su clínica y configure los intervalos de turnos. Esto determina los horarios disponibles en su página de reservas pública.',
-        'step_2_action' => 'Ir al horario laboral',
+        'step_2_action' => 'Configurar horario de apertura',
 
         'step_3_title' => 'Personalice su página de clínica',
         'step_3_desc' => 'Añada su logo, elija un tema de color, configure sus datos de contacto, zona horaria e idioma. Esto es lo que verán sus pacientes al visitar su página.',
-        'step_3_action' => 'Ir a la configuración',
+        'step_3_action' => 'Personalizar página de reservas',
 
         'step_4_title' => 'Añada sus servicios',
         'step_4_desc' => 'Cree los servicios que ofrece su clínica — nombre, precio, duración y color. Cada servicio será reservable en su página pública.',
@@ -528,6 +536,18 @@ return [
         'step_6_desc' => 'Su clínica está lista para recibir reservas. Comparta su enlace de clínica con los pacientes. Siempre puede revisar esta configuración desde el menú lateral.',
 
         'view_clinic' => 'Ver página de clínica',
+
+        'checklist_title' => 'Configure su clínica',
+        'checklist_subtitle' => 'Complete estos 3 pasos antes de compartir su enlace de reservas.',
+        'checklist_dismiss' => 'Ignorar',
+        'checklist_schedule' => 'Definir su horario de apertura',
+        'checklist_schedule_desc' => 'Indique a los pacientes cuándo está disponible.',
+        'checklist_services' => 'Añadir al menos un servicio',
+        'checklist_services_desc' => 'Los pacientes reservan un servicio — añada el suyo ahora.',
+        'checklist_branding' => 'Subir su logo',
+        'checklist_branding_desc' => 'Su logo aparece en su página de reservas y en los emails.',
+        'checklist_all_done' => '¡Todo listo — su clínica está en línea! Comparta su enlace para recibir reservas.',
+        'checklist_view_page' => 'Abrir su página de reservas →',
     ],
 
     // ── Email subjects ────────────────────────────────────────────────────
@@ -544,6 +564,16 @@ return [
         'label_time' => 'Hora',
         'label_assigned_to' => 'Asignado a',
         'label_reason' => 'Motivo',
+        'new_booking_alert_subject' => 'Nueva cita — :service — :date',
+        'new_booking_alert_heading' => 'Nueva cita recibida',
+        'new_booking_alert_intro' => 'Se ha realizado una nueva cita en su clínica.',
+        'new_booking_alert_patient' => 'Paciente',
+        'new_booking_alert_name' => 'Nombre',
+        'new_booking_alert_phone' => 'Teléfono',
+        'new_booking_alert_service_section' => 'Cita',
+        'new_booking_alert_action' => 'Ver cita en el panel',
+        'new_booking_alert_note' => 'Inicie sesión para confirmar o reprogramar esta cita. Su paciente recibirá su correo de confirmación una vez que confirme.',
+
         'booking_confirmed_heading' => '¡Su cita está confirmada!',
         'booking_confirmed_intro' => '¡Buenas noticias! Su cita ha sido confirmada.',
         'booking_confirmed_cta' => 'Visitar nuestro sitio web',

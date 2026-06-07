@@ -25,6 +25,7 @@ return [
         'field_dob' => 'Geburtsdatum',
         'field_gender' => 'Geschlecht',
         'field_notes' => 'Notizen',
+        'page_description' => 'Patientenakten werden automatisch bei einer Buchung erstellt. Buchungsverlauf ansehen, klinische Notizen hinzufügen und Datensätze verwalten.',
     ],
 
     // ── Booking ───────────────────────────────────────────────────────────
@@ -61,6 +62,7 @@ return [
         'action_create_patient_notification' => 'Patient ":name" mit dieser Buchung verknüpft.',
 
         'employee_busy' => ':name — zu diesem Zeitpunkt bereits gebucht',
+        'page_description' => 'Termine, die über Ihre öffentliche Seite gebucht wurden, erscheinen hier. Sie können Termine auch manuell erstellen, verschieben oder stornieren.',
     ],
 
     // ── Employee ──────────────────────────────────────────────────────────
@@ -73,6 +75,7 @@ return [
         'field_password' => 'Passwort',
         'field_active' => 'Aktiv',
         'field_role' => 'Rolle',
+        'page_description' => 'Fügen Sie Mitarbeiter hinzu, die sich einloggen und Buchungen verwalten können. Rollen zuweisen, um Zugriffsrechte zu steuern.',
     ],
 
     // ── Service ───────────────────────────────────────────────────────────
@@ -87,6 +90,7 @@ return [
         'field_color' => 'Farbe',
         'field_image' => 'Leistungsbild (3:2-Verhältnis empfohlen — z. B. 900×600 px)',
         'field_image_short' => 'Bild',
+        'page_description' => 'Leistungen erscheinen auf Ihrer öffentlichen Buchungsseite. Fügen Sie jede Behandlung mit Name, Dauer, Preis und Farbe hinzu.',
     ],
 
     // ── Role ──────────────────────────────────────────────────────────────
@@ -103,7 +107,8 @@ return [
     'settings' => [
         'saved' => 'Einstellungen erfolgreich gespeichert.',
         'nav_group' => 'Einstellungen',
-        'nav_label' => 'Einstellungen',
+        'nav_label' => 'Buchungsseite',
+        'page_description' => 'Gestalten Sie Ihre öffentliche Buchungsseite — Logo, Farbthema, Kontaktdaten, Sprache und Zeitzone. Änderungen werden live angezeigt.',
 
         'section_branding' => 'Branding & Hero',
         'section_contact' => 'Kontakt',
@@ -164,7 +169,8 @@ return [
 
     // ── Navigation labels (pages) ─────────────────────────────────────────
     'billing' => [
-        'nav_label' => 'Abrechnung',
+        'nav_label' => 'Tarif & Abrechnung',
+        'page_description' => 'Verwalten Sie Ihr Klinica-Abonnement — jederzeit upgraden, downgraden oder kündigen.',
         'current_plan' => 'Aktueller Plan',
         'badge_trial_expired' => 'Test abgelaufen',
         'badge_trial_days' => 'Test &mdash; noch :days :word',
@@ -387,7 +393,8 @@ return [
     ],
     'calendar' => ['nav_label' => 'Kalender'],
     'schedule' => [
-        'nav_label' => 'Arbeitszeiten',
+        'nav_label' => 'Öffnungszeiten',
+        'page_description' => 'Legen Sie fest, an welchen Tagen und zu welchen Zeiten Ihre Klinik geöffnet ist. Diese Einstellungen bestimmen die verfügbaren Buchungsslots.',
         'title' => 'Arbeitszeiten & Planung',
         'day_sun' => 'Sonntag',
         'day_mon' => 'Montag',
@@ -415,6 +422,7 @@ return [
     ],
     'audit_log' => [
         'nav_label' => 'Aktivitätsprotokoll',
+        'page_description' => 'Vollständiger Verlauf aller Änderungen in Ihrem Dashboard — wer was wann geändert hat.',
         'col_time' => 'Uhrzeit',
         'col_user' => 'Benutzer',
         'col_event' => 'Ereignis',
@@ -510,11 +518,11 @@ return [
 
         'step_2_title' => 'Arbeitszeiten festlegen',
         'step_2_desc' => 'Legen Sie fest, wann Ihre Klinik geöffnet ist, und konfigurieren Sie die Zeitintervalle. Dies bestimmt die verfügbaren Buchungsslots auf Ihrer öffentlichen Seite.',
-        'step_2_action' => 'Zu den Arbeitszeiten',
+        'step_2_action' => 'Öffnungszeiten festlegen',
 
         'step_3_title' => 'Klinikseite anpassen',
         'step_3_desc' => 'Fügen Sie Ihr Logo hinzu, wählen Sie ein Farbthema und hinterlegen Sie Kontaktdaten, Zeitzone und Sprache. Das sehen Ihre Patienten auf Ihrer Klinikseite.',
-        'step_3_action' => 'Zu den Einstellungen',
+        'step_3_action' => 'Buchungsseite anpassen',
 
         'step_4_title' => 'Leistungen hinzufügen',
         'step_4_desc' => 'Erstellen Sie die Leistungen Ihrer Klinik — Name, Preis, Dauer und Farbe. Jede Leistung kann auf Ihrer öffentlichen Seite gebucht werden.',
@@ -528,6 +536,18 @@ return [
         'step_6_desc' => 'Ihre Klinik ist bereit, Buchungen anzunehmen. Teilen Sie Ihren Kliniklink mit Patienten. Sie können diese Einstellungen jederzeit über die Seitenleiste anpassen.',
 
         'view_clinic' => 'Klinikseite anzeigen',
+
+        'checklist_title' => 'Klinik einrichten',
+        'checklist_subtitle' => 'Schließen Sie diese 3 Schritte ab, bevor Sie Ihren Link teilen.',
+        'checklist_dismiss' => 'Schließen',
+        'checklist_schedule' => 'Öffnungszeiten festlegen',
+        'checklist_schedule_desc' => 'Teilen Sie Patienten mit, wann Sie verfügbar sind.',
+        'checklist_services' => 'Mindestens eine Leistung hinzufügen',
+        'checklist_services_desc' => 'Patienten buchen eine Leistung — fügen Sie Ihre hinzu.',
+        'checklist_branding' => 'Logo hochladen',
+        'checklist_branding_desc' => 'Ihr Logo erscheint auf Ihrer Buchungsseite und in E-Mails.',
+        'checklist_all_done' => 'Alles erledigt — Ihre Klinik ist live! Teilen Sie Ihren Link, um Buchungen zu erhalten.',
+        'checklist_view_page' => 'Buchungsseite öffnen →',
     ],
 
     // ── Email subjects ────────────────────────────────────────────────────
@@ -544,6 +564,16 @@ return [
         'label_time' => 'Uhrzeit',
         'label_assigned_to' => 'Zugewiesen an',
         'label_reason' => 'Grund',
+        'new_booking_alert_subject' => 'Neue Buchung — :service — :date',
+        'new_booking_alert_heading' => 'Neue Buchung eingegangen',
+        'new_booking_alert_intro' => 'In Ihrer Klinik wurde ein neuer Termin gebucht.',
+        'new_booking_alert_patient' => 'Patient',
+        'new_booking_alert_name' => 'Name',
+        'new_booking_alert_phone' => 'Telefon',
+        'new_booking_alert_service_section' => 'Termin',
+        'new_booking_alert_action' => 'Buchung im Dashboard ansehen',
+        'new_booking_alert_note' => 'Bitte melden Sie sich an, um diesen Termin zu bestätigen oder zu verschieben. Ihr Patient erhält seine Bestätigungs-E-Mail, sobald Sie bestätigen.',
+
         'booking_confirmed_heading' => 'Ihr Termin ist bestätigt!',
         'booking_confirmed_intro' => 'Gute Neuigkeiten! Ihr Termin wurde bestätigt.',
         'booking_confirmed_cta' => 'Unsere Website besuchen',

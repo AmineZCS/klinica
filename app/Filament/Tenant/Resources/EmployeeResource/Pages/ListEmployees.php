@@ -12,6 +12,11 @@ class ListEmployees extends ListRecords
 {
     protected static string $resource = EmployeeResource::class;
 
+    public function getSubheading(): ?string
+    {
+        return __('klinica.employee.page_description');
+    }
+
     protected function getHeaderActions(): array
     {
         return [

@@ -13,6 +13,11 @@ class ListPatients extends ListRecords
 {
     protected static string $resource = PatientResource::class;
 
+    public function getSubheading(): ?string
+    {
+        return __('klinica.patient.page_description');
+    }
+
     protected function getHeaderActions(): array
     {
         return [
