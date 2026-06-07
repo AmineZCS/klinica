@@ -8,7 +8,7 @@
             <span class="w-3 h-3 rounded-full bg-green-400"></span>
         </div>
         <div class="flex-1 truncate rounded bg-white dark:bg-gray-700 px-3 py-0.5 text-xs text-gray-400 dark:text-gray-500 font-mono">
-            {{ tenant('id') }}.lvh.me
+            {{ tenant('id') }}.klinica.space
         </div>
     </div>
 
