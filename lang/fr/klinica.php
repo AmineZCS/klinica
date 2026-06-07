@@ -25,6 +25,7 @@ return [
         'field_dob' => 'Date de naissance',
         'field_gender' => 'Genre',
         'field_notes' => 'Notes',
+        'page_description' => 'Les fiches patients sont créées automatiquement lors d\'une réservation. Consultez l\'historique, ajoutez des notes cliniques et gérez les dossiers.',
     ],
 
     // ── Booking ───────────────────────────────────────────────────────────
@@ -61,6 +62,7 @@ return [
         'action_create_patient_notification' => 'Patient ":name" associé à ce rendez-vous.',
 
         'employee_busy' => ':name — déjà réservé à ce créneau',
+        'page_description' => 'Les rendez-vous pris via votre page publique apparaissent ici. Vous pouvez aussi créer, reporter ou annuler des rendez-vous manuellement.',
     ],
 
     // ── Employee ──────────────────────────────────────────────────────────
@@ -73,6 +75,7 @@ return [
         'field_password' => 'Mot de passe',
         'field_active' => 'Actif',
         'field_role' => 'Rôle',
+        'page_description' => 'Ajoutez des membres du personnel pouvant se connecter et gérer les rendez-vous. Attribuez des rôles pour contrôler les droits d\'accès.',
     ],
 
     // ── Service ───────────────────────────────────────────────────────────
@@ -87,6 +90,7 @@ return [
         'field_color' => 'Couleur',
         'field_image' => 'Image du service (ratio 3:2 recommandé — ex. 900×600 px)',
         'field_image_short' => 'Image',
+        'page_description' => 'Les services apparaissent sur votre page de réservation. Ajoutez chaque soin avec son nom, sa durée, son prix et sa couleur.',
     ],
 
     // ── Role ──────────────────────────────────────────────────────────────
@@ -103,7 +107,8 @@ return [
     'settings' => [
         'saved' => 'Paramètres enregistrés avec succès.',
         'nav_group' => 'Paramètres',
-        'nav_label' => 'Paramètres',
+        'nav_label' => 'Page de réservation',
+        'page_description' => "Personnalisez votre page de réservation — logo, thème de couleur, coordonnées, langue et fuseau horaire. Les modifications s'affichent en direct.",
 
         'section_branding' => 'Identité visuelle',
         'section_contact' => 'Contact',
@@ -164,7 +169,8 @@ return [
 
     // ── Navigation labels (pages) ─────────────────────────────────────────
     'billing' => [
-        'nav_label' => 'Facturation',
+        'nav_label' => 'Forfait & Facturation',
+        'page_description' => 'Gérez votre abonnement Klinica — passez à une formule supérieure, inférieure ou annulez à tout moment.',
         'current_plan' => 'Abonnement actuel',
         'badge_trial_expired' => 'Essai expiré',
         'badge_trial_days' => 'Essai &mdash; :days :word restant(s)',
@@ -387,7 +393,8 @@ return [
     ],
     'calendar' => ['nav_label' => 'Calendrier'],
     'schedule' => [
-        'nav_label' => 'Horaires de travail',
+        'nav_label' => "Horaires d'ouverture",
+        'page_description' => "Définissez les jours et heures d'ouverture de votre clinique. Ces paramètres déterminent les créneaux disponibles sur votre page de réservation.",
         'title' => 'Horaires & Planification',
         'day_sun' => 'Dimanche',
         'day_mon' => 'Lundi',
@@ -415,6 +422,7 @@ return [
     ],
     'audit_log' => [
         'nav_label' => "Journal d'activité",
+        'page_description' => 'Historique complet de toutes les modifications effectuées dans votre tableau de bord — qui a changé quoi et quand.',
         'col_time' => 'Heure',
         'col_user' => 'Utilisateur',
         'col_event' => 'Événement',
@@ -510,11 +518,11 @@ return [
 
         'step_2_title' => 'Définissez vos horaires de travail',
         'step_2_desc' => 'Indiquez quand votre clinique est ouverte et configurez les intervalles de créneaux. Cela détermine les créneaux disponibles sur votre page de réservation publique.',
-        'step_2_action' => 'Aller aux horaires',
+        'step_2_action' => "Définir les horaires d'ouverture",
 
         'step_3_title' => 'Personnalisez votre page clinique',
         'step_3_desc' => "Ajoutez votre logo, choisissez un thème de couleur, renseignez vos coordonnées, le fuseau horaire et la langue. C'est ce que vos patients verront en visitant votre page.",
-        'step_3_action' => 'Aller aux paramètres',
+        'step_3_action' => 'Personnaliser la page de réservation',
 
         'step_4_title' => 'Ajoutez vos services',
         'step_4_desc' => 'Créez les services proposés par votre clinique — nom, prix, durée et couleur. Chaque service sera réservable sur votre page publique.',
@@ -528,6 +536,18 @@ return [
         'step_6_desc' => 'Votre clinique est prête à accepter des réservations. Partagez votre lien de clinique avec vos patients. Vous pouvez toujours modifier ces paramètres depuis le menu.',
 
         'view_clinic' => 'Voir la page clinique',
+
+        'checklist_title' => 'Configurez votre clinique',
+        'checklist_subtitle' => 'Complétez ces 3 étapes avant de partager votre lien de réservation.',
+        'checklist_dismiss' => 'Ignorer',
+        'checklist_schedule' => 'Définir vos horaires d\'ouverture',
+        'checklist_schedule_desc' => 'Indiquez aux patients quand vous êtes disponible.',
+        'checklist_services' => 'Ajouter au moins un service',
+        'checklist_services_desc' => 'Les patients réservent un service — ajoutez le vôtre.',
+        'checklist_branding' => 'Télécharger votre logo',
+        'checklist_branding_desc' => 'Votre logo apparaît sur votre page et dans les e-mails.',
+        'checklist_all_done' => 'Tout est prêt — votre clinique est en ligne ! Partagez votre lien pour recevoir des réservations.',
+        'checklist_view_page' => 'Ouvrir votre page de réservation →',
     ],
 
     // ── Email subjects ────────────────────────────────────────────────────
@@ -544,6 +564,16 @@ return [
         'label_time' => 'Heure',
         'label_assigned_to' => 'Assigné à',
         'label_reason' => 'Motif',
+        'new_booking_alert_subject' => 'Nouveau rendez-vous — :service — :date',
+        'new_booking_alert_heading' => 'Nouveau rendez-vous reçu',
+        'new_booking_alert_intro' => 'Un nouveau rendez-vous vient d\'être pris dans votre clinique.',
+        'new_booking_alert_patient' => 'Patient',
+        'new_booking_alert_name' => 'Nom',
+        'new_booking_alert_phone' => 'Téléphone',
+        'new_booking_alert_service_section' => 'Rendez-vous',
+        'new_booking_alert_action' => 'Voir le rendez-vous dans le tableau de bord',
+        'new_booking_alert_note' => 'Veuillez vous connecter pour confirmer ou reprogrammer ce rendez-vous. Votre patient recevra son e-mail de confirmation une fois que vous aurez confirmé.',
+
         'booking_confirmed_heading' => 'Votre rendez-vous est confirmé !',
         'booking_confirmed_intro' => 'Bonne nouvelle ! Votre rendez-vous a été confirmé.',
         'booking_confirmed_cta' => 'Visiter notre site',

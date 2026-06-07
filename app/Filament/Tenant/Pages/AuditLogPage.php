@@ -32,6 +32,11 @@ class AuditLogPage extends Page implements HasTable
         return __('klinica.audit_log.nav_label');
     }
 
+    public function getSubheading(): ?string
+    {
+        return __('klinica.audit_log.page_description');
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('klinica.audit_log.nav_label');

@@ -28,6 +28,11 @@ class ClinicSchedulePage extends Page
         return __('klinica.schedule.title');
     }
 
+    public function getSubheading(): ?string
+    {
+        return __('klinica.schedule.page_description');
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('klinica.schedule.nav_label');

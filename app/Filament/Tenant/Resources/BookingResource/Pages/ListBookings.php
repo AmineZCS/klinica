@@ -13,6 +13,11 @@ class ListBookings extends ListRecords
 {
     protected static string $resource = BookingResource::class;
 
+    public function getSubheading(): ?string
+    {
+        return __('klinica.booking.page_description');
+    }
+
     protected function getHeaderActions(): array
     {
         return [
