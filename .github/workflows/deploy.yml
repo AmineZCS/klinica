@@ -5,44 +5,75 @@ on:
     branches:
       - main
 
+# Serialize deployments so two pushes in quick succession cannot run overlapping
+# git-reset / build steps against the same server.
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code Base
-        uses: actions/checkout@v4
-
+      # The deploy runs entirely server-side over SSH, so the runner does not
+      # need a checkout of the repository.
       - name: Deploy to Hetzner via SSH
-        uses: appleboy/ssh-action@v1.0.3
+        # Pinned to the commit SHA of appleboy/ssh-action v1.2.5 for supply-chain safety.
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
+          script_stop: true
           script: |
+            set -euo pipefail
             cd /var/www/klinica
+
+            compose() { docker compose -f compose.prod.yaml "$@"; }
+
+            # Preserve the currently-running image so a failed release can be
+            # rolled back to it (see the smoke-test step below).
+            docker image tag klinica-app:latest klinica-app:previous 2>/dev/null || true
 
             git fetch origin main
             git reset --hard origin/main
 
-            # Build new image before touching running containers
-            docker compose -f compose.prod.yaml build
+            # Build the new image before touching anything that serves traffic;
+            # a build failure leaves the running release untouched.
+            compose build
 
-            # Start/replace containers; --wait blocks until healthchecks pass
-            docker compose -f compose.prod.yaml up -d --wait
+            # Bring the datastores up first so migrations have something to run
+            # against, without yet replacing the app containers.
+            compose up -d --wait db redis
 
-            # Ensure storage subdirs exist in the named volume (needed on first deploy)
-            docker compose -f compose.prod.yaml exec -T web mkdir -p /app/storage/app/public /app/storage/app/private /app/storage/app/livewire-tmp /app/storage/framework/cache /app/storage/framework/sessions /app/storage/framework/views /app/storage/logs
+            # Run migrations BEFORE the new app serves traffic, via a one-off
+            # container on the freshly built image. Migrations must be
+            # backward-compatible (expand-and-contract) so the still-running old
+            # app keeps working until it is replaced below.
+            compose run --rm --no-deps --entrypoint php web artisan migrate --force
+            compose run --rm --no-deps --entrypoint php web artisan tenants:migrate --force
 
-            # Re-link storage (symlink lives in container, target is the named volume)
-            docker compose -f compose.prod.yaml exec -T web php artisan storage:link --force
+            # Swap in the new app, worker and scheduler; --wait blocks on healthchecks.
+            compose up -d --wait
 
-            # Run central DB migrations
-            docker compose -f compose.prod.yaml exec -T web php artisan migrate --force
+            # Ensure storage subdirs exist in the named volume (first deploy) and relink.
+            compose exec -T web mkdir -p \
+              /app/storage/app/public /app/storage/app/private \
+              /app/storage/app/livewire-tmp /app/storage/framework/cache \
+              /app/storage/framework/sessions /app/storage/framework/views \
+              /app/storage/logs
+            compose exec -T web php artisan storage:link --force
 
-            # Run tenant DB migrations
-            docker compose -f compose.prod.yaml exec -T web php artisan tenants:migrate --force
+            # Post-deploy smoke test against the running app. Roll back to the
+            # previous image if the app does not come up healthy after migration.
+            if ! compose exec -T web curl -fsS http://localhost:8000/up > /dev/null; then
+              echo "Smoke test failed after migration — rolling back to previous image."
+              docker image tag klinica-app:previous klinica-app:latest
+              compose up -d --wait
+              exit 1
+            fi
 
-            # Remove dangling images from previous builds
+            # Drop dangling images from previous builds.
             docker image prune -f
