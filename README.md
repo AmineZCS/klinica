@@ -1,58 +1,101 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<h1 align="center">Klinica</h1>
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <strong>Multi-tenant SaaS for medical clinics</strong> — subdomain-per-clinic, a
+  customizable public landing page, online booking, and a full admin panel.
 </p>
 
-## About Laravel
+<p align="center">
+  <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License: MIT">
+  <img src="https://img.shields.io/badge/PHP-8.4+-777BB4?style=flat-square&logo=php&logoColor=white" alt="PHP 8.4+">
+  <img src="https://img.shields.io/badge/Laravel-13-FF2D20?style=flat-square&logo=laravel&logoColor=white" alt="Laravel 13">
+  <img src="https://img.shields.io/badge/Filament-5-FDAE4B?style=flat-square" alt="Filament 5">
+  <img src="https://img.shields.io/badge/Livewire-4-FB70A9?style=flat-square&logo=livewire&logoColor=white" alt="Livewire 4">
+  <img src="https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind CSS 4">
+  <img src="https://img.shields.io/badge/Octane-FrankenPHP-0E7FC0?style=flat-square" alt="Octane + FrankenPHP">
+  <img src="https://img.shields.io/badge/Tested_with-Pest-5A67D8?style=flat-square" alt="Tested with Pest">
+</p>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Billing, trials, and plan restrictions are handled end-to-end with live payments.
+Built as an indie project to see how fast a complete, production-deployable SaaS
+could be shipped — it runs in production on Hetzner behind FrankenPHP + Octane.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Features
 
-## Learning Laravel
+- **Multi-tenancy** — subdomain-per-tenant with isolated databases ([`stancl/tenancy`](https://tenancyforlaravel.com)).
+- **Billing & subscriptions** — Paddle integration with trials, renewable subscriptions,
+  plan swaps, cancellations, and webhook-driven state sync.
+- **Plan restrictions** — Starter vs Pro limits (patients, employees, monthly bookings,
+  storage, email reminders) enforced via middleware.
+- **Public booking** — each clinic exposes a branded landing page and a self-service
+  appointment booking flow.
+- **Customizable landing page** — tenants edit branding, colors, contact info, and
+  copy from their settings panel, with a **live preview** of the public site before saving.
+- **Two Filament panels** — a central super-admin panel (tenants, subscriptions,
+  analytics) and a per-tenant clinic panel (bookings, patients, services, staff, calendar).
+- **Roles & permissions** — per-tenant RBAC ([`spatie/laravel-permission`](https://spatie.be/docs/laravel-permission)).
+- **Multi-language** — English, French, German, Spanish.
+- **SEO** — per-tenant sitemaps, `llms.txt`, IndexNow submission, noindex for unready tenants.
+- **Audit log** — tenant activity tracking ([`spatie/laravel-activitylog`](https://spatie.be/docs/laravel-activitylog)).
+- **GDPR** — per-tenant data export.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Stack
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- PHP 8.4+ / Laravel 13
+- Filament 5 (admin + tenant panels)
+- Livewire 4 + Alpine.js + Tailwind CSS 4
+- MySQL 8, Redis
+- FrankenPHP + Laravel Octane (production runtime)
+- Laravel Sail (local development)
+- Pest 4 (testing)
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## Local development
 
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+Requires Docker. The project uses [Laravel Sail](https://laravel.com/docs/sail).
 
 ```bash
-composer require laravel/boost --dev
+git clone <repo-url> klinica && cd klinica
 
-php artisan boost:install
+cp .env.example .env
+composer install
+
+vendor/bin/sail up -d
+vendor/bin/sail artisan key:generate
+vendor/bin/sail artisan migrate
+vendor/bin/sail npm install
+vendor/bin/sail npm run dev
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Multi-tenancy is resolved by subdomain, so point a wildcard host at the app for
+local tenant testing (e.g. `*.klinica.test` → `127.0.0.1`).
 
-## Contributing
+### Configuration
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Payment and SEO integrations read from `config/services.php`. Set these in `.env`:
 
-## Code of Conduct
+```dotenv
+PADDLE_API_KEY=
+PADDLE_WEBHOOK_SECRET=
+PADDLE_SANDBOX=true
+PADDLE_PRICE_STARTER=
+PADDLE_PRICE_PRO=
+INDEXNOW_KEY=
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Testing
 
-## Security Vulnerabilities
+```bash
+vendor/bin/sail artisan test
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Deployment
+
+Production is a multi-stage Docker build (`Dockerfile`) running FrankenPHP with
+Laravel Octane. `compose.prod.yaml` defines the production stack. A GitHub Actions
+workflow (`.github/workflows/deploy.yml`) builds and deploys to the server.
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT — see [LICENSE](LICENSE).

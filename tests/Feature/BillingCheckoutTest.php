@@ -2,43 +2,41 @@
 
 declare(strict_types=1);
 
+use App\Contracts\PaymentGatewayContract;
 use App\Enums\TenantPlan;
 use App\Http\Controllers\BillingController;
 use App\Models\Tenant;
-use App\Services\PolarService;
-use Illuminate\Http\Request;
 use Stancl\Tenancy\Tenancy;
 
-it('redirects trial tenants to checkout for their selected plan', function (string $tier): void {
+it('redirects trial tenants to a hosted checkout for their selected plan', function (string $tier): void {
     $tenant = new Tenant;
     $tenant->id = $tier.'-clinic';
     $tenant->name = ucfirst($tier).' Clinic';
     $tenant->plan = TenantPlan::Trial;
     $tenant->plan_tier = $tier;
 
+    // Initialize tenancy without bootstrappers so tenancy()->tenant resolves
+    // in-memory, with no database switch.
     $tenancy = app(Tenancy::class);
     $tenancy->getBootstrappersUsing = static fn (): array => [];
     $tenancy->initialize($tenant);
 
-    $polarService = Mockery::mock(PolarService::class);
-    $polarService->shouldReceive('productIdForPlan')
+    $gateway = Mockery::mock(PaymentGatewayContract::class);
+    $gateway->shouldReceive('priceIdForPlan')
         ->once()
         ->with($tier)
-        ->andReturn('polar_'.$tier);
-    $polarService->shouldReceive('createCheckoutUrl')
+        ->andReturn('price_'.$tier);
+    $gateway->shouldReceive('createCheckoutUrl')
         ->once()
-        ->with('polar_'.$tier, $tenant->id, Mockery::type('string'))
-        ->andReturn('https://polar.test/'.$tier);
+        ->with('price_'.$tier, $tenant->id, Mockery::type('string'), Mockery::any(), Mockery::any())
+        ->andReturn('https://paddle.test/'.$tier);
 
-    $this->app->instance(PolarService::class, $polarService);
+    $this->app->instance(PaymentGatewayContract::class, $gateway);
 
-    $response = app(BillingController::class)->checkout(
-        Request::create('/billing/checkout/'.$tier, 'GET'),
-        $tier,
-    );
+    $response = app(BillingController::class)->checkout($tier);
 
     expect($response->isRedirect())->toBeTrue();
-    expect($response->getTargetUrl())->toBe('https://polar.test/'.$tier);
+    expect($response->getTargetUrl())->toBe('https://paddle.test/'.$tier);
 
     $tenancy->end();
     $tenancy->getBootstrappersUsing = null;
