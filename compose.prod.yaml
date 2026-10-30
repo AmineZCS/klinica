@@ -82,6 +82,9 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
+      # Grants the app DB user rights over per-tenant "klinica_*" databases
+      # (runs once on first volume init). See the script for details.
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}"]
       timeout: 5s
