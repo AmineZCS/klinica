@@ -334,9 +334,9 @@
                 </thead>
                 <tbody>
                     <tr style="border-bottom:1px solid var(--beige)">
-                        <td style="padding:12px 16px;color:var(--navy);font-weight:600">Hetzner Online GmbH</td>
+                        <td style="padding:12px 16px;color:var(--navy);font-weight:600">Amazon Web Services EMEA SARL</td>
                         <td style="padding:12px 16px;color:var(--slate)">Cloud infrastructure & data hosting</td>
-                        <td style="padding:12px 16px;color:var(--slate)">Germany / EU</td>
+                        <td style="padding:12px 16px;color:var(--slate)">Germany / EU (Frankfurt, eu-central-1)</td>
                         <td style="padding:12px 16px;color:var(--slate)">ISO 27001, ISO 9001, GDPR compliant</td>
                     </tr>
                     <tr style="border-bottom:1px solid var(--beige)">
@@ -379,7 +379,7 @@
                 <div class="tom-card">
                     <div class="tom-card-icon">03</div>
                     <h3>ISO 27001 Certified Infrastructure</h3>
-                    <p>All data is hosted on <strong>Hetzner Online GmbH</strong> servers located in Germany. Hetzner is certified under ISO 27001 and ISO 9001 and is fully GDPR compliant.</p>
+                    <p>All data is hosted on <strong>Amazon Web Services (AWS)</strong> servers in the Frankfurt region (eu-central-1), located in Germany. AWS is certified under ISO 27001 and ISO 9001 and is fully GDPR compliant.</p>
                 </div>
                 <div class="tom-card">
                     <div class="tom-card-icon">04</div>

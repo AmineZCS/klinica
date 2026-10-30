@@ -289,7 +289,7 @@
             <h2>Who We Share Data With</h2>
             <p>We do not sell, rent, or share personal data with third parties for their own purposes. We share data only with:</p>
             <ul>
-                <li><strong>Hetzner Online GmbH (Germany):</strong> Cloud infrastructure provider hosting our servers. ISO 27001 certified. All data stays in the EU.</li>
+                <li><strong>Amazon Web Services (AWS), Frankfurt (eu-central-1), Germany:</strong> Cloud infrastructure provider hosting our servers. ISO 27001 certified. All data stays in the EU.</li>
                 <li><strong>Paddle.com:</strong> Payment processing for subscriptions (acts as Merchant of Record). We share only billing contact details — no medical or patient data is shared.</li>
                 <li><strong>Transactional email service:</strong> For sending system notifications. Only the recipient email address and minimal content are shared.</li>
                 <li><strong>Law enforcement or regulators:</strong> Only when legally required and to the minimum extent necessary.</li>
@@ -308,7 +308,7 @@
                 <li><strong>AES-256 encryption at rest</strong> for all stored data, including database backups.</li>
                 <li><strong>TLS 1.3 encryption in transit</strong> for all communication between your browser and our servers.</li>
                 <li><strong>Strict tenant isolation:</strong> Each clinic has its own dedicated database. There is no shared database between clinics by design.</li>
-                <li><strong>ISO 27001 certified infrastructure</strong> hosted entirely in Germany with Hetzner Online GmbH.</li>
+                <li><strong>ISO 27001 certified infrastructure</strong> hosted entirely in Germany on Amazon Web Services (AWS), Frankfurt region (eu-central-1).</li>
                 <li><strong>Bcrypt password hashing</strong> — passwords are never stored in plain text.</li>
                 <li><strong>Comprehensive audit logging</strong> for all sensitive operations.</li>
                 <li><strong>Regular security reviews</strong> and prompt patching of critical vulnerabilities.</li>

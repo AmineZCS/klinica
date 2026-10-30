@@ -20,7 +20,8 @@
 
 Billing, trials, and plan restrictions are handled end-to-end with live payments.
 Built as an indie project to see how fast a complete, production-deployable SaaS
-could be shipped — it runs in production on Hetzner behind FrankenPHP + Octane.
+could be shipped — it runs in production on a single cloud VM (Docker Compose)
+behind FrankenPHP + Octane.
 
 ## Features
 

@@ -300,7 +300,7 @@ return [
         'sec_heading' => "Your patients' data is safe with us",
         'sec_sub' => 'We built Klinica with security at its core, not as an afterthought.',
         'sec_1_title' => 'Infrastructure',
-        'sec_1_desc' => 'Hosted on Hetzner Frankfurt (EU). ISO 27001 certified data centres. Data never leaves the EU.',
+        'sec_1_desc' => 'Hosted on AWS Frankfurt (eu-central-1, EU). ISO 27001 certified data centres. Data never leaves the EU.',
         'sec_2_title' => 'Access Control',
         'sec_2_desc' => 'Role-based permissions, isolated tenant databases, and AES-256 encryption at rest and in transit.',
         'sec_3_title' => 'Audit Trails',

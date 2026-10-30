@@ -297,7 +297,7 @@ return [
         'sec_heading' => 'Die Daten Ihrer Patienten sind bei uns sicher',
         'sec_sub' => 'Wir haben Klinica mit Sicherheit als Kernprinzip gebaut, nicht als Nachgedanken.',
         'sec_1_title' => 'Infrastruktur',
-        'sec_1_desc' => 'Gehostet auf Hetzner Frankfurt (EU). ISO 27001 zertifizierte Rechenzentren. Daten verlassen die EU nie.',
+        'sec_1_desc' => 'Gehostet auf AWS Frankfurt (eu-central-1, EU). ISO 27001 zertifizierte Rechenzentren. Daten verlassen die EU nie.',
         'sec_2_title' => 'Zugriffskontrolle',
         'sec_2_desc' => 'Rollenbasierte Berechtigungen, isolierte Mandantendatenbanken und AES-256-Verschlüsselung im Ruhezustand und bei der Übertragung.',
         'sec_3_title' => 'Audit-Protokolle',

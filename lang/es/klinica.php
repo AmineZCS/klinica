@@ -297,7 +297,7 @@ return [
         'sec_heading' => 'Los datos de sus pacientes están seguros con nosotros',
         'sec_sub' => 'Construimos Klinica con la seguridad en el núcleo, no como una ocurrencia tardía.',
         'sec_1_title' => 'Infraestructura',
-        'sec_1_desc' => 'Alojado en Hetzner Fráncfort (UE). Centros de datos certificados ISO 27001. Los datos nunca salen de la UE.',
+        'sec_1_desc' => 'Alojado en AWS Fráncfort (eu-central-1, UE). Centros de datos certificados ISO 27001. Los datos nunca salen de la UE.',
         'sec_2_title' => 'Control de acceso',
         'sec_2_desc' => 'Permisos basados en roles, bases de datos de inquilinos aisladas y cifrado AES-256 en reposo y en tránsito.',
         'sec_3_title' => 'Rastros de auditoría',
