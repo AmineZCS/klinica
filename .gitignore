@@ -21,6 +21,7 @@
 /storage/*.key
 /storage/pail
 /storage/tenant*
+/certs
 /vendor
 _ide_helper.php
 Homestead.json
