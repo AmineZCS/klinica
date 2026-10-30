@@ -12,7 +12,12 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Quality gate: the production deploy only runs if linting and tests pass.
+  test:
+    uses: ./.github/workflows/ci.yml
+
   deploy:
+    needs: test
     runs-on: ubuntu-latest
 
     steps:
@@ -34,7 +39,8 @@ jobs:
             compose() { docker compose -f compose.prod.yaml "$@"; }
 
             # Preserve the currently-running image so a failed release can be
-            # rolled back to it (see the smoke-test step below).
+            # rolled back to it (see the smoke-test step below). On the very
+            # first deploy there is no :latest yet, hence the guard.
             docker image tag klinica-app:latest klinica-app:previous 2>/dev/null || true
 
             git fetch origin main
@@ -49,13 +55,17 @@ jobs:
             compose up -d --wait db redis
 
             # Run migrations BEFORE the new app serves traffic, via a one-off
-            # container on the freshly built image. Migrations must be
-            # backward-compatible (expand-and-contract) so the still-running old
-            # app keeps working until it is replaced below.
+            # container on the freshly built image.
+            #
+            # REQUIRED: migrations must be backward-compatible (expand-and-contract).
+            # The rollback below restores the previous *image* but does NOT reverse
+            # migrations, so the old app must keep working against the new schema.
             compose run --rm --no-deps --entrypoint php web artisan migrate --force
             compose run --rm --no-deps --entrypoint php web artisan tenants:migrate --force
 
-            # Swap in the new app, worker and scheduler; --wait blocks on healthchecks.
+            # Swap in the new app, worker and scheduler. This recreates the
+            # containers, so expect a brief unavailability window — this is not a
+            # zero-downtime deploy. --wait blocks until healthchecks pass.
             compose up -d --wait
 
             # Ensure storage subdirs exist in the named volume (first deploy) and relink.
@@ -66,12 +76,23 @@ jobs:
               /app/storage/logs
             compose exec -T web php artisan storage:link --force
 
-            # Post-deploy smoke test against the running app. Roll back to the
-            # previous image if the app does not come up healthy after migration.
-            if ! compose exec -T web curl -fsS http://localhost:8000/up > /dev/null; then
-              echo "Smoke test failed after migration — rolling back to previous image."
-              docker image tag klinica-app:previous klinica-app:latest
-              compose up -d --wait
+            # Post-deploy smoke test: verify the app both serves HTTP (/up) and
+            # can reach the database after migrating (migrate:status) — the latter
+            # is a signal the container healthcheck alone does not cover.
+            smoke_ok() {
+              compose exec -T web php artisan migrate:status > /dev/null 2>&1 \
+                && compose exec -T web curl -fsS http://localhost:8000/up > /dev/null
+            }
+
+            if ! smoke_ok; then
+              echo "Smoke test failed after migration."
+              if docker image inspect klinica-app:previous > /dev/null 2>&1; then
+                echo "Rolling back to the previous image (schema changes are NOT reverted)."
+                docker image tag klinica-app:previous klinica-app:latest
+                compose up -d --wait
+              else
+                echo "No previous image to roll back to (first deploy) — manual intervention required."
+              fi
               exit 1
             fi
 
