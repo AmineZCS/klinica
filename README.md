@@ -6,6 +6,7 @@
 </p>
 
 <p align="center">
+  <a href="https://klinica.space"><img src="https://img.shields.io/badge/live-klinica.space-2F8082?style=flat-square" alt="Live demo"></a>
   <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License: MIT">
   <img src="https://img.shields.io/badge/PHP-8.4+-777BB4?style=flat-square&logo=php&logoColor=white" alt="PHP 8.4+">
   <img src="https://img.shields.io/badge/Laravel-13-FF2D20?style=flat-square&logo=laravel&logoColor=white" alt="Laravel 13">
