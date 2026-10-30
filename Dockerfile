@@ -1,7 +1,9 @@
 # ==============================================================================
 # STAGE 1: PHP Dependency Builder
 # ==============================================================================
-FROM dunglas/frankenphp:php8.5 AS base
+# Pin an explicit PHP patch release (>= 8.5.12) so builds don't silently drift
+# and to guarantee the PHP2Shell fixes (CVE-2026-109618/109619) are present.
+FROM dunglas/frankenphp:php8.5.12 AS base
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y git unzip \
@@ -35,13 +37,16 @@ RUN npm run build
 # ==============================================================================
 # STAGE 3: Production Runtime
 # ==============================================================================
-FROM dunglas/frankenphp:php8.5 AS runner
+FROM dunglas/frankenphp:php8.5.12 AS runner
 WORKDIR /app
 
 # Explicit curl install for healthcheck + php.ini tuning in one layer
 RUN apt-get update && apt-get install -y curl \
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && sed -i 's/variables_order = "GPCS"/variables_order = "EGPCS"/' "$PHP_INI_DIR/php.ini" \
+    # Mitigate CVE-2026-115560 (unpatched session-upload-progress RCE); the app
+    # does not rely on PHP's native upload-progress tracking.
+    && printf '\nsession.upload_progress.enabled = Off\n' >> "$PHP_INI_DIR/php.ini" \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -sSL https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o /usr/local/bin/install-php-extensions \
