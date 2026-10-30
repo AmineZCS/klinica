@@ -27,10 +27,13 @@ class BookingCalendarWidget extends CalendarWidget
     }
 
     /**
-     * Override to suppress the built-in abort_unless(canView(), 403).
-     * Access is guarded by CalendarPage::canAccess() instead.
+     * Override Filament's widget access boot hook to suppress the built-in
+     * abort_unless(static::canView(), 403) — canView() is false only to hide
+     * this widget from the auto-discovered dashboard. The widget is rendered
+     * directly on CalendarPage, which guards access via CalendarPage::canAccess();
+     * here we only require an authenticated tenant user.
      */
-    public function hydrateCanAuthorizeAccess(): void
+    public function bootCanAuthorizeAccess(): void
     {
         abort_unless(auth('tenant')->check(), 403);
     }
