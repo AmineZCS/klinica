@@ -68,7 +68,7 @@ return [
             'driver' => 'mysql',
             'host' => env('TENANT_DB_HOST', env('DB_HOST', '127.0.0.1')),
             'port' => env('DB_PORT', '3306'),
-            'database' => null, //keeping this null , it is handled by the tenancy package
+            'database' => null, // keeping this null , it is handled by the tenancy package
             'username' => 'root', // Explicitly route through root for DB creation
             'password' => env('DB_ROOT_PASSWORD'), // pulled from .env
             'unix_socket' => env('DB_SOCKET', ''),
@@ -168,7 +168,7 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug((string) env('APP_NAME', 'laravel')) . '-database-'),
+            'prefix' => env('REDIS_PREFIX', Str::slug((string) env('APP_NAME', 'laravel')).'-database-'),
             'persistent' => env('REDIS_PERSISTENT', false),
         ],
 
