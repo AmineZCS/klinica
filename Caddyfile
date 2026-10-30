@@ -1,28 +1,14 @@
 {
-	# Email used for Let's Encrypt registration / expiry notices.
 	email admin@klinica.space
-
-	# Tenant sites live on subdomains of klinica.space. On-demand TLS issues a
-	# certificate for each tenant hostname the first time it is visited, so we
-	# need neither a wildcard certificate nor DNS-provider API credentials.
-	# Caddy asks the app before issuing; /up returns 200, and the wildcard site
-	# block below already scopes issuance to *.klinica.space.
-	on_demand_tls {
-		ask http://web:8000/up
-	}
 }
 
-# Central application: apex + www.
-klinica.space, www.klinica.space {
+# Served behind Cloudflare (proxied / orange-cloud) with SSL mode Full (strict).
+# Caddy presents a Cloudflare Origin CA certificate that covers the apex and all
+# first-level tenant subdomains; Cloudflare trusts it on the edge-to-origin hop,
+# so no Let's Encrypt / ACME is used here. The cert and key are mounted from
+# ./certs (gitignored — never commit them).
+klinica.space, www.klinica.space, *.klinica.space {
 	encode zstd gzip
-	reverse_proxy web:8000
-}
-
-# Tenant subdomains: one certificate per host, issued on demand.
-*.klinica.space {
-	encode zstd gzip
-	tls {
-		on_demand
-	}
+	tls /etc/caddy/certs/origin.pem /etc/caddy/certs/origin.key
 	reverse_proxy web:8000
 }
