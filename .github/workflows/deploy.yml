@@ -1,4 +1,4 @@
-name: Deploy Klinica to Hetzner
+name: Deploy Klinica to production
 
 on:
   push:
@@ -23,7 +23,7 @@ jobs:
     steps:
       # The deploy runs entirely server-side over SSH, so the runner does not
       # need a checkout of the repository.
-      - name: Deploy to Hetzner via SSH
+      - name: Deploy to the production server via SSH
         # Pinned to the commit SHA of appleboy/ssh-action v1.2.5 for supply-chain safety.
         uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2
         with:
