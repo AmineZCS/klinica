@@ -21,8 +21,44 @@
 
 Billing, trials, and plan restrictions are handled end-to-end with live payments.
 Built as an indie project to see how fast a complete, production-deployable SaaS
-could be shipped — it runs in production on a single cloud VM (Docker Compose)
-behind FrankenPHP + Octane.
+could be shipped — it runs in production on an AWS Lightsail VM (Docker Compose)
+behind FrankenPHP + Octane, with Cloudflare handling DNS and SSL for the root
+domain and every tenant subdomain.
+
+## Screenshots
+
+<!--
+  Drop images in docs/screenshots/ and reference them here. Suggested set:
+  landing page, tenant booking flow, super-admin panel, tenant clinic panel,
+  the live landing-page editor with preview.
+-->
+
+<p align="center">
+  <img src="docs/screenshots/landing.png" alt="Clinic landing page" width="49%">
+  <img src="docs/screenshots/booking.png" alt="Public booking flow" width="49%">
+</p>
+<p align="center">
+  <img src="docs/screenshots/admin-panel.png" alt="Super-admin panel" width="49%">
+  <img src="docs/screenshots/clinic-panel.png" alt="Tenant clinic panel" width="49%">
+</p>
+
+## Architecture
+
+Klinica is **database-per-tenant**. The central app owns the marketing site,
+sign-up, billing, and the super-admin panel; each clinic gets its own subdomain
+(`clinic.klinica.space`) backed by its own isolated database.
+
+- **Tenant resolution** — [`stancl/tenancy`](https://tenancyforlaravel.com) resolves
+  the tenant from the request subdomain and swaps the DB connection before the app
+  boots tenant context. Central domains (`klinica.space`, `www`) bypass tenancy.
+- **Two Filament panels** — a central panel (super-admin: tenants, subscriptions,
+  analytics) and a tenant panel served per-subdomain (bookings, patients, services,
+  staff, calendar), each with its own auth guard.
+- **Billing is central** — Paddle subscriptions live on the central tenant record;
+  webhooks sync subscription state, and middleware enforces per-plan limits inside
+  each tenant.
+- **Isolation by default** — tenant data, media, and activity logs never share a
+  database, so one clinic can't read another's rows.
 
 ## Features
 
@@ -95,8 +131,11 @@ vendor/bin/sail artisan test
 ## Deployment
 
 Production is a multi-stage Docker build (`Dockerfile`) running FrankenPHP with
-Laravel Octane. `compose.prod.yaml` defines the production stack. A GitHub Actions
-workflow (`.github/workflows/deploy.yml`) builds and deploys to the server.
+Laravel Octane. `compose.prod.yaml` defines the production stack (app, queue
+worker, scheduler, MySQL, Redis, Caddy). A GitHub Actions workflow
+(`.github/workflows/deploy.yml`) builds and deploys on push to `main` — lint and
+tests (`ci.yml`) must pass first, and the deploy runs migrations before cutover
+with a smoke test and image rollback on failure.
 
 ## License
 
