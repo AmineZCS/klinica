@@ -41,7 +41,9 @@ services:
     env_file: .env
     volumes:
       - storage_data:/app/storage
-    entrypoint: ["php", "artisan", "queue:work", "redis", "--sleep=3", "--tries=3", "--max-time=3600"]
+    # No explicit connection: honor QUEUE_CONNECTION so the worker always drains
+    # the same queue the app dispatches to (avoids a connection mismatch).
+    entrypoint: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--max-time=3600"]
     healthcheck:
       disable: true
     depends_on:
