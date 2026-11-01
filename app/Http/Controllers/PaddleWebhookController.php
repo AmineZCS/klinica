@@ -9,6 +9,7 @@ use App\Models\Tenant;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class PaddleWebhookController extends Controller
@@ -22,14 +23,36 @@ class PaddleWebhookController extends Controller
 
         $payload = $request->all();
         $type = $payload['event_type'] ?? null;
+        $eventId = $payload['event_id'] ?? null;
 
-        Log::info('Paddle webhook received', ['event_type' => $type]);
+        Log::info('Paddle webhook received', ['event_type' => $type, 'event_id' => $eventId]);
 
-        match ($type) {
-            'subscription.created', 'subscription.updated' => $this->handleSubscriptionUpserted($payload),
-            'subscription.canceled' => $this->handleSubscriptionCancelled($payload),
-            default => null,
-        };
+        // Paddle retries failed deliveries, so dedupe on the unique event_id.
+        // Claiming the event and applying its effect share one transaction: if
+        // processing throws, the claim rolls back too and a retry reprocesses
+        // cleanly. The unique index drops a duplicate without reprocessing.
+        DB::transaction(function () use ($payload, $type, $eventId): void {
+            if ($eventId !== null) {
+                $claimed = DB::table('webhook_events')->insertOrIgnore([
+                    'event_id' => $eventId,
+                    'event_type' => $type,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                if ($claimed === 0) {
+                    Log::info('Paddle webhook already processed, skipping', ['event_id' => $eventId]);
+
+                    return;
+                }
+            }
+
+            match ($type) {
+                'subscription.created', 'subscription.updated' => $this->handleSubscriptionUpserted($payload),
+                'subscription.canceled' => $this->handleSubscriptionCancelled($payload),
+                default => null,
+            };
+        });
 
         return response()->json(['ok' => true]);
     }
