@@ -76,6 +76,11 @@ jobs:
               /app/storage/logs
             compose exec -T web php artisan storage:link --force
 
+            # Cache config, routes, events and views for production, then reload
+            # Octane workers so they serve with the optimized, cached bootstrap.
+            compose exec -T web php artisan optimize
+            compose exec -T web php artisan octane:reload
+
             # Post-deploy smoke test: verify the app both serves HTTP (/up) and
             # can reach the database after migrating (migrate:status) — the latter
             # is a signal the container healthcheck alone does not cover.
