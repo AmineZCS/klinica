@@ -32,6 +32,8 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script_stop: true
+          # The build + migrations can exceed the 10-minute default on a small VM.
+          command_timeout: 20m
           script: |
             set -euo pipefail
             cd /var/www/klinica
@@ -68,17 +70,27 @@ jobs:
             # zero-downtime deploy. --wait blocks until healthchecks pass.
             compose up -d --wait
 
-            # Ensure storage subdirs exist in the named volume (first deploy) and relink.
-            compose exec -T web mkdir -p \
+            # Ensure storage subdirs exist and are owned by the runtime user. The
+            # storage volume can predate the non-root container (root-owned), so
+            # create missing dirs and fix ownership AS ROOT before caching — both
+            # view:cache and the running app write compiled views, sessions and
+            # logs there as www-data.
+            compose exec -u root -T web mkdir -p \
               /app/storage/app/public /app/storage/app/private \
               /app/storage/app/livewire-tmp /app/storage/framework/cache \
               /app/storage/framework/sessions /app/storage/framework/views \
               /app/storage/logs
+            compose exec -u root -T web chown -R www-data:www-data /app/storage /app/bootstrap/cache
             compose exec -T web php artisan storage:link --force
 
-            # Cache config, routes, events and views for production, then reload
-            # Octane workers so they serve with the optimized, cached bootstrap.
-            compose exec -T web php artisan optimize
+            # Production caches, then reload Octane to serve with them. We do NOT
+            # run view:cache: Filament registers its blade components at panel boot,
+            # so view:cache cannot resolve them (views compile on demand instead).
+            # filament:optimize caches Filament components + Blade icons in its place.
+            compose exec -T web php artisan config:cache
+            compose exec -T web php artisan event:cache
+            compose exec -T web php artisan route:cache
+            compose exec -T web php artisan filament:optimize
             compose exec -T web php artisan octane:reload
 
             # Post-deploy smoke test: verify the app both serves HTTP (/up) and
