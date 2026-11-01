@@ -128,4 +128,10 @@ return [
     'js_subdomain_reserved' => '✗ Reservado — elija un nombre diferente',
     'js_subdomain_invalid' => '✗ Formato inválido',
     'js_subdomain_taken' => '✗ Ya en uso — intente con otro',
+
+    'provisioning_title' => 'Configurando su clínica',
+    'provisioning_heading' => 'Configurando su clínica…',
+    'provisioning_subtext' => 'Esto suele tardar unos segundos. Se le redirigirá a su clínica automáticamente.',
+    'provisioning_failed' => 'Algo salió mal al crear su clínica. Póngase en contacto con soporte en admin@klinica.space.',
+    'provisioning_timeout' => 'Esto está tardando más de lo esperado. Si no se le redirige en breve, póngase en contacto con soporte en admin@klinica.space.',
 ];

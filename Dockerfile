@@ -61,10 +61,15 @@ COPY . .
 # Ensure runtime dirs exist (some excluded by .dockerignore), discover packages
 # skipped by --no-scripts, and link storage.
 RUN mkdir -p storage/app/public storage/framework/cache storage/framework/sessions \
-        storage/framework/views storage/logs bootstrap/cache \
+        storage/framework/views storage/logs bootstrap/cache /data /config \
     && php artisan package:discover --ansi \
     && php artisan storage:link \
-    && chown -R www-data:www-data storage bootstrap/cache
+    && chown -R www-data:www-data /app /data /config
+
+# Drop privileges: run Octane/FrankenPHP — and the worker/scheduler that reuse
+# this image — as the unprivileged www-data user instead of root. /data and
+# /config are FrankenPHP's runtime dirs and must be writable by that user.
+USER www-data
 
 EXPOSE 8000
 ENTRYPOINT ["php", "artisan", "octane:start", "--server=frankenphp", "--host=0.0.0.0", "--port=8000"]

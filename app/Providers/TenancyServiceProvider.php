@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Jobs\FinalizeTenantSetup;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
@@ -30,9 +31,12 @@ class TenancyServiceProvider extends ServiceProvider
                     Jobs\CreateDatabase::class,
                     Jobs\MigrateDatabase::class,
                     Jobs\SeedDatabase::class,
+                    // Create the admin user and flip the tenant to "ready" once the
+                    // database is migrated and seeded. See FinalizeTenantSetup.
+                    FinalizeTenantSetup::class,
                 ])->send(function (Events\TenantCreated $event) {
                     return $event->tenant;
-                })->shouldBeQueued(false), // `false` by default, but you probably want to make this `true` for production.
+                })->shouldBeQueued(true), // Provision off the request thread; the signup page polls for readiness.
             ],
             Events\SavingTenant::class => [],
             Events\TenantSaved::class => [],

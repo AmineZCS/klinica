@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Actions\Central\CreateTenantAction;
+use App\Enums\TenantStatus;
 use App\Models\Tenant;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -87,6 +88,27 @@ class TenantRegistrationController extends Controller
             'locale' => $validated['locale'],
         ]);
 
-        return redirect()->away($tenant->dashboardLoginUrl());
+        // Provisioning runs on the queue; send the user to a page that polls for
+        // readiness and then forwards to their clinic login.
+        return redirect()->route('registering', ['tenant' => $tenant->id]);
+    }
+
+    /**
+     * The "setting up your clinic" page shown while provisioning runs.
+     */
+    public function provisioning(Tenant $tenant): View
+    {
+        return view('registration.provisioning', ['tenant' => $tenant]);
+    }
+
+    /**
+     * Polled by the provisioning page to learn when the tenant is ready.
+     */
+    public function status(Tenant $tenant): JsonResponse
+    {
+        return response()->json([
+            'status' => $tenant->status?->value ?? TenantStatus::Provisioning->value,
+            'login_url' => $tenant->isReady() ? $tenant->dashboardLoginUrl() : null,
+        ]);
     }
 }
