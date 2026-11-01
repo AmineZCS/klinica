@@ -5,12 +5,47 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Contracts\PaymentGatewayContract;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class BillingController extends Controller
 {
+    /**
+     * Central checkout proxy — opens the Paddle overlay from the approved central
+     * domain. The tenant billing page redirects here with ?txn=... so Paddle's
+     * domain check passes. Return/cancel URLs are constrained to the base domain.
+     */
+    public function open(Request $request): View
+    {
+        $txn = (string) $request->query('txn', '');
+        $returnUrl = (string) $request->query('return', '/');
+        $cancelUrl = (string) $request->query('cancel', '/');
+
+        // Derive the registrable base domain (e.g. "klinica.space") from APP_URL
+        // so any subdomain like dr-abdelali.klinica.space passes validation.
+        $appHost = parse_url((string) config('app.url', ''), PHP_URL_HOST) ?: '';
+        $hostParts = explode('.', $appHost);
+        $baseDomain = count($hostParts) >= 2
+            ? implode('.', array_slice($hostParts, -2))
+            : $appHost;
+
+        $sanitize = function (string $url) use ($baseDomain): string {
+            $host = parse_url($url, PHP_URL_HOST) ?? '';
+
+            return str_ends_with($host, $baseDomain) ? $url : '/';
+        };
+
+        return view('billing.open', [
+            'txn' => $txn,
+            'returnUrl' => $sanitize($returnUrl),
+            'cancelUrl' => $sanitize($cancelUrl),
+            'paddleClientToken' => (string) config('services.paddle.client_token'),
+            'paddleSandbox' => (bool) config('services.paddle.sandbox'),
+        ]);
+    }
+
     public function checkout(string $plan): RedirectResponse
     {
         $tenant = tenancy()->tenant;
