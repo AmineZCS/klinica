@@ -9,10 +9,8 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Canonicalizes the central site to its bare apex by 301-redirecting any
- * "www." central host to the same path on the apex host. Keeping a single
- * canonical host avoids duplicate content across www/apex and gives crawlers
- * and LLM fetchers one URL per page. Tenant subdomains are never touched.
+ * 301-redirects a "www." central host to its bare apex so the central site has
+ * one canonical URL (no www/apex duplicate content). Tenant subdomains are untouched.
  */
 class RedirectWww
 {

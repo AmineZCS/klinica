@@ -1,8 +1,6 @@
-# ==============================================================================
-# STAGE 1: PHP Dependency Builder
-# ==============================================================================
-# Pin an explicit PHP patch release (>= 8.5.12) so builds don't silently drift
-# and to guarantee the PHP2Shell fixes (CVE-2026-109618/109619) are present.
+# Stage 1 — PHP dependencies
+# Pinned patch release: avoids silent drift and includes the PHP2Shell fixes
+# (CVE-2026-109618/109619).
 FROM dunglas/frankenphp:php8.5.12 AS base
 WORKDIR /app
 
@@ -17,9 +15,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
-# ==============================================================================
-# STAGE 2: Node.js Asset Compiler
-# ==============================================================================
+# Stage 2 — frontend assets
 FROM node:20-alpine AS asset-builder
 WORKDIR /app
 
@@ -34,18 +30,14 @@ COPY public/ ./public/
 
 RUN npm run build
 
-# ==============================================================================
-# STAGE 3: Production Runtime
-# ==============================================================================
+# Stage 3 — production runtime
 FROM dunglas/frankenphp:php8.5.12 AS runner
 WORKDIR /app
 
-# Explicit curl install for healthcheck + php.ini tuning in one layer
 RUN apt-get update && apt-get install -y curl \
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && sed -i 's/variables_order = "GPCS"/variables_order = "EGPCS"/' "$PHP_INI_DIR/php.ini" \
-    # Mitigate CVE-2026-115560 (unpatched session-upload-progress RCE); the app
-    # does not rely on PHP's native upload-progress tracking.
+    # Mitigates CVE-2026-115560 (session upload-progress); unused by the app.
     && printf '\nsession.upload_progress.enabled = Off\n' >> "$PHP_INI_DIR/php.ini" \
     && rm -rf /var/lib/apt/lists/*
 
@@ -58,17 +50,13 @@ COPY --from=base /app/vendor /app/vendor
 COPY --from=asset-builder /app/public/build /app/public/build
 COPY . .
 
-# Ensure runtime dirs exist (some excluded by .dockerignore), discover packages
-# skipped by --no-scripts, and link storage.
 RUN mkdir -p storage/app/public storage/framework/cache storage/framework/sessions \
         storage/framework/views storage/logs bootstrap/cache /data /config \
     && php artisan package:discover --ansi \
     && php artisan storage:link \
     && chown -R www-data:www-data /app /data /config
 
-# Drop privileges: run Octane/FrankenPHP — and the worker/scheduler that reuse
-# this image — as the unprivileged www-data user instead of root. /data and
-# /config are FrankenPHP's runtime dirs and must be writable by that user.
+# Run as non-root; /data and /config are FrankenPHP's writable runtime dirs.
 USER www-data
 
 EXPOSE 8000

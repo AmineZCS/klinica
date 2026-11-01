@@ -1,8 +1,6 @@
 name: CI
 
-# Runs on pull requests and on pushes to any branch except main (main is
-# covered by the deploy workflow, which calls this one as a required gate).
-# Also exposed as a reusable workflow via workflow_call.
+# PRs and non-main pushes; also called by the deploy workflow as its test gate.
 on:
   pull_request:
   push:

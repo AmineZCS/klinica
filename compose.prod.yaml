@@ -41,8 +41,7 @@ services:
     env_file: .env
     volumes:
       - storage_data:/app/storage
-    # No explicit connection: honor QUEUE_CONNECTION so the worker always drains
-    # the same queue the app dispatches to (avoids a connection mismatch).
+    # Honor QUEUE_CONNECTION so the worker drains the same queue the app uses.
     entrypoint: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--max-time=3600"]
     healthcheck:
       disable: true
@@ -84,8 +83,7 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
-      # Grants the app DB user rights over per-tenant "klinica_*" databases
-      # (runs once on first volume init). See the script for details.
+      # Grants the app user rights over per-tenant klinica_* DBs (first volume init).
       - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}"]

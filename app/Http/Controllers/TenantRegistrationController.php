@@ -88,8 +88,7 @@ class TenantRegistrationController extends Controller
             'locale' => $validated['locale'],
         ]);
 
-        // Provisioning runs on the queue; send the user to a page that polls for
-        // readiness and then forwards to their clinic login.
+        // Provisioning runs on the queue; the page polls for readiness.
         return redirect()->route('registering', ['tenant' => $tenant->id]);
     }
 
