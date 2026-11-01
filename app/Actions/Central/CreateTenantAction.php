@@ -5,34 +5,50 @@ declare(strict_types=1);
 namespace App\Actions\Central;
 
 use App\Enums\TenantPlan;
-use App\Mail\TenantWelcomeMail;
-use App\Models\ClinicSetting;
+use App\Enums\TenantStatus;
 use App\Models\Tenant;
-use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-use Spatie\Permission\Models\Role;
+use Illuminate\Support\Str;
 
 class CreateTenantAction
 {
     /**
-     * Create a new tenant, run migrations/seeding, then optionally create an admin user.
+     * Create a tenant's central records and kick off asynchronous provisioning.
+     *
+     * The returned tenant is in the "provisioning" state: creating it fires
+     * TenantCreated, which runs the queued CreateDatabase → MigrateDatabase →
+     * SeedDatabase → FinalizeTenantSetup pipeline on the worker. That pipeline
+     * creates the tenant database, the admin user, and flips the tenant to
+     * "ready". The signup page polls the tenant status until then.
      *
      * @param  array{name: string, subdomain: string, admin_name?: string, admin_email?: string, admin_password?: string, plan_tier?: string, locale?: string}  $data
      */
     public function execute(array $data): Tenant
     {
-        // Phase 1 — central DB: create tenant row + domain row atomically.
-        // NOTE: Tenant::create() fires TenantCreated → CreateDatabase/MigrateDatabase/SeedDatabase
-        // synchronously. CreateDatabase is DDL (not transactional in MySQL), so the tenant DB
-        // may exist even if this transaction rolls back. Phase 2 handles cleanup in that case.
-        $tenant = DB::transaction(function () use ($data): Tenant {
+        // Stash admin credentials in the central cache BEFORE creating the tenant,
+        // so FinalizeTenantSetup can read them without receiving them through the
+        // job pipeline. The password is hashed; nothing is cached in plaintext.
+        // Caching first also covers the sync-queue case (tests), where the pipeline
+        // runs inline during Tenant::create().
+        if (isset($data['admin_email'])) {
+            Cache::put("tenant_setup:{$data['subdomain']}", [
+                'name' => $data['admin_name'] ?? null,
+                'email' => $data['admin_email'],
+                'password' => Hash::make($data['admin_password'] ?? Str::password(16)),
+                'locale' => $data['locale'] ?? null,
+            ], now()->addHour());
+        }
+
+        // Central DB: create the tenant + its domain atomically. With after_commit
+        // enabled, the provisioning pipeline is only dispatched once this commits.
+        return DB::transaction(function () use ($data): Tenant {
             $tenant = Tenant::create([
                 'id' => $data['subdomain'],
                 'name' => $data['name'],
+                'status' => TenantStatus::Provisioning,
                 'owner_name' => $data['admin_name'] ?? null,
                 'owner_email' => $data['admin_email'] ?? null,
                 'plan' => TenantPlan::Trial,
@@ -44,58 +60,5 @@ class CreateTenantAction
 
             return $tenant;
         });
-
-        // Phase 2 — tenant DB: create admin user + assign role.
-        // Wrapped in try/finally so tenancy()->end() always runs (critical for Octane workers).
-        // On failure, we delete the tenant which fires TenantDeleted → DeleteDatabase cleanup.
-        if (isset($data['admin_email'])) {
-            try {
-                tenancy()->initialize($tenant);
-
-                try {
-                    $admin = User::create([
-                        'name' => $data['admin_name'] ?? 'Clinic Admin',
-                        'email' => $data['admin_email'],
-                        'password' => Hash::make($data['admin_password'] ?? 'password'),
-                    ]);
-
-                    $adminRole = Role::where('name', 'admin')->where('guard_name', 'tenant')->firstOrFail();
-                    $admin->assignRole($adminRole);
-
-                    if (isset($data['locale'])) {
-                        ClinicSetting::current()->update(['locale' => $data['locale']]);
-                    }
-                } finally {
-                    tenancy()->end();
-                }
-            } catch (\Throwable $e) {
-                Log::error('Tenant user creation failed — rolling back tenant', [
-                    'tenant_id' => $tenant->id,
-                    'error' => $e->getMessage(),
-                ]);
-
-                try {
-                    $tenant->delete();
-                } catch (\Throwable $deleteException) {
-                    Log::critical('Tenant rollback failed — orphaned tenant requires manual cleanup', [
-                        'tenant_id' => $tenant->id,
-                        'error' => $deleteException->getMessage(),
-                    ]);
-                }
-
-                throw $e;
-            }
-
-            Mail::to($data['admin_email'])->queue(new TenantWelcomeMail(
-                tenantName: $tenant->name ?? 'Your Clinic',
-                ownerName: $data['admin_name'] ?? 'there',
-                planTier: $tenant->effectiveTier(),
-                trialEndsAt: $tenant->trial_ends_at,
-                dashboardLoginUrl: $tenant->dashboardLoginUrl(),
-                billingPageUrl: $tenant->billingPageUrl(),
-            ));
-        }
-
-        return $tenant;
     }
 }

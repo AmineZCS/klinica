@@ -128,4 +128,10 @@ return [
     'js_subdomain_reserved' => '✗ Reserviert — wählen Sie einen anderen Namen',
     'js_subdomain_invalid' => '✗ Ungültiges Format',
     'js_subdomain_taken' => '✗ Bereits vergeben — versuchen Sie einen anderen',
+
+    'provisioning_title' => 'Ihre Klinik wird eingerichtet',
+    'provisioning_heading' => 'Ihre Klinik wird eingerichtet…',
+    'provisioning_subtext' => 'Dies dauert normalerweise nur ein paar Sekunden. Sie werden automatisch zu Ihrer Klinik weitergeleitet.',
+    'provisioning_failed' => 'Beim Erstellen Ihrer Klinik ist ein Fehler aufgetreten. Bitte kontaktieren Sie den Support unter admin@klinica.space.',
+    'provisioning_timeout' => 'Dies dauert länger als erwartet. Falls Sie nicht in Kürze weitergeleitet werden, kontaktieren Sie bitte den Support unter admin@klinica.space.',
 ];

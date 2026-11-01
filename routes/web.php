@@ -30,6 +30,11 @@ Route::get('/register', [TenantRegistrationController::class, 'create'])->name('
 Route::post('/register', [TenantRegistrationController::class, 'store'])->name('register.store');
 Route::get('/api/check-subdomain', [TenantRegistrationController::class, 'checkSubdomain'])->name('register.check-subdomain');
 
+// Post-signup provisioning: a page that polls tenant readiness, then forwards to
+// the clinic login once the async pipeline has finished setting the tenant up.
+Route::get('/registering/{tenant}', [TenantRegistrationController::class, 'provisioning'])->name('registering');
+Route::get('/registering/{tenant}/status', [TenantRegistrationController::class, 'status'])->name('registering.status');
+
 // Sitemap and llms.txt — central domain only (tenant subdomains have their own routes)
 Route::domain(config('tenancy.central_domains')[0])->group(function (): void {
     Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');

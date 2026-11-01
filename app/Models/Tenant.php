@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\TenantPlan;
+use App\Enums\TenantStatus;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -22,8 +23,14 @@ class Tenant extends BaseTenant implements TenantWithDatabase
         'plan_expires_at' => 'datetime',
         'plan_cancels_at' => 'datetime',
         'plan' => TenantPlan::class,
+        'status' => TenantStatus::class,
         'is_active' => 'boolean',
     ];
+
+    public function isReady(): bool
+    {
+        return $this->status === TenantStatus::Ready;
+    }
 
     public function tenantHost(): string
     {
@@ -91,6 +98,7 @@ class Tenant extends BaseTenant implements TenantWithDatabase
         return [
             'id',
             'name',
+            'status',
             'owner_name',
             'owner_email',
             'is_active',
