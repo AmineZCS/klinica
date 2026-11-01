@@ -31,12 +31,11 @@ class TenancyServiceProvider extends ServiceProvider
                     Jobs\CreateDatabase::class,
                     Jobs\MigrateDatabase::class,
                     Jobs\SeedDatabase::class,
-                    // Create the admin user and flip the tenant to "ready" once the
-                    // database is migrated and seeded. See FinalizeTenantSetup.
+                    // Creates the admin user and marks the tenant ready.
                     FinalizeTenantSetup::class,
                 ])->send(function (Events\TenantCreated $event) {
                     return $event->tenant;
-                })->shouldBeQueued(true), // Provision off the request thread; the signup page polls for readiness.
+                })->shouldBeQueued(true), // Provision off the request thread.
             ],
             Events\SavingTenant::class => [],
             Events\TenantSaved::class => [],

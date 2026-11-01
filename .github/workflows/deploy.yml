@@ -5,14 +5,12 @@ on:
     branches:
       - main
 
-# Serialize deployments so two pushes in quick succession cannot run overlapping
-# git-reset / build steps against the same server.
+# Serialize deploys so two pushes can't run overlapping builds on the server.
 concurrency:
   group: production-deploy
   cancel-in-progress: false
 
 jobs:
-  # Quality gate: the production deploy only runs if linting and tests pass.
   test:
     uses: ./.github/workflows/ci.yml
 
@@ -21,10 +19,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # The deploy runs entirely server-side over SSH, so the runner does not
-      # need a checkout of the repository.
       - name: Deploy to the production server via SSH
-        # Pinned to the commit SHA of appleboy/ssh-action v1.2.5 for supply-chain safety.
+        # appleboy/ssh-action v1.2.5, pinned by SHA.
         uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -32,7 +28,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script_stop: true
-          # The build + migrations can exceed the 10-minute default on a small VM.
           command_timeout: 20m
           script: |
             set -euo pipefail
@@ -40,41 +35,25 @@ jobs:
 
             compose() { docker compose -f compose.prod.yaml "$@"; }
 
-            # Preserve the currently-running image so a failed release can be
-            # rolled back to it (see the smoke-test step below). On the very
-            # first deploy there is no :latest yet, hence the guard.
+            # Keep the running image so a failed release can roll back to it.
             docker image tag klinica-app:latest klinica-app:previous 2>/dev/null || true
 
             git fetch origin main
             git reset --hard origin/main
 
-            # Build the new image before touching anything that serves traffic;
-            # a build failure leaves the running release untouched.
             compose build
-
-            # Bring the datastores up first so migrations have something to run
-            # against, without yet replacing the app containers.
             compose up -d --wait db redis
 
-            # Run migrations BEFORE the new app serves traffic, via a one-off
-            # container on the freshly built image.
-            #
-            # REQUIRED: migrations must be backward-compatible (expand-and-contract).
-            # The rollback below restores the previous *image* but does NOT reverse
-            # migrations, so the old app must keep working against the new schema.
+            # Migrate before the new app serves traffic. Migrations must be
+            # backward-compatible: rollback restores the previous image, not the schema.
             compose run --rm --no-deps --entrypoint php web artisan migrate --force
             compose run --rm --no-deps --entrypoint php web artisan tenants:migrate --force
 
-            # Swap in the new app, worker and scheduler. This recreates the
-            # containers, so expect a brief unavailability window — this is not a
-            # zero-downtime deploy. --wait blocks until healthchecks pass.
+            # Swap in the new containers. Brief downtime here — not zero-downtime.
             compose up -d --wait
 
-            # Ensure storage subdirs exist and are owned by the runtime user. The
-            # storage volume can predate the non-root container (root-owned), so
-            # create missing dirs and fix ownership AS ROOT before caching — both
-            # view:cache and the running app write compiled views, sessions and
-            # logs there as www-data.
+            # The storage volume can predate the non-root container, so fix ownership
+            # as root before caching (view compilation and the app write here).
             compose exec -u root -T web mkdir -p \
               /app/storage/app/public /app/storage/app/private \
               /app/storage/app/livewire-tmp /app/storage/framework/cache \
@@ -83,19 +62,14 @@ jobs:
             compose exec -u root -T web chown -R www-data:www-data /app/storage /app/bootstrap/cache
             compose exec -T web php artisan storage:link --force
 
-            # Production caches, then reload Octane to serve with them. We do NOT
-            # run view:cache: Filament registers its blade components at panel boot,
-            # so view:cache cannot resolve them (views compile on demand instead).
-            # filament:optimize caches Filament components + Blade icons in its place.
+            # No view:cache — Filament resolves its blade components at panel boot,
+            # which view:cache can't do; filament:optimize covers Filament instead.
             compose exec -T web php artisan config:cache
             compose exec -T web php artisan event:cache
             compose exec -T web php artisan route:cache
             compose exec -T web php artisan filament:optimize
             compose exec -T web php artisan octane:reload
 
-            # Post-deploy smoke test: verify the app both serves HTTP (/up) and
-            # can reach the database after migrating (migrate:status) — the latter
-            # is a signal the container healthcheck alone does not cover.
             smoke_ok() {
               compose exec -T web php artisan migrate:status > /dev/null 2>&1 \
                 && compose exec -T web curl -fsS http://localhost:8000/up > /dev/null
@@ -104,14 +78,13 @@ jobs:
             if ! smoke_ok; then
               echo "Smoke test failed after migration."
               if docker image inspect klinica-app:previous > /dev/null 2>&1; then
-                echo "Rolling back to the previous image (schema changes are NOT reverted)."
+                echo "Rolling back to the previous image (schema NOT reverted)."
                 docker image tag klinica-app:previous klinica-app:latest
                 compose up -d --wait
               else
-                echo "No previous image to roll back to (first deploy) — manual intervention required."
+                echo "No previous image to roll back to (first deploy)."
               fi
               exit 1
             fi
 
-            # Drop dangling images from previous builds.
             docker image prune -f

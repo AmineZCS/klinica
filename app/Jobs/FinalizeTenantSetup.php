@@ -15,13 +15,10 @@ use Illuminate\Support\Facades\Mail;
 use Spatie\Permission\Models\Role;
 
 /**
- * Final step of the tenant-provisioning pipeline, appended after stancl's
- * CreateDatabase → MigrateDatabase → SeedDatabase jobs. It creates the clinic's
- * admin user (credentials are stashed in the central cache by CreateTenantAction,
- * never passed in plaintext), marks the tenant ready, and sends the welcome mail.
- *
- * It is constructed by Stancl\JobPipeline with the tenant as its only argument,
- * so the whole pipeline runs as one queued job on the worker.
+ * Final step of the tenant-provisioning pipeline (after CreateDatabase →
+ * MigrateDatabase → SeedDatabase): creates the admin user from the cached
+ * credentials, marks the tenant ready, and sends the welcome mail. JobPipeline
+ * constructs it with the tenant as its only argument.
  */
 class FinalizeTenantSetup
 {
@@ -51,9 +48,8 @@ class FinalizeTenantSetup
                 ));
             }
         } catch (\Throwable $e) {
-            // Mark the tenant failed so the signup page can stop polling and show
-            // a support message. Earlier pipeline steps (DB/migrate/seed) failing
-            // leave the tenant "provisioning"; the page falls back to a timeout.
+            // Let the signup page stop polling. Earlier pipeline steps failing leave
+            // the tenant "provisioning"; the page falls back to a timeout.
             $this->tenant->update(['status' => TenantStatus::Failed]);
 
             Log::error('Tenant provisioning finalize failed', [

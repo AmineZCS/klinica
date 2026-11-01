@@ -16,23 +16,18 @@ use Illuminate\Support\Str;
 class CreateTenantAction
 {
     /**
-     * Create a tenant's central records and kick off asynchronous provisioning.
+     * Create the tenant's central records and start async provisioning.
      *
-     * The returned tenant is in the "provisioning" state: creating it fires
-     * TenantCreated, which runs the queued CreateDatabase → MigrateDatabase →
-     * SeedDatabase → FinalizeTenantSetup pipeline on the worker. That pipeline
-     * creates the tenant database, the admin user, and flips the tenant to
-     * "ready". The signup page polls the tenant status until then.
+     * Returns a "provisioning" tenant; TenantCreated runs the queued CreateDatabase
+     * → MigrateDatabase → SeedDatabase → FinalizeTenantSetup pipeline, which builds
+     * the database and admin user and flips the tenant to "ready".
      *
      * @param  array{name: string, subdomain: string, admin_name?: string, admin_email?: string, admin_password?: string, plan_tier?: string, locale?: string}  $data
      */
     public function execute(array $data): Tenant
     {
-        // Stash admin credentials in the central cache BEFORE creating the tenant,
-        // so FinalizeTenantSetup can read them without receiving them through the
-        // job pipeline. The password is hashed; nothing is cached in plaintext.
-        // Caching first also covers the sync-queue case (tests), where the pipeline
-        // runs inline during Tenant::create().
+        // Cache the admin credentials (hashed) before creating the tenant so
+        // FinalizeTenantSetup can read them rather than receive them via the pipeline.
         if (isset($data['admin_email'])) {
             Cache::put("tenant_setup:{$data['subdomain']}", [
                 'name' => $data['admin_name'] ?? null,
@@ -42,8 +37,7 @@ class CreateTenantAction
             ], now()->addHour());
         }
 
-        // Central DB: create the tenant + its domain atomically. With after_commit
-        // enabled, the provisioning pipeline is only dispatched once this commits.
+        // after_commit ensures the provisioning pipeline dispatches only once this commits.
         return DB::transaction(function () use ($data): Tenant {
             $tenant = Tenant::create([
                 'id' => $data['subdomain'],

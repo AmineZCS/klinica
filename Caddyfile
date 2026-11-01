@@ -2,13 +2,20 @@
 	email admin@klinica.space
 }
 
-# Served behind Cloudflare (proxied / orange-cloud) with SSL mode Full (strict).
-# Caddy presents a Cloudflare Origin CA certificate that covers the apex and all
-# first-level tenant subdomains; Cloudflare trusts it on the edge-to-origin hop,
-# so no Let's Encrypt / ACME is used here. The cert and key are mounted from
-# ./certs (gitignored — never commit them).
+# Behind Cloudflare (Full strict): Caddy serves a Cloudflare Origin CA cert from
+# ./certs (gitignored), so no ACME. The cert covers the apex and tenant subdomains.
 klinica.space, www.klinica.space, *.klinica.space {
 	encode zstd gzip
 	tls /etc/caddy/certs/origin.pem /etc/caddy/certs/origin.key
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		# Allow framing only within the klinica.space family (the settings live preview).
+		Content-Security-Policy "frame-ancestors 'self' https://*.klinica.space"
+		-Server
+	}
+
 	reverse_proxy web:8000
 }

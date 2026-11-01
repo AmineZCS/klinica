@@ -12,7 +12,6 @@ use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Database\Models\Domain;
 use Stancl\Tenancy\Database\Models\ImpersonationToken;
@@ -30,8 +29,7 @@ Route::get('/register', [TenantRegistrationController::class, 'create'])->name('
 Route::post('/register', [TenantRegistrationController::class, 'store'])->name('register.store');
 Route::get('/api/check-subdomain', [TenantRegistrationController::class, 'checkSubdomain'])->name('register.check-subdomain');
 
-// Post-signup provisioning: a page that polls tenant readiness, then forwards to
-// the clinic login once the async pipeline has finished setting the tenant up.
+// Post-signup provisioning page: polls tenant readiness, then forwards to login.
 Route::get('/registering/{tenant}', [TenantRegistrationController::class, 'provisioning'])->name('registering');
 Route::get('/registering/{tenant}/status', [TenantRegistrationController::class, 'status'])->name('registering.status');
 
@@ -141,8 +139,8 @@ Route::post('/billing/cancel', [BillingController::class, 'cancel'])
 // Paddle webhooks (CSRF excluded in bootstrap/app.php)
 Route::post('/webhooks/paddle', [PaddleWebhookController::class, 'handle'])->name('webhooks.paddle');
 
-// for production only
-// subdomain validation to check if a requested subdomain is actually a tenant or no to decide wether we issue an ssl certificate for it using Caddy or no
+// Called by Caddy's on-demand TLS to decide whether to issue a cert for a host.
+// Cached for a day so probes can't hammer the DB through Caddy.
 Route::get('/api/v1/validate-tenant', function (Request $request) {
     $incomingDomain = strtolower($request->query('domain'));
 
@@ -150,26 +148,19 @@ Route::get('/api/v1/validate-tenant', function (Request $request) {
         return response('Invalid Domain Parameter', 400);
     }
 
-    // 1. Instantly whitelist your central core domains
     $centralDomains = ['klinica.space', 'www.klinica.space'];
     if (in_array($incomingDomain, $centralDomains)) {
         return response('Valid Central Domain', 200);
     }
 
-    // Cache the database lookup for 24 hours.
-    // This stops malicious scripts from hammering the DB via Caddy.
     $isValidTenant = Cache::remember("domain_auth:{$incomingDomain}", now()->addDay(), function () use ($incomingDomain) {
-
-        // Handle standard subdomains (e.g., test.klinica.space)
         if (str_ends_with($incomingDomain, '.klinica.space')) {
             $subdomain = head(explode('.', $incomingDomain));
 
-            // Check if the tenant ID matches the subdomain prefix
             return Tenant::where('id', $subdomain)->exists();
         }
 
-        // Handle fully custom white-label domains (e.g., www.algiersclinic.dz)
-        // This utilizes Stancl Tenancy's built-in Domain model lookup
+        // Custom white-label domains resolve through the Domain model.
         return Domain::where('domain', $incomingDomain)->exists();
     });
 
@@ -179,18 +170,3 @@ Route::get('/api/v1/validate-tenant', function (Request $request) {
 
     return response('Unauthorized Domain', 403);
 });
-
-// test smtp
-Route::get('/test-smtp', function () {
-    // send email to medamineben19@gmail.com
-    try {
-        Mail::raw('This is a test email from Laravel.', function ($message) {
-            $message->to('medamineben19@gmail.com')
-                ->subject('Test Email');
-        });
-
-        return 'Test email sent!';
-    } catch (Exception $e) {
-        return 'Failed to send test email: '.$e->getMessage();
-    }
-})->name('test.smtp');
