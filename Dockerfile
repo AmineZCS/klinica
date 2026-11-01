@@ -5,7 +5,7 @@ FROM dunglas/frankenphp:php8.5.12 AS base
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y git unzip \
-    && curl -sSL https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o /usr/local/bin/install-php-extensions \
+    && curl -sSL https://github.com/mlocati/docker-php-extension-installer/releases/download/2.10.15/install-php-extensions -o /usr/local/bin/install-php-extensions \
     && chmod +x /usr/local/bin/install-php-extensions \
     && install-php-extensions pcntl pdo_mysql zip opcache redis intl exif gd \
     && rm -rf /var/lib/apt/lists/*
@@ -41,7 +41,7 @@ RUN apt-get update && apt-get install -y curl \
     && printf '\nsession.upload_progress.enabled = Off\n' >> "$PHP_INI_DIR/php.ini" \
     && rm -rf /var/lib/apt/lists/*
 
-RUN curl -sSL https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o /usr/local/bin/install-php-extensions \
+RUN curl -sSL https://github.com/mlocati/docker-php-extension-installer/releases/download/2.10.15/install-php-extensions -o /usr/local/bin/install-php-extensions \
     && chmod +x /usr/local/bin/install-php-extensions \
     && install-php-extensions pcntl pdo_mysql zip opcache redis intl exif gd \
     && rm -rf /var/lib/apt/lists/* && rm /usr/local/bin/install-php-extensions

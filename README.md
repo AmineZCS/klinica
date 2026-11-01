@@ -21,9 +21,14 @@
 
 Billing, trials, and plan restrictions are handled end-to-end with live payments.
 Built as an indie project to see how fast a complete, production-deployable SaaS
-could be shipped — it runs in production on an AWS Lightsail VM (Docker Compose)
-behind FrankenPHP + Octane, with Cloudflare handling DNS and SSL for the root
-domain and every tenant subdomain.
+could be shipped — it runs live on an AWS Lightsail VM (Docker Compose) behind
+FrankenPHP + Octane, with Cloudflare handling DNS and SSL for the root domain and
+every tenant subdomain.
+
+> **Scope:** a solo project built to ship a complete, real SaaS end-to-end and
+> fast. It's deployed with real infrastructure and live payments, but it's a
+> one-person build — not load-tested at scale or hardened to enterprise standards.
+> Read it as a real-world code sample, not a reference production setup.
 
 ## Screenshots
 
@@ -65,8 +70,9 @@ sign-up, billing, and the super-admin panel; each clinic gets its own subdomain
 - **Multi-tenancy** — subdomain-per-tenant with isolated databases ([`stancl/tenancy`](https://tenancyforlaravel.com)).
 - **Billing & subscriptions** — Paddle integration with trials, renewable subscriptions,
   plan swaps, cancellations, and webhook-driven state sync.
-- **Plan restrictions** — Starter vs Pro limits (patients, employees, monthly bookings,
-  storage, email reminders) enforced via middleware.
+- **Plan restrictions** — per-plan caps on patients, employees and monthly bookings,
+  enforced when records are created; a subscription middleware gates the panel on a
+  lapsed trial or suspended account.
 - **Public booking** — each clinic exposes a branded landing page and a self-service
   appointment booking flow.
 - **Customizable landing page** — tenants edit branding, colors, contact info, and
@@ -102,12 +108,21 @@ composer install
 vendor/bin/sail up -d
 vendor/bin/sail artisan key:generate
 vendor/bin/sail artisan migrate
+
+# Create the central super admin (reads SUPER_ADMIN_* from .env)
+vendor/bin/sail artisan db:seed --class=SuperAdminSeeder
+
 vendor/bin/sail npm install
 vendor/bin/sail npm run dev
 ```
 
 Multi-tenancy is resolved by subdomain, so point a wildcard host at the app for
 local tenant testing (e.g. `*.klinica.test` → `127.0.0.1`).
+
+Creating a clinic on sign-up provisions its database on the queue, so run a
+worker (`vendor/bin/sail artisan queue:work`) or set `QUEUE_CONNECTION=sync` in
+`.env` — otherwise new sign-ups stay on the "setting up" screen. The super-admin
+panel is at `/admin`; each clinic's own panel is at `clinic.<host>/clinic`.
 
 ### Configuration
 

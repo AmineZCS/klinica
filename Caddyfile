@@ -7,5 +7,15 @@
 klinica.space, www.klinica.space, *.klinica.space {
 	encode zstd gzip
 	tls /etc/caddy/certs/origin.pem /etc/caddy/certs/origin.key
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		# Allow framing only within the klinica.space family (the settings live preview).
+		Content-Security-Policy "frame-ancestors 'self' https://*.klinica.space"
+		-Server
+	}
+
 	reverse_proxy web:8000
 }
