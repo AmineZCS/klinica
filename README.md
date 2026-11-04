@@ -30,22 +30,6 @@ every tenant subdomain.
 > one-person build — not load-tested at scale or hardened to enterprise standards.
 > Read it as a real-world code sample, not a reference production setup.
 
-## Screenshots
-
-<!--
-  Drop images in docs/screenshots/ and reference them here. Suggested set:
-  landing page, tenant booking flow, super-admin panel, tenant clinic panel,
-  the live landing-page editor with preview.
--->
-
-<p align="center">
-  <img src="docs/screenshots/landing.png" alt="Clinic landing page" width="49%">
-  <img src="docs/screenshots/booking.png" alt="Public booking flow" width="49%">
-</p>
-<p align="center">
-  <img src="docs/screenshots/admin-panel.png" alt="Super-admin panel" width="49%">
-  <img src="docs/screenshots/clinic-panel.png" alt="Tenant clinic panel" width="49%">
-</p>
 
 ## Architecture
 
